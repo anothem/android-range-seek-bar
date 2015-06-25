@@ -3,7 +3,9 @@ range-seek-bar
 
 # Introduction
 
-This is a fork of the following project: https://code.google.com/p/range-seek-bar/ under Apache license.
+If you are coming from [the original repo](https://github.com/yahoo/android-range-seek-bar), you're in the right place this is the new home for this project. 
+
+The android-range-seek-bar is a fork of the following project: https://code.google.com/p/range-seek-bar/ under Apache license.
 
 It provides a SeekBar similar to the default Android one, but with two thumb controls allowing a range to be selected, and some other extras as well.
 
