@@ -17,8 +17,11 @@ limitations under the License.
 package com.yahoo.mobile.client.android.demo;
 
 import android.app.Activity;
+import android.graphics.Path;
 import android.os.Bundle;
 import android.widget.LinearLayout;
+
+import com.yahoo.mobile.client.android.util.PixelUtil;
 import com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar;
 
 public class DemoActivity extends Activity {
@@ -41,5 +44,13 @@ public class DemoActivity extends Activity {
         // Add to layout
         LinearLayout layout = (LinearLayout) findViewById(R.id.seekbar_placeholder);
         layout.addView(rangeSeekBar);
+
+        // Find the seek bar for which we will add a custom shadow
+        RangeSeekBar<Integer> seekBar = (RangeSeekBar<Integer>) findViewById(R.id.shadow_path_seek_bar);
+        int height = getResources().getDimensionPixelSize(R.dimen.rect_height);
+        int width = getResources().getDimensionPixelSize(R.dimen.rect_width);
+        Path shadowPath = new Path();
+        shadowPath.addRect(-(float)width / 2f, -(float)height / 2f, (float)width / 2f, (float)height / 2f, Path.Direction.CW);
+        seekBar.setThumbShadowPath(shadowPath);
     }
 }
