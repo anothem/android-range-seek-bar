@@ -28,6 +28,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -232,6 +233,15 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         this.absoluteMinValue = minValue;
         this.absoluteMaxValue = maxValue;
         setValuePrimAndNumberType();
+    }
+
+    public void setTextAboveThumbsColor(int textAboveThumbsColor) {
+        this.mTextAboveThumbsColor = textAboveThumbsColor;
+        invalidate();
+    }
+
+    public void setTextAboveThumbsColorResource(@ColorRes int resId) {
+        setTextAboveThumbsColor(getResources().getColor(resId));
     }
 
     @SuppressWarnings("unchecked")
