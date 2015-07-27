@@ -32,6 +32,9 @@
         <!-- the color of the bar that is selected -->
         <attr name="activeColor"        format="color"/>
 
+        <!-- the color of the text above thumbs -->
+        <attr name="textAboveThumbsColor" format="color"/>
+
         <!-- set drawables for thumb handles -->
         <attr name="thumbNormal"        format="reference"/>
         <attr name="thumbPressed"       format="reference"/>
