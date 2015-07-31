@@ -65,6 +65,32 @@
             rsb:singleThumb="true" />
 
         <TextView
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:text="Range seek bar from xml with custom color to text above thumbs " />
+
+        <com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          rsb:textAboveThumbsColor="@android:color/holo_green_light"
+          rsb:absoluteMaxValue="150"
+          rsb:absoluteMinValue="20"
+          rsb:singleThumb="true" />
+
+        <TextView
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:text="Range seek bar from code with custom color to text above thumbs " />
+
+        <com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar
+          android:id="@+id/rangeSeekBarTextColorWithCode"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          rsb:absoluteMaxValue="150"
+          rsb:absoluteMinValue="20"
+          rsb:singleThumb="true" />
+
+        <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="Range seek bar from xml with custom thumb handle" />

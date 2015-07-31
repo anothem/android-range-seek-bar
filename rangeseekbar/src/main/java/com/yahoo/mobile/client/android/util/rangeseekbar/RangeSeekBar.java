@@ -28,6 +28,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -117,6 +118,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private float mInternalPad;
     private int mActiveColor;
     private int mDefaultColor;
+    private int mTextAboveThumbsColor;
 
     public RangeSeekBar(Context context) {
         super(context);
@@ -160,6 +162,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
             barHeight       = PixelUtil.dpToPx(context, LINE_HEIGHT_IN_DP);
             mActiveColor    = ACTIVE_COLOR;
             mDefaultColor   = Color.GRAY;
+            mTextAboveThumbsColor = Color.WHITE;
             mAlwaysActive   = false;
             mShowTextAboveThumbs = true;
         } else {
@@ -176,6 +179,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 barHeight       = a.getDimensionPixelSize(R.styleable.RangeSeekBar_barHeight, LINE_HEIGHT_IN_DP);
                 mActiveColor    = a.getColor(R.styleable.RangeSeekBar_activeColor, ACTIVE_COLOR);
                 mDefaultColor   = a.getColor(R.styleable.RangeSeekBar_defaultColor, Color.GRAY);
+                mTextAboveThumbsColor = a.getColor(R.styleable.RangeSeekBar_textAboveThumbsColor, Color.WHITE);
                 mAlwaysActive   = a.getBoolean(R.styleable.RangeSeekBar_alwaysActive, false);
                 Drawable normalDrawable = a.getDrawable(R.styleable.RangeSeekBar_thumbNormal);
                 if (normalDrawable != null) {
@@ -229,6 +233,15 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         this.absoluteMinValue = minValue;
         this.absoluteMaxValue = maxValue;
         setValuePrimAndNumberType();
+    }
+
+    public void setTextAboveThumbsColor(int textAboveThumbsColor) {
+        this.mTextAboveThumbsColor = textAboveThumbsColor;
+        invalidate();
+    }
+
+    public void setTextAboveThumbsColorResource(@ColorRes int resId) {
+        setTextAboveThumbsColor(getResources().getColor(resId));
     }
 
     @SuppressWarnings("unchecked")
@@ -560,7 +573,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         // draw the text if sliders have moved from default edges
         if (mShowTextAboveThumbs && !selectedValuesAreDefault) {
             paint.setTextSize(mTextSize);
-            paint.setColor(Color.WHITE);
+            paint.setColor(mTextAboveThumbsColor);
             // give text a bit more space here so it doesn't get cut off
             int offset = PixelUtil.dpToPx(getContext(), TEXT_LATERAL_PADDING_IN_DP);
 
