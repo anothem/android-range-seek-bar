@@ -3,30 +3,33 @@ range-seek-bar
 
 # Introduction
 
-If you are coming from [the original repo](https://github.com/yahoo/android-range-seek-bar), you're in the right place this is the new home for this project. 
+If you are coming from [the original repo](https://github.com/yahoo/android-range-seek-bar), it has a [new home](https://github.com/anothem/android-range-seek-bar) so if you're seeing this, you're probably in the right place.
 
-The android-range-seek-bar is a fork of the following project: https://code.google.com/p/range-seek-bar/ under Apache license.
-
-It provides a SeekBar similar to the default Android one, but with two thumb controls allowing a range to be selected, and some other extras as well.
+This library provides a SeekBar similar to the default Android one, but with two thumb controls allowing a range to be selected.
 
 ![](demo_screenshot.png)
 
-# Modifications in fork from original project
+# Features and customizations
 
-Feature additions are:
+Main features:
+
+* Two thumbs allowing a range to be selected
+* Supports integer ranges and floating point ranges
+* Text indicating the selected min and max values on the bar
+* Smoother drag animation
+
+Customizations:
 
 * Ability to initialise from XML, with attributes (only tested for Integer and Double, would not support all the original types that the class supports when initialized programmatically)
 * Ability to make the range-seek-bar only use one thumb instead of two, with all other feature remaining; can be set from XML.
   This makes it more similar to the default android seekbar, but you still benefit from the other features and very smooth animation.
-* Text labels at beginning and end integrated in the RangeSeekBar view itself
-* Floating text above the thumbs that shows the value selected by the thumb
-* Styling changes — thinner line, the progress bar shows as “disabled” (line grey, buttons grey, no text labels) when the values are at default min/max
-* I’ve also added a PixelUtils class that does Px to Dp and Dp to Px conversions.
+* Text above thumbs can be disabled and colour can be changed
+* Custom icons can be used for the thumbs
 
 # How to run demo
 
-This repository contains an ant-based Android project which runs a demo app showing off some of the features of the range-seek-bar and ways of utilizing it.
-You should be able to import and run like any other Android app.
+Should be able to import, build and run in Android Studio or from the command line with gradle.
+The rangeseekbar-sample shows the available features and customizations in code and XML.
 
 # How to use in your own project
 
@@ -38,7 +41,7 @@ You should be able to import and run like any other Android app.
 
 ```groovy
 	dependencies {
-    	compile 'com.yahoo.mobile.client.android.util.rangeseekbar:rangeseekbar-library:0.1.0'
+    	compile 'org.florescu.android.rangeseekbar:rangeseekbar-library:0.2.0'
 	}
 ```
 
@@ -46,19 +49,13 @@ You should be able to import and run like any other Android app.
 
 ```groovy
 	dependencies {
-    	compile 'com.yahoo.mobile.client.android.util.rangeseekbar:rangeseekbar-library:0.2.0-SNAPSHOT'
+    	compile 'org.florescu.android.rangeseekbar:rangeseekbar-library:0.3.0-SNAPSHOT'
 	}
 ```
 
-## Copy/paste relevant files
+# Credits
 
-Copy the following into your own project:
-* [Java source files from src/com/yahoo/mobile/client/android/util](rangeseekbar/src/main/java/com/yahoo/mobile/client/android/util)
-* [Attributes for XML use](rangeseekbar/src/main/res/values/attrs.xml)
-* [Image files from res/drawable-xhdpi](rangeseekbar/src/main/res/drawable-xhdpi) (or use your own): [seek_thumb_disabled.png](rangeseekbar/src/main/res/drawable-xhdpi/seek_thumb_disabled.png), [seek_thumb_normal.png](rangeseekbar/src/main/res/drawable-xhdpi/seek_thumb_normal.png), [seek_thumb_pressed.png](rangeseekbar/src/main/res/drawable-xhdpi/seek_thumb_pressed.png)
-
-Then you can use this in your layouts, either programmatically instantiating like in [DemoActivity](rangeseekbar-sample/src/main/java/com/yahoo/mobile/client/android/demo/DemoActivity.java) or through XML, like in [main.xml](rangeseekbar-sample/src/main/res/layout/main.xml)
-
+The android-range-seek-bar started as a fork of the following project: https://code.google.com/p/range-seek-bar/ under Apache license.
 
 # License
 
