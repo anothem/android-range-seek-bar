@@ -1,4 +1,4 @@
-package com.yahoo.mobile.client.android.util.rangeseekbar;
+package org.florescu.android.rangeseekbar;
 
 import org.junit.Assert;
 import org.junit.Test;

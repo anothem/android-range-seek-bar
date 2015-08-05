@@ -1,4 +1,5 @@
 /*
+Copyright 2015 Alex Florescu
 Copyright 2014 Stephan Tittel and Yahoo Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package com.yahoo.mobile.client.android.util.rangeseekbar;
+package org.florescu.android.rangeseekbar;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -36,8 +37,8 @@ import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 import android.widget.ImageView;
 
-import com.yahoo.mobile.client.android.util.BitmapUtil;
-import com.yahoo.mobile.client.android.util.PixelUtil;
+import org.florescu.android.util.BitmapUtil;
+import org.florescu.android.util.PixelUtil;
 
 import java.math.BigDecimal;
 
@@ -51,7 +52,7 @@ import java.math.BigDecimal;
  * @author Stephan Tittel (stephan.tittel@kom.tu-darmstadt.de)
  * @author Peter Sinnott (psinnott@gmail.com)
  * @author Thomas Barrasso (tbarrasso@sevenplusandroid.org)
- * @author Alex Florescu (florescu@yahoo-inc.com)
+ * @author Alex Florescu (alex@florescu.org)
  * @author Michael Keppler (bananeweizen@gmx.de)
  */
 public class RangeSeekBar<T extends Number> extends ImageView {
@@ -158,12 +159,12 @@ public class RangeSeekBar<T extends Number> extends ImageView {
 
         if (attrs == null) {
             setRangeToDefaultValues();
-            mInternalPad    = PixelUtil.dpToPx(context, INITIAL_PADDING_IN_DP);
-            barHeight       = PixelUtil.dpToPx(context, LINE_HEIGHT_IN_DP);
-            mActiveColor    = ACTIVE_COLOR;
-            mDefaultColor   = Color.GRAY;
+            mInternalPad = PixelUtil.dpToPx(context, INITIAL_PADDING_IN_DP);
+            barHeight = PixelUtil.dpToPx(context, LINE_HEIGHT_IN_DP);
+            mActiveColor = ACTIVE_COLOR;
+            mDefaultColor = Color.GRAY;
             mTextAboveThumbsColor = Color.WHITE;
-            mAlwaysActive   = false;
+            mAlwaysActive = false;
             mShowTextAboveThumbs = true;
         } else {
             TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.RangeSeekBar, 0, 0);
@@ -173,14 +174,14 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                         extractNumericValueFromAttributes(a, R.styleable.RangeSeekBar_absoluteMaxValue, DEFAULT_MAXIMUM)
                 );
                 mShowTextAboveThumbs = a.getBoolean(R.styleable.RangeSeekBar_valuesAboveThumbs, true);
-                mSingleThumb    = a.getBoolean(R.styleable.RangeSeekBar_singleThumb, false);
-                mShowLabels     = a.getBoolean(R.styleable.RangeSeekBar_showLabels, true);
-                mInternalPad    = a.getDimensionPixelSize(R.styleable.RangeSeekBar_internalPadding, INITIAL_PADDING_IN_DP);
-                barHeight       = a.getDimensionPixelSize(R.styleable.RangeSeekBar_barHeight, LINE_HEIGHT_IN_DP);
-                mActiveColor    = a.getColor(R.styleable.RangeSeekBar_activeColor, ACTIVE_COLOR);
-                mDefaultColor   = a.getColor(R.styleable.RangeSeekBar_defaultColor, Color.GRAY);
+                mSingleThumb = a.getBoolean(R.styleable.RangeSeekBar_singleThumb, false);
+                mShowLabels = a.getBoolean(R.styleable.RangeSeekBar_showLabels, true);
+                mInternalPad = a.getDimensionPixelSize(R.styleable.RangeSeekBar_internalPadding, INITIAL_PADDING_IN_DP);
+                barHeight = a.getDimensionPixelSize(R.styleable.RangeSeekBar_barHeight, LINE_HEIGHT_IN_DP);
+                mActiveColor = a.getColor(R.styleable.RangeSeekBar_activeColor, ACTIVE_COLOR);
+                mDefaultColor = a.getColor(R.styleable.RangeSeekBar_defaultColor, Color.GRAY);
                 mTextAboveThumbsColor = a.getColor(R.styleable.RangeSeekBar_textAboveThumbsColor, Color.WHITE);
-                mAlwaysActive   = a.getBoolean(R.styleable.RangeSeekBar_alwaysActive, false);
+                mAlwaysActive = a.getBoolean(R.styleable.RangeSeekBar_alwaysActive, false);
                 Drawable normalDrawable = a.getDrawable(R.styleable.RangeSeekBar_thumbNormal);
                 if (normalDrawable != null) {
                     thumbImage = BitmapUtil.drawableToBitmap(normalDrawable);
@@ -216,12 +217,12 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         mTextSize = PixelUtil.dpToPx(context, DEFAULT_TEXT_SIZE_IN_DP);
         mDistanceToTop = PixelUtil.dpToPx(context, DEFAULT_TEXT_DISTANCE_TO_TOP_IN_DP);
         mTextOffset = !mShowTextAboveThumbs ? 0 : this.mTextSize + PixelUtil.dpToPx(context,
-                                                        DEFAULT_TEXT_DISTANCE_TO_BUTTON_IN_DP) + this.mDistanceToTop;
+                DEFAULT_TEXT_DISTANCE_TO_BUTTON_IN_DP) + this.mDistanceToTop;
 
         mRect = new RectF(padding,
-                          mTextOffset + mThumbHalfHeight - barHeight / 2,
-                          getWidth() - padding,
-                          mTextOffset + mThumbHalfHeight + barHeight / 2);
+                mTextOffset + mThumbHalfHeight - barHeight / 2,
+                getWidth() - padding,
+                mTextOffset + mThumbHalfHeight + barHeight / 2);
 
         // make RangeSeekBar focusable. This solves focus handling issues in case EditText widgets are being used along with the RangeSeekBar within ScrollViews.
         setFocusable(true);
@@ -563,7 +564,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         // draw minimum thumb if not a single thumb control
         if (!mSingleThumb) {
             drawThumb(normalizedToScreen(normalizedMinValue), Thumb.MIN.equals(pressedThumb), canvas,
-                      selectedValuesAreDefault);
+                    selectedValuesAreDefault);
         }
 
         // draw maximum thumb
@@ -584,16 +585,16 @@ public class RangeSeekBar<T extends Number> extends ImageView {
 
             if (!mSingleThumb) {
                 canvas.drawText(minText,
-                                normalizedToScreen(normalizedMinValue) - minTextWidth * 0.5f,
-                                mDistanceToTop + mTextSize,
-                                paint);
+                        normalizedToScreen(normalizedMinValue) - minTextWidth * 0.5f,
+                        mDistanceToTop + mTextSize,
+                        paint);
 
             }
 
             canvas.drawText(maxText,
-                            normalizedToScreen(normalizedMaxValue) - maxTextWidth * 0.5f,
-                            mDistanceToTop + mTextSize,
-                            paint);
+                    normalizedToScreen(normalizedMaxValue) - maxTextWidth * 0.5f,
+                    mDistanceToTop + mTextSize,
+                    paint);
         }
 
     }
@@ -637,8 +638,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         }
 
         canvas.drawBitmap(buttonToDraw, screenCoord - mThumbHalfWidth,
-                          mTextOffset,
-                          paint);
+                mTextOffset,
+                paint);
     }
 
     /**
@@ -745,17 +746,6 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     }
 
     /**
-     * Callback listener interface to notify about changed range values.
-     *
-     * @param <T> The Number type the RangeSeekBar has been declared with.
-     * @author Stephan Tittel (stephan.tittel@kom.tu-darmstadt.de)
-     */
-    public interface OnRangeSeekBarChangeListener<T> {
-
-        void onRangeSeekBarValuesChanged(RangeSeekBar<?> bar, T minValue, T maxValue);
-    }
-
-    /**
      * Thumb constants (min and max).
      */
     private enum Thumb {
@@ -814,6 +804,17 @@ public class RangeSeekBar<T extends Number> extends ImageView {
             }
             throw new InstantiationError("can't convert " + this + " to a Number object");
         }
+    }
+
+    /**
+     * Callback listener interface to notify about changed range values.
+     *
+     * @param <T> The Number type the RangeSeekBar has been declared with.
+     * @author Stephan Tittel (stephan.tittel@kom.tu-darmstadt.de)
+     */
+    public interface OnRangeSeekBarChangeListener<T> {
+
+        void onRangeSeekBarValuesChanged(RangeSeekBar<?> bar, T minValue, T maxValue);
     }
 
 }

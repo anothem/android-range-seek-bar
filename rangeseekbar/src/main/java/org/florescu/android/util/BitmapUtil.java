@@ -1,4 +1,4 @@
-package com.yahoo.mobile.client.android.util;
+package org.florescu.android.util;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;

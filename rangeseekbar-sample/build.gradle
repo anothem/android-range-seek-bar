@@ -10,7 +10,7 @@ android {
     buildToolsVersion "20.0.0"
 
     defaultConfig {
-        applicationId "com.yahoo.mobile.client.android.util.rangeseekbar"
+        applicationId "org.florescu.android.util.rangeseekbar"
         minSdkVersion 15
         targetSdkVersion 21
         versionCode 1
