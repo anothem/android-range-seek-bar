@@ -15,7 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package org.florescu.android.demo;
+package org.florescu.android.rangeseekbar.sample;
 
 import android.app.Activity;
 import android.os.Bundle;
