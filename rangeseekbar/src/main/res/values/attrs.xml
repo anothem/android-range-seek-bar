@@ -20,6 +20,9 @@
         <!-- show the currently selected value above each thumb (defaults to true) -->
         <attr name="valuesAboveThumbs"  format="boolean"/>
 
+        <!-- color of value text -->
+        <attr name="valuesColor"        format="color"/>
+
         <!-- padding on either side on the slider -->
         <attr name="internalPadding"    format="dimension"/>
 
@@ -36,6 +39,13 @@
         <attr name="thumbNormal"        format="reference"/>
         <attr name="thumbPressed"       format="reference"/>
         <attr name="thumbDisabled"      format="reference"/>
+
+        <!-- thumb shadow specifications -->
+        <attr name="thumbShadow"        format="boolean"/>
+        <attr name="thumbShadowColor"   format="color"/>
+        <attr name="thumbShadowXOffset" format="dimension"/>
+        <attr name="thumbShadowYOffset" format="dimension"/>
+        <attr name="thumbShadowBlur"    format="dimension"/>
     </declare-styleable>
 
 </resources>
