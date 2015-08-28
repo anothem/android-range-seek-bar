@@ -8,7 +8,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="5dp">
+        android:padding="8dp"
+        >
 
         <TextView
             android:layout_width="match_parent"
@@ -73,7 +74,7 @@
             android:text="Range seek bar from xml with custom color to text above thumbs "/>
 
         <org.florescu.android.rangeseekbar.RangeSeekBar
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             rsb:absoluteMaxValue="150"
             rsb:absoluteMinValue="20"
@@ -81,13 +82,13 @@
             rsb:textAboveThumbsColor="@android:color/holo_green_light"/>
 
         <TextView
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Range seek bar from code with custom color to text above thumbs "/>
 
         <org.florescu.android.rangeseekbar.RangeSeekBar
             android:id="@+id/rangeSeekBarTextColorWithCode"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             rsb:absoluteMaxValue="150"
             rsb:absoluteMinValue="20"
@@ -130,7 +131,9 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Range seek bar from xml with thumb shadow"/>
+                android:text="Range seek bar from xml with thumb shadow"
+                android:textColor="@color/material_blue_grey_900"
+                />
 
             <org.florescu.android.rangeseekbar.RangeSeekBar
                 android:layout_width="match_parent"
@@ -138,29 +141,11 @@
                 rsb:absoluteMaxValue="150"
                 rsb:absoluteMinValue="20"
                 rsb:textAboveThumbsColor="@android:color/holo_purple"
-                rsb:thumbDisabled="@drawable/slider_thumb"
-                rsb:thumbNormal="@drawable/slider_thumb"
-                rsb:thumbPressed="@drawable/slider_thumb"
+                rsb:thumbDisabled="@drawable/custom_slider_thumb"
+                rsb:thumbNormal="@drawable/custom_slider_thumb"
+                rsb:thumbPressed="@drawable/custom_slider_thumb"
                 rsb:thumbShadow="true"/>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Range seek bar from xml with thumb shadow from code"/>
-
-            <org.florescu.android.rangeseekbar.RangeSeekBar
-                android:id="@+id/shadow_path_seek_bar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                rsb:absoluteMaxValue="150"
-                rsb:absoluteMinValue="20"
-                rsb:textAboveThumbsColor="@android:color/holo_purple"
-                rsb:thumbDisabled="@drawable/slider_thumb_rect"
-                rsb:thumbNormal="@drawable/slider_thumb_rect"
-                rsb:thumbPressed="@drawable/slider_thumb_rect"
-                rsb:thumbShadow="true"
-                rsb:thumbShadowBlur="4dp"
-                rsb:thumbShadowColor="#bbb"/>
 
         </LinearLayout>
 
