@@ -112,6 +112,8 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingBottom="4dp"
+            android:paddingTop="8dp"
             android:text="Range seek bar from xml with no text above"/>
 
 
@@ -122,32 +124,25 @@
             rsb:absoluteMinValue="20"
             rsb:valuesAboveThumbs="false"/>
 
-        <LinearLayout
+
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/white"
-            android:orientation="vertical">
+            android:paddingTop="8dp"
+            android:text="Range seek bar from xml with thumb shadow"
+            />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Range seek bar from xml with thumb shadow"
-                android:textColor="@color/material_blue_grey_900"
-                />
+        <org.florescu.android.rangeseekbar.RangeSeekBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            rsb:absoluteMaxValue="150"
+            rsb:absoluteMinValue="20"
+            rsb:textAboveThumbsColor="@android:color/holo_purple"
+            rsb:thumbDisabled="@drawable/custom_slider_thumb"
+            rsb:thumbNormal="@drawable/custom_slider_thumb"
+            rsb:thumbPressed="@drawable/custom_slider_thumb"
+            rsb:thumbShadow="true"/>
 
-            <org.florescu.android.rangeseekbar.RangeSeekBar
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                rsb:absoluteMaxValue="150"
-                rsb:absoluteMinValue="20"
-                rsb:textAboveThumbsColor="@android:color/holo_purple"
-                rsb:thumbDisabled="@drawable/custom_slider_thumb"
-                rsb:thumbNormal="@drawable/custom_slider_thumb"
-                rsb:thumbPressed="@drawable/custom_slider_thumb"
-                rsb:thumbShadow="true"/>
-
-
-        </LinearLayout>
 
     </LinearLayout>
 
