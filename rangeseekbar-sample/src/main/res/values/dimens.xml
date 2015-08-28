@@ -1,5 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="rect_height">20dp</dimen>
-    <dimen name="rect_width">30dp</dimen>
 </resources>
