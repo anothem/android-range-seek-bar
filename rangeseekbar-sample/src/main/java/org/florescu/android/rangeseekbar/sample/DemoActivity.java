@@ -1,4 +1,5 @@
 /*
+Copyright 2015 Alex Florescu
 Copyright 2014 Yahoo Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,15 +15,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package com.yahoo.mobile.client.android.demo;
+package org.florescu.android.rangeseekbar.sample;
 
 import android.app.Activity;
 import android.graphics.Path;
 import android.os.Bundle;
 import android.widget.LinearLayout;
 
-import com.yahoo.mobile.client.android.util.PixelUtil;
-import com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar;
+import org.florescu.android.rangeseekbar.RangeSeekBar;
 
 public class DemoActivity extends Activity {
 
@@ -50,7 +50,11 @@ public class DemoActivity extends Activity {
         int height = getResources().getDimensionPixelSize(R.dimen.rect_height);
         int width = getResources().getDimensionPixelSize(R.dimen.rect_width);
         Path shadowPath = new Path();
-        shadowPath.addRect(-(float)width / 2f, -(float)height / 2f, (float)width / 2f, (float)height / 2f, Path.Direction.CW);
+        shadowPath.addRect(-(float) width / 2f, -(float) height / 2f, (float) width / 2f, (float) height / 2f, Path.Direction.CW);
         seekBar.setThumbShadowPath(shadowPath);
+
+        // Seek bar for which we will set text color in code
+        RangeSeekBar rangeSeekBarTextColorWithCode = (RangeSeekBar) findViewById(R.id.rangeSeekBarTextColorWithCode);
+        rangeSeekBarTextColorWithCode.setTextAboveThumbsColorResource(android.R.color.holo_blue_bright);
     }
 }

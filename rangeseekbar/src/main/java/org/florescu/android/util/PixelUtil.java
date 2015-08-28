@@ -1,4 +1,5 @@
 /*
+Copyright 2015 Alex Florescu
 Copyright 2014 Yahoo Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package com.yahoo.mobile.client.android.util;
+package org.florescu.android.util;
 
 import android.content.Context;
 import android.util.DisplayMetrics;

@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:text="Range seek bar from xml with default range"/>
 
-        <com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar
+        <org.florescu.android.rangeseekbar.RangeSeekBar
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
@@ -35,7 +35,8 @@
             android:layout_height="wrap_content"
             android:text="Range seek bar from xml with ranges set"/>
 
-        <com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar
+
+        <org.florescu.android.rangeseekbar.RangeSeekBar
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             rsb:absoluteMaxValue="150"
@@ -46,7 +47,8 @@
             android:layout_height="wrap_content"
             android:text="Range seek bar from xml with ranges set and double values"/>
 
-        <com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar
+
+        <org.florescu.android.rangeseekbar.RangeSeekBar
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             rsb:absoluteMaxValue="140.54"
@@ -57,8 +59,35 @@
             android:layout_height="wrap_content"
             android:text="Range seek bar from xml with single thumb to true"/>
 
-        <com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar
+
+        <org.florescu.android.rangeseekbar.RangeSeekBar
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            rsb:absoluteMaxValue="150"
+            rsb:absoluteMinValue="20"
+            rsb:singleThumb="true"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Range seek bar from xml with custom color to text above thumbs "/>
+
+        <org.florescu.android.rangeseekbar.RangeSeekBar
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            rsb:absoluteMaxValue="150"
+            rsb:absoluteMinValue="20"
+            rsb:singleThumb="true"
+            rsb:textAboveThumbsColor="@android:color/holo_green_light"/>
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Range seek bar from code with custom color to text above thumbs "/>
+
+        <org.florescu.android.rangeseekbar.RangeSeekBar
+            android:id="@+id/rangeSeekBarTextColorWithCode"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             rsb:absoluteMaxValue="150"
             rsb:absoluteMinValue="20"
@@ -69,7 +98,8 @@
             android:layout_height="wrap_content"
             android:text="Range seek bar from xml with custom thumb handle"/>
 
-        <com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar
+
+        <org.florescu.android.rangeseekbar.RangeSeekBar
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             rsb:absoluteMaxValue="150"
@@ -83,7 +113,8 @@
             android:layout_height="wrap_content"
             android:text="Range seek bar from xml with no text above"/>
 
-        <com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar
+
+        <org.florescu.android.rangeseekbar.RangeSeekBar
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             rsb:absoluteMaxValue="150"
@@ -101,7 +132,7 @@
                 android:layout_height="wrap_content"
                 android:text="Range seek bar from xml with thumb shadow"/>
 
-            <com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar
+            <org.florescu.android.rangeseekbar.RangeSeekBar
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 rsb:absoluteMaxValue="150"
@@ -118,7 +149,7 @@
                 android:layout_height="wrap_content"
                 android:text="Range seek bar from xml with thumb shadow from code"/>
 
-            <com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar
+            <org.florescu.android.rangeseekbar.RangeSeekBar
                 android:id="@+id/shadow_path_seek_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
