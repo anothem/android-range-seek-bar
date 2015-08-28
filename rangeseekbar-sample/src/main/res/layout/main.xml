@@ -137,12 +137,11 @@
                 android:layout_height="wrap_content"
                 rsb:absoluteMaxValue="150"
                 rsb:absoluteMinValue="20"
+                rsb:textAboveThumbsColor="@android:color/holo_purple"
                 rsb:thumbDisabled="@drawable/slider_thumb"
                 rsb:thumbNormal="@drawable/slider_thumb"
                 rsb:thumbPressed="@drawable/slider_thumb"
-                rsb:thumbShadow="true"
-                rsb:valuesAboveThumbs="true"
-                rsb:valuesColor="@android:color/holo_purple"/>
+                rsb:thumbShadow="true"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -155,14 +154,13 @@
                 android:layout_height="wrap_content"
                 rsb:absoluteMaxValue="150"
                 rsb:absoluteMinValue="20"
+                rsb:textAboveThumbsColor="@android:color/holo_purple"
                 rsb:thumbDisabled="@drawable/slider_thumb_rect"
                 rsb:thumbNormal="@drawable/slider_thumb_rect"
                 rsb:thumbPressed="@drawable/slider_thumb_rect"
                 rsb:thumbShadow="true"
                 rsb:thumbShadowBlur="4dp"
-                rsb:thumbShadowColor="#bbb"
-                rsb:valuesAboveThumbs="true"
-                rsb:valuesColor="@android:color/holo_purple"/>
+                rsb:thumbShadowColor="#bbb"/>
 
         </LinearLayout>
 
