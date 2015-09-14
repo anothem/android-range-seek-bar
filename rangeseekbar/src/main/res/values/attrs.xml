@@ -46,6 +46,9 @@
         <attr name="thumbShadowXOffset" format="dimension"/>
         <attr name="thumbShadowYOffset" format="dimension"/>
         <attr name="thumbShadowBlur" format="dimension"/>
+
+        <!-- to activate the thumbs and texts when the min and max values are the default ones (defaults to false) -->
+        <attr name="activateOnDefaultValues" format="boolean"/>
     </declare-styleable>
 
 </resources>
