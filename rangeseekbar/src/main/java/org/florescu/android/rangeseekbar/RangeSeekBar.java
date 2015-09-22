@@ -133,6 +133,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private Path mTranslatedThumbShadowPath = new Path();
     private Matrix mThumbShadowMatrix = new Matrix();
 
+    private boolean mActivateOnDefaultValues;
+
 
     public RangeSeekBar(Context context) {
         super(context);
@@ -188,6 +190,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
             mThumbShadowXOffset = defaultShadowXOffset;
             mThumbShadowYOffset = defaultShadowYOffset;
             mThumbShadowBlur = defaultShadowBlur;
+            mActivateOnDefaultValues = false;
         } else {
             TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.RangeSeekBar, 0, 0);
             try {
@@ -222,6 +225,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 mThumbShadowXOffset = a.getDimensionPixelSize(R.styleable.RangeSeekBar_thumbShadowXOffset, defaultShadowXOffset);
                 mThumbShadowYOffset = a.getDimensionPixelSize(R.styleable.RangeSeekBar_thumbShadowYOffset, defaultShadowYOffset);
                 mThumbShadowBlur = a.getDimensionPixelSize(R.styleable.RangeSeekBar_thumbShadowBlur, defaultShadowBlur);
+
+                mActivateOnDefaultValues = a.getBoolean(R.styleable.RangeSeekBar_activateOnDefaultValues, false);
             } finally {
                 a.recycle();
             }
@@ -604,7 +609,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         boolean selectedValuesAreDefault = (getSelectedMinValue().equals(getAbsoluteMinValue()) &&
                 getSelectedMaxValue().equals(getAbsoluteMaxValue()));
 
-        int colorToUseForButtonsAndHighlightedLine = !mAlwaysActive && selectedValuesAreDefault ?
+        int colorToUseForButtonsAndHighlightedLine = !mAlwaysActive && !mActivateOnDefaultValues && selectedValuesAreDefault ?
                 mDefaultColor : // default values
                 mActiveColor;   // non default, filter is active
 
@@ -632,7 +637,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 selectedValuesAreDefault);
 
         // draw the text if sliders have moved from default edges
-        if (mShowTextAboveThumbs && !selectedValuesAreDefault) {
+        if (mShowTextAboveThumbs && (mActivateOnDefaultValues || !selectedValuesAreDefault)) {
             paint.setTextSize(mTextSize);
             paint.setColor(mTextAboveThumbsColor);
             // give text a bit more space here so it doesn't get cut off
@@ -691,7 +696,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      */
     private void drawThumb(float screenCoord, boolean pressed, Canvas canvas, boolean areSelectedValuesDefault) {
         Bitmap buttonToDraw;
-        if (areSelectedValuesDefault) {
+        if (!mActivateOnDefaultValues && areSelectedValuesDefault) {
             buttonToDraw = thumbDisabledImage;
         } else {
             buttonToDraw = pressed ? thumbPressedImage : thumbImage;
