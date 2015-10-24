@@ -34,4 +34,4 @@ proguard/
 **/.DS_Store
 
 # Don't commit the pgp certificate
-secring.pgp
+/deploy/secring.gpg
