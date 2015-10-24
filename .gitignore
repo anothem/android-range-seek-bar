@@ -32,3 +32,6 @@ proguard/
 
 # Mac files
 **/.DS_Store
+
+# Don't commit the pgp certificate
+/deploy/secring.gpg
