@@ -41,7 +41,7 @@ The rangeseekbar-sample shows the available features and customizations in code 
 
 ```groovy
 	dependencies {
-    	compile 'org.florescu.android.rangeseekbar:rangeseekbar-library:0.2.0'
+    	compile 'org.florescu.android.rangeseekbar:rangeseekbar-library:0.3.0'
 	}
 ```
 
@@ -49,7 +49,7 @@ The rangeseekbar-sample shows the available features and customizations in code 
 
 ```groovy
 	dependencies {
-    	compile 'org.florescu.android.rangeseekbar:rangeseekbar-library:0.3.0-SNAPSHOT'
+    	compile 'org.florescu.android.rangeseekbar:rangeseekbar-library:0.4.0-SNAPSHOT'
 	}
 ```
 
