@@ -39,6 +39,8 @@ public class DemoActivity extends Activity {
         rangeSeekBar.setRangeValues(15, 90);
         rangeSeekBar.setSelectedMinValue(20);
         rangeSeekBar.setSelectedMaxValue(88);
+        // Set minimum range
+        rangeSeekBar.setMinimumRange(10f);
 
         // Add to layout
         LinearLayout layout = (LinearLayout) findViewById(R.id.seekbar_placeholder);

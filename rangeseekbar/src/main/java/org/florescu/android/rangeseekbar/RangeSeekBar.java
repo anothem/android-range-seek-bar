@@ -77,6 +77,9 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     public static final int HEIGHT_IN_DP = 30;
     public static final int TEXT_LATERAL_PADDING_IN_DP = 3;
 
+    // Constant for storing default minimum range value
+    private static final Float DEFAULT_MINIMUM_RANGE = 0f;
+
     private static final int INITIAL_PADDING_IN_DP = 8;
     private static final int DEFAULT_TEXT_SIZE_IN_DP = 14;
     private static final int DEFAULT_TEXT_DISTANCE_TO_BUTTON_IN_DP = 8;
@@ -99,6 +102,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private double absoluteMinValuePrim, absoluteMaxValuePrim;
     private double normalizedMinValue = 0d;
     private double normalizedMaxValue = 1d;
+    // Variable for storing minimum range value
+    private float mMinimumRange;
     private Thumb pressedThumb = null;
     private boolean notifyWhileDragging = false;
     private OnRangeSeekBarChangeListener<T> listener;
@@ -227,6 +232,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 mThumbShadowBlur = a.getDimensionPixelSize(R.styleable.RangeSeekBar_thumbShadowBlur, defaultShadowBlur);
 
                 mActivateOnDefaultValues = a.getBoolean(R.styleable.RangeSeekBar_activateOnDefaultValues, false);
+
+                mMinimumRange = a.getFloat(R.styleable.RangeSeekBar_minimumRange, DEFAULT_MINIMUM_RANGE);
             } finally {
                 a.recycle();
             }
@@ -308,6 +315,16 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     public void resetSelectedValues() {
         setSelectedMinValue(absoluteMinValue);
         setSelectedMaxValue(absoluteMaxValue);
+    }
+
+    @SuppressWarnings("unused")
+    public void setMinimumRange(float minimumRange) {
+        mMinimumRange = minimumRange;
+    }
+
+    @SuppressWarnings("unused")
+    public void setMinimumRangeToDefault() {
+        mMinimumRange = DEFAULT_MINIMUM_RANGE;
     }
 
     @SuppressWarnings("unused")
@@ -527,11 +544,18 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private void trackTouchEvent(MotionEvent event) {
         final int pointerIndex = event.findPointerIndex(mActivePointerId);
         final float x = event.getX(pointerIndex);
+        float xValue = screenToValue(x).floatValue();
 
         if (Thumb.MIN.equals(pressedThumb) && !mSingleThumb) {
-            setNormalizedMinValue(screenToNormalized(x));
+            float maxValue = getSelectedMaxValue().floatValue();
+            if (maxValue - xValue >= mMinimumRange) {
+                setNormalizedMinValue(screenToNormalized(x));
+            }
         } else if (Thumb.MAX.equals(pressedThumb)) {
-            setNormalizedMaxValue(screenToNormalized(x));
+            float minValue = getSelectedMinValue().floatValue();
+            if (xValue - minValue >= mMinimumRange) {
+                setNormalizedMaxValue(screenToNormalized(x));
+            }
         }
     }
 
@@ -821,6 +845,16 @@ public class RangeSeekBar<T extends Number> extends ImageView {
             double result = (screenCoord - padding) / (width - 2 * padding);
             return Math.min(1d, Math.max(0d, result));
         }
+    }
+
+    /**
+     * Converts screen space x-coordinates into Number object in the value space between absolute minimum and maximum.
+     *
+     * @param screenCoord The x-coordinate in screen space to convert.
+     * @return The Number object.
+     */
+    private T screenToValue(float screenCoord) {
+        return normalizedToValue(screenToNormalized(screenCoord));
     }
 
     /**

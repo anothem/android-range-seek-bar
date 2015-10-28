@@ -49,6 +49,9 @@
 
         <!-- to activate the thumbs and texts when the min and max values are the default ones (defaults to false) -->
         <attr name="activateOnDefaultValues" format="boolean"/>
+
+        <!-- minimum range between thumbs -->
+        <attr name="minimumRange" format="float"/>
     </declare-styleable>
 
 </resources>

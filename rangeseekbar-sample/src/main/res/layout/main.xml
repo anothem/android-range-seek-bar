@@ -14,7 +14,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Range seek bar initialized in code with ranges set"/>
+            android:text="Range seek bar initialized in code with ranges set and minimum range of 10"/>
 
         <LinearLayout
             android:id="@+id/seekbar_placeholder"
@@ -25,11 +25,12 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Range seek bar from xml with default range"/>
+            android:text="Range seek bar from xml with default range and minimum range of 20"/>
 
         <org.florescu.android.rangeseekbar.RangeSeekBar
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            rsb:minimumRange="20"/>
 
         <TextView
             android:layout_width="match_parent"
