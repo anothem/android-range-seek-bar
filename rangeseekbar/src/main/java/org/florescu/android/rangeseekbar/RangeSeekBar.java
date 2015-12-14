@@ -94,7 +94,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private float mThumbHalfHeight;
 
     private float padding;
-    private T absoluteMinValue, absoluteMaxValue;
+    private T absoluteMinValue, absoluteMaxValue, absoluteMinAllowedGapValue, absoluteMaxAllowedGapValue;
     private NumberType numberType;
     private double absoluteMinValuePrim, absoluteMaxValuePrim;
     private double normalizedMinValue = 0d;
@@ -276,8 +276,14 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     }
 
     public void setRangeValues(T minValue, T maxValue) {
+        setRangeValues(minValue, maxValue, null, null);
+    }
+
+    public void setRangeValues(T minValue, T maxValue, T minAllowedGap, T maxAllowedGap) {
         this.absoluteMinValue = minValue;
         this.absoluteMaxValue = maxValue;
+        this.absoluteMinAllowedGapValue = minAllowedGap;
+        this.absoluteMaxAllowedGapValue = maxAllowedGap;
         setValuePrimAndNumberType();
     }
 
@@ -758,7 +764,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      * @param value The new normalized min value to set.
      */
     private void setNormalizedMinValue(double value) {
-        normalizedMinValue = Math.max(0d, Math.min(1d, Math.min(value, normalizedMaxValue)));
+        normalizedMinValue = Math.max(Math.max(0d, normalizedMaxValue-normalizedMaxGap()), Math.min(1d, Math.min(value, normalizedMaxValue-normalizedMinGap())));
         invalidate();
     }
 
@@ -768,7 +774,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      * @param value The new normalized max value to set.
      */
     private void setNormalizedMaxValue(double value) {
-        normalizedMaxValue = Math.max(0d, Math.min(1d, Math.max(value, normalizedMinValue)));
+        normalizedMaxValue = Math.max(0d, Math.min(Math.min(1d, normalizedMinValue+normalizedMaxGap()), Math.max(value, normalizedMinValue + normalizedMinGap())));
         invalidate();
     }
 
@@ -821,6 +827,18 @@ public class RangeSeekBar<T extends Number> extends ImageView {
             double result = (screenCoord - padding) / (width - 2 * padding);
             return Math.min(1d, Math.max(0d, result));
         }
+    }
+
+    private double normalizedMaxGap() {
+        return absoluteMaxAllowedGapValue == null
+                ? 0d
+                : absoluteMaxAllowedGapValue.doubleValue() / (absoluteMaxValuePrim - absoluteMinValuePrim);
+    }
+
+    private double normalizedMinGap() {
+        return absoluteMinAllowedGapValue == null
+                ? 0d
+                : absoluteMinAllowedGapValue.doubleValue() / (absoluteMaxValuePrim - absoluteMinValuePrim);
     }
 
     /**
