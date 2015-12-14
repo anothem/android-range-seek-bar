@@ -85,6 +85,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private static final int LINE_HEIGHT_IN_DP = 1;
     private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint shadowPaint = new Paint();
+    private Paint mBorderPaint;
 
     private Bitmap thumbImage;
     private Bitmap thumbPressedImage;
@@ -114,15 +115,18 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private int mTextOffset;
     private int mTextSize;
     private int mDistanceToTop;
-    private RectF mRect;
+    private RectF mRect, mBorderRect;
 
     private boolean mSingleThumb;
     private boolean mAlwaysActive;
+    private boolean mShowSelectedBorder;
     private boolean mShowLabels;
     private boolean mShowTextAboveThumbs;
     private float mInternalPad;
     private int mActiveColor;
     private int mDefaultColor;
+    private int mSelectedRectColor;
+    private int mSelectedRectStrokeColor;
     private int mTextAboveThumbsColor;
 
     private boolean mThumbShadow;
@@ -201,11 +205,15 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 mShowTextAboveThumbs = a.getBoolean(R.styleable.RangeSeekBar_valuesAboveThumbs, true);
                 mTextAboveThumbsColor = a.getColor(R.styleable.RangeSeekBar_textAboveThumbsColor, Color.WHITE);
                 mSingleThumb = a.getBoolean(R.styleable.RangeSeekBar_singleThumb, false);
+                mShowSelectedBorder = a.getBoolean(R.styleable.RangeSeekBar_showSelectedRect, false);
                 mShowLabels = a.getBoolean(R.styleable.RangeSeekBar_showLabels, true);
                 mInternalPad = a.getDimensionPixelSize(R.styleable.RangeSeekBar_internalPadding, INITIAL_PADDING_IN_DP);
                 barHeight = a.getDimensionPixelSize(R.styleable.RangeSeekBar_barHeight, LINE_HEIGHT_IN_DP);
                 mActiveColor = a.getColor(R.styleable.RangeSeekBar_activeColor, ACTIVE_COLOR);
                 mDefaultColor = a.getColor(R.styleable.RangeSeekBar_defaultColor, Color.GRAY);
+                mSelectedRectColor = a.getColor(R.styleable.RangeSeekBar_selectedRectColor, Color.parseColor("#4D4D4D"));
+                mSelectedRectStrokeColor = a.getColor(R.styleable.RangeSeekBar_selectedRectStrokeColor, Color.WHITE);
+
                 mAlwaysActive = a.getBoolean(R.styleable.RangeSeekBar_alwaysActive, false);
 
                 Drawable normalDrawable = a.getDrawable(R.styleable.RangeSeekBar_thumbNormal);
@@ -256,6 +264,14 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 mTextOffset + mThumbHalfHeight - barHeight / 2,
                 getWidth() - padding,
                 mTextOffset + mThumbHalfHeight + barHeight / 2);
+
+        mBorderRect = new RectF();
+        mBorderRect.top =  (mTextOffset - barHeight / 2) + PixelUtil.dpToPx(context, 3);
+        mBorderRect.bottom = (mTextOffset + (mThumbHalfHeight*2.0f) + barHeight / 2) - PixelUtil.dpToPx(context, 3);
+
+        mBorderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mBorderPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+        mBorderPaint.setStrokeWidth(3);
 
         // make RangeSeekBar focusable. This solves focus handling issues in case EditText widgets are being used along with the RangeSeekBar within ScrollViews.
         setFocusable(true);
@@ -626,6 +642,20 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         paint.setColor(colorToUseForButtonsAndHighlightedLine);
         canvas.drawRect(mRect, paint);
 
+        // Border around thumbs
+        if (mShowSelectedBorder) {
+            mBorderRect.left = mRect.left + mThumbHalfWidth;
+            mBorderRect.right = mRect.right - mThumbHalfWidth;
+            mBorderPaint.setStyle(Paint.Style.STROKE);
+            mBorderPaint.setColor(mSelectedRectStrokeColor);
+            mBorderPaint.setAlpha(255);
+            canvas.drawRect(mBorderRect, mBorderPaint);
+            mBorderPaint.setStyle(Paint.Style.FILL);
+            mBorderPaint.setColor(mSelectedRectColor);
+            mBorderPaint.setAlpha(200);
+            canvas.drawRect(mBorderRect, mBorderPaint);
+        }
+
         // draw minimum thumb (& shadow if requested) if not a single thumb control
         if (!mSingleThumb) {
             if (mThumbShadow) {
@@ -831,7 +861,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
 
     private double normalizedMaxGap() {
         return absoluteMaxAllowedGapValue == null
-                ? 0d
+                ? 1d
                 : absoluteMaxAllowedGapValue.doubleValue() / (absoluteMaxValuePrim - absoluteMinValuePrim);
     }
 

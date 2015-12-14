@@ -11,6 +11,9 @@
         <!-- show a single slider -->
         <attr name="singleThumb" format="boolean"/>
 
+        <!-- show a rectangle border around the selected area (the area in between the range labels) -->
+        <attr name="showSelectedRect" format="boolean"/>
+
         <!-- show the labels on the right and left-->
         <attr name="showLabels" format="boolean"/>
 
@@ -34,6 +37,12 @@
 
         <!-- the color of the text above thumbs -->
         <attr name="textAboveThumbsColor" format="color"/>
+
+        <!-- the color of the selected rect (if visible) -->
+        <attr name="selectedRectColor" format="color"/>
+
+        <!-- the stroke color of the selected rect (if visible) -->
+        <attr name="selectedRectStrokeColor" format="color"/>
 
         <!-- set drawables for thumb handles -->
         <attr name="thumbNormal" format="reference"/>
