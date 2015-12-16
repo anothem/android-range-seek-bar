@@ -661,7 +661,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         // Border around thumbs
         if (mShowSelectedBorder) {
             mBorderRect.left = mRect.left + mThumbHalfWidth;
-            mBorderRect.right = mRect.right - mThumbHalfWidth;
+            mBorderRect.right = normalizedToScreen(normalizedMaxValue) - mThumbHalfWidth;
             mBorderPaint.setStyle(Paint.Style.STROKE);
             mBorderPaint.setColor(mSelectedRectStrokeColor);
             mBorderPaint.setAlpha(255);
