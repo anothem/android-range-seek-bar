@@ -655,9 +655,6 @@ public class RangeSeekBar<T extends Number> extends ImageView {
             mRect.right = normalizedToScreen(normalizedMaxValue);
         }
 
-        paint.setColor(colorToUseForButtonsAndHighlightedLine);
-        canvas.drawRect(mRect, paint);
-
         // Border around thumbs
         if (mShowSelectedBorder) {
             mBorderRect.left = mRect.left + mThumbHalfWidth;
@@ -671,6 +668,10 @@ public class RangeSeekBar<T extends Number> extends ImageView {
             mBorderPaint.setAlpha(200);
             canvas.drawRect(mBorderRect, mBorderPaint);
         }
+
+        // draw active line
+        paint.setColor(colorToUseForButtonsAndHighlightedLine);
+        canvas.drawRect(mRect, paint);
 
         // draw minimum thumb (& shadow if requested) if not a single thumb control
         if (!mSingleThumb) {
