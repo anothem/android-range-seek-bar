@@ -95,7 +95,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private float mThumbHalfHeight;
 
     private float padding;
-    private T absoluteMinValue, absoluteMaxValue, absoluteMinAllowedGapValue, absoluteMaxAllowedGapValue;
+    private T absoluteMinValue, absoluteMaxValue, absoluteMinAllowedGapValue, absoluteMaxAllowedGapValue, absoluteProgressValue;
     private NumberType numberType;
     private double absoluteMinValuePrim, absoluteMaxValuePrim;
     private double normalizedMinValue = 0d;
@@ -122,6 +122,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private boolean mShowSelectedBorder;
     private boolean mShowLabels;
     private boolean mShowTextAboveThumbs;
+    private boolean mIsProgressBar;
     private float mInternalPad;
     private int mActiveColor;
     private int mDefaultColor;
@@ -138,7 +139,6 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private Matrix mThumbShadowMatrix = new Matrix();
 
     private boolean mActivateOnDefaultValues;
-
 
     public RangeSeekBar(Context context) {
         super(context);
@@ -235,6 +235,11 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 mThumbShadowBlur = a.getDimensionPixelSize(R.styleable.RangeSeekBar_thumbShadowBlur, defaultShadowBlur);
 
                 mActivateOnDefaultValues = a.getBoolean(R.styleable.RangeSeekBar_activateOnDefaultValues, false);
+                mIsProgressBar = a.getBoolean(R.styleable.RangeSeekBar_isProgressBar, false);
+                if(mIsProgressBar) {
+                    absoluteProgressValue = (T) Integer.valueOf(0);
+                    mAlwaysActive = true;
+                }
             } finally {
                 a.recycle();
             }
@@ -289,6 +294,11 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                     mThumbHalfHeight,
                     Path.Direction.CW);
         }
+    }
+
+    public void setProgressValue(T value) {
+        this.absoluteProgressValue = value;
+        invalidate();
     }
 
     public void setRangeValues(T minValue, T maxValue) {
@@ -637,7 +647,13 @@ public class RangeSeekBar<T extends Number> extends ImageView {
 
         // draw seek bar active range line
         mRect.left = normalizedToScreen(normalizedMinValue);
-        mRect.right = normalizedToScreen(normalizedMaxValue);
+
+        // if progress bar then set the active range line to be the current progress value
+        if(mIsProgressBar) {
+            mRect.right = normalizedToScreen(Math.min(1d, valueToNormalized(absoluteProgressValue)));
+        } else {
+            mRect.right = normalizedToScreen(normalizedMaxValue);
+        }
 
         paint.setColor(colorToUseForButtonsAndHighlightedLine);
         canvas.drawRect(mRect, paint);

@@ -58,6 +58,9 @@
 
         <!-- to activate the thumbs and texts when the min and max values are the default ones (defaults to false) -->
         <attr name="activateOnDefaultValues" format="boolean"/>
+
+        <!-- sometimes we may not want the active line to be the full inner width of the 2 ranges and instead might want to manually control the progress -->
+        <attr name="isProgressBar" format="boolean"/>
     </declare-styleable>
 
 </resources>
