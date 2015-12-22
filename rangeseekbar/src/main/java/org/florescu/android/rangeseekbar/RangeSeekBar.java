@@ -496,7 +496,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                     }
 
                     if (notifyWhileDragging && listener != null) {
-                        listener.onRangeSeekBarValuesChanged(this, getSelectedMinValue(), getSelectedMaxValue());
+                        listener.onRangeSeekBarValuesChanged(this, getSelectedMinValue(), getSelectedMaxValue(), true);
                     }
                 }
                 break;
@@ -516,7 +516,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 pressedThumb = null;
                 invalidate();
                 if (listener != null) {
-                    listener.onRangeSeekBarValuesChanged(this, getSelectedMinValue(), getSelectedMaxValue());
+                    listener.onRangeSeekBarValuesChanged(this, getSelectedMinValue(), getSelectedMaxValue(), false);
                 }
                 break;
             case MotionEvent.ACTION_POINTER_DOWN: {
@@ -956,8 +956,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      * @author Stephan Tittel (stephan.tittel@kom.tu-darmstadt.de)
      */
     public interface OnRangeSeekBarChangeListener<T> {
-
-        void onRangeSeekBarValuesChanged(RangeSeekBar<?> bar, T minValue, T maxValue);
+        void onRangeSeekBarValuesChanged(RangeSeekBar<?> bar, T minValue, T maxValue, boolean isDragging);
     }
 
 }
