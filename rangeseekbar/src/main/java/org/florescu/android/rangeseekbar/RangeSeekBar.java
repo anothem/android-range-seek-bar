@@ -123,12 +123,14 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private boolean mShowLabels;
     private boolean mShowTextAboveThumbs;
     private boolean mIsProgressBar;
+    private boolean mAllowSectedRectDrag;
     private float mInternalPad;
     private int mActiveColor;
     private int mDefaultColor;
     private int mSelectedRectColor;
     private int mSelectedRectStrokeColor;
     private int mTextAboveThumbsColor;
+    private double mInBetweenDragMarker;
 
     private boolean mThumbShadow;
     private int mThumbShadowXOffset;
@@ -213,6 +215,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 mDefaultColor = a.getColor(R.styleable.RangeSeekBar_defaultColor, Color.GRAY);
                 mSelectedRectColor = a.getColor(R.styleable.RangeSeekBar_selectedRectColor, Color.parseColor("#4D4D4D"));
                 mSelectedRectStrokeColor = a.getColor(R.styleable.RangeSeekBar_selectedRectStrokeColor, Color.WHITE);
+                mAllowSectedRectDrag = mShowSelectedBorder && a.getBoolean(R.styleable.RangeSeekBar_allowSelectedRectDrag, false);
 
                 mAlwaysActive = a.getBoolean(R.styleable.RangeSeekBar_alwaysActive, false);
 
@@ -467,6 +470,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 // Only handle thumb presses.
                 if (pressedThumb == null) {
                     return super.onTouchEvent(event);
+                } else if (Thumb.INBETWEEN.equals(pressedThumb)) {
+                    mInBetweenDragMarker = screenToNormalized(mDownMotionX);
                 }
 
                 setPressed(true);
@@ -564,6 +569,13 @@ public class RangeSeekBar<T extends Number> extends ImageView {
             setNormalizedMinValue(screenToNormalized(x));
         } else if (Thumb.MAX.equals(pressedThumb)) {
             setNormalizedMaxValue(screenToNormalized(x));
+        } else if (Thumb.INBETWEEN.equals(pressedThumb)) {
+            final double distanceMoved = screenToNormalized(x) - mInBetweenDragMarker;
+            if (distanceMoved > 0 || distanceMoved < 0) {
+                mInBetweenDragMarker = mInBetweenDragMarker + distanceMoved;
+                setNormalizedMinValue(normalizedMinValue + distanceMoved);
+                setNormalizedMaxValue(normalizedMaxValue + distanceMoved);
+            }
         }
     }
 
@@ -783,6 +795,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         Thumb result = null;
         boolean minThumbPressed = isInThumbRange(touchX, normalizedMinValue);
         boolean maxThumbPressed = isInThumbRange(touchX, normalizedMaxValue);
+
         if (minThumbPressed && maxThumbPressed) {
             // if both thumbs are pressed (they lie on top of each other), choose the one with more room to drag. this avoids "stalling" the thumbs in a corner, not being able to drag them apart anymore.
             result = (touchX / getWidth() > 0.5f) ? Thumb.MIN : Thumb.MAX;
@@ -790,6 +803,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
             result = Thumb.MIN;
         } else if (maxThumbPressed) {
             result = Thumb.MAX;
+        } else if (mAllowSectedRectDrag && isInBetweenThumbs(touchX)) {
+            result = Thumb.INBETWEEN;
         }
         return result;
     }
@@ -803,6 +818,15 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      */
     private boolean isInThumbRange(float touchX, double normalizedThumbValue) {
         return Math.abs(touchX - normalizedToScreen(normalizedThumbValue)) <= mThumbHalfWidth;
+    }
+
+    /**
+     * Decides if x-coordinate in screen space is within the bounds of the MIN and MAX thumbs.
+     * @param touchX The x-coordinate in screen space to check.
+     * @return true if x-coordinate is in netween the MIN and MAX thumbs
+     */
+    private boolean isInBetweenThumbs(float touchX) {
+        return (touchX > (normalizedToScreen(normalizedMinValue) + mThumbHalfWidth)) && (touchX < (normalizedToScreen(normalizedMaxValue) + mThumbHalfWidth));
     }
 
     /**
@@ -892,7 +916,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      * Thumb constants (min and max).
      */
     private enum Thumb {
-        MIN, MAX
+        MIN, MAX, INBETWEEN
     }
 
     /**

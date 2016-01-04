@@ -61,6 +61,9 @@
 
         <!-- sometimes we may not want the active line to be the full inner width of the 2 ranges and instead might want to manually control the progress -->
         <attr name="isProgressBar" format="boolean"/>
+
+        <!-- if the selected rect is visible we can also allow the user to drag it (i.e so the min and max handles move at the same time) -->
+        <attr name="allowSelectedRectDrag" format="boolean"/>
     </declare-styleable>
 
 </resources>
