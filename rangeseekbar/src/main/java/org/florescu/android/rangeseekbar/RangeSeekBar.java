@@ -94,11 +94,11 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private float mThumbHalfHeight;
 
     private float padding;
-    private T absoluteMinValue, absoluteMaxValue;
-    private NumberType numberType;
-    private double absoluteMinValuePrim, absoluteMaxValuePrim;
-    private double normalizedMinValue = 0d;
-    private double normalizedMaxValue = 1d;
+    protected T absoluteMinValue, absoluteMaxValue;
+    protected NumberType numberType;
+    protected double absoluteMinValuePrim, absoluteMaxValuePrim;
+    protected double normalizedMinValue = 0d;
+    protected double normalizedMaxValue = 1d;
     private Thumb pressedThumb = null;
     private boolean notifyWhileDragging = false;
     private OnRangeSeekBarChangeListener<T> listener;
@@ -606,8 +606,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         mRect.right = getWidth() - padding;
         canvas.drawRect(mRect, paint);
 
-        boolean selectedValuesAreDefault = (getSelectedMinValue().equals(getAbsoluteMinValue()) &&
-                getSelectedMaxValue().equals(getAbsoluteMaxValue()));
+        boolean selectedValuesAreDefault = (normalizedMinValue < 0.00001 && normalizedMaxValue > 0.99999);
 
         int colorToUseForButtonsAndHighlightedLine = !mAlwaysActive && !mActivateOnDefaultValues && selectedValuesAreDefault ?
                 mDefaultColor : // default values
@@ -640,28 +639,42 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         if (mShowTextAboveThumbs && (mActivateOnDefaultValues || !selectedValuesAreDefault)) {
             paint.setTextSize(mTextSize);
             paint.setColor(mTextAboveThumbsColor);
-            // give text a bit more space here so it doesn't get cut off
-            int offset = PixelUtil.dpToPx(getContext(), TEXT_LATERAL_PADDING_IN_DP);
 
-            String minText = String.valueOf(getSelectedMinValue());
-            String maxText = String.valueOf(getSelectedMaxValue());
-            float minTextWidth = paint.measureText(minText) + offset;
-            float maxTextWidth = paint.measureText(maxText) + offset;
+            String minText = valueToString(getSelectedMinValue());
+            String maxText = valueToString(getSelectedMaxValue());
+            float minTextWidth = paint.measureText(minText);
+            float maxTextWidth = paint.measureText(maxText);
+            // keep the position so that the labels don't get cut off
+            float minPosition = Math.max(0f, normalizedToScreen(normalizedMinValue) - minTextWidth * 0.5f);
+            float maxPosition = Math.min(getWidth() - maxTextWidth, normalizedToScreen(normalizedMaxValue) - maxTextWidth * 0.5f);
 
             if (!mSingleThumb) {
+                // check if the labels overlap, or are too close to each other
+                int spacing = PixelUtil.dpToPx(getContext(), TEXT_LATERAL_PADDING_IN_DP);
+                float overlap = minPosition + minTextWidth - maxPosition + spacing;
+                if (overlap > 0f) {
+                    // we could move them the same ("overlap * 0.5f")
+                    // but we rather move more the one which is farther from the ends, as it has more space
+                    minPosition -= overlap * normalizedMinValue / (normalizedMinValue + 1-normalizedMaxValue);
+                    maxPosition += overlap * (1-normalizedMaxValue) / (normalizedMinValue + 1-normalizedMaxValue);
+                }
                 canvas.drawText(minText,
-                        normalizedToScreen(normalizedMinValue) - minTextWidth * 0.5f,
+                        minPosition,
                         mDistanceToTop + mTextSize,
                         paint);
 
             }
 
             canvas.drawText(maxText,
-                    normalizedToScreen(normalizedMaxValue) - maxTextWidth * 0.5f,
+                    maxPosition,
                     mDistanceToTop + mTextSize,
                     paint);
         }
 
+    }
+
+    protected String valueToString(T value) {
+        return String.valueOf(value);
     }
 
     /**
@@ -776,7 +789,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      * Converts a normalized value to a Number object in the value space between absolute minimum and maximum.
      */
     @SuppressWarnings("unchecked")
-    private T normalizedToValue(double normalized) {
+    protected T normalizedToValue(double normalized) {
         double v = absoluteMinValuePrim + normalized * (absoluteMaxValuePrim - absoluteMinValuePrim);
         // TODO parameterize this rounding to allow variable decimal points
         return (T) numberType.toNumber(Math.round(v * 100) / 100d);
@@ -788,7 +801,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      * @param value The Number value to normalize.
      * @return The normalized double.
      */
-    private double valueToNormalized(T value) {
+    protected double valueToNormalized(T value) {
         if (0 == absoluteMaxValuePrim - absoluteMinValuePrim) {
             // prevent division by zero, simply return 0.
             return 0d;
@@ -835,7 +848,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      *
      * @author Stephan Tittel (stephan.tittel@kom.tu-darmstadt.de)
      */
-    private enum NumberType {
+    protected enum NumberType {
         LONG, DOUBLE, INTEGER, FLOAT, SHORT, BYTE, BIG_DECIMAL;
 
         public static <E extends Number> NumberType fromNumber(E value) throws IllegalArgumentException {
