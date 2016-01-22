@@ -7,8 +7,9 @@ android:
 script:
 - ./gradlew clean build
 before_install:
-- openssl aes-256-cbc -K $encrypted_ee19969afbf8_key -iv $encrypted_ee19969afbf8_iv
-  -in deploy/secring.gpg.enc -out deploy/secring.gpg -d
+  - pip install --user codecov
+  - openssl aes-256-cbc -K $encrypted_ee19969afbf8_key -iv $encrypted_ee19969afbf8_iv
+    -in deploy/secring.gpg.enc -out deploy/secring.gpg -d
 env:
   global:
   - signing.secretKeyRingFile=deploy/secring.gpg
@@ -25,3 +26,5 @@ deploy:
   skip_cleanup: true
   on:
     branch: master
+after_success:
+  - codecov
