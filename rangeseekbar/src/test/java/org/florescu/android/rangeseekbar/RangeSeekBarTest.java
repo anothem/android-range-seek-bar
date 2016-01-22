@@ -22,4 +22,8 @@ public class RangeSeekBarTest {
         Assert.assertEquals(100L, maxValue);
     }
 
+    @Test
+    public void test() {
+        Assert.assertTrue(true);
+    }
 }
