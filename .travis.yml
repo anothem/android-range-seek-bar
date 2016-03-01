@@ -2,29 +2,96 @@ language: android
 jdk: oraclejdk7
 android:
   components:
-  - build-tools-20.0.0
-  - android-21
-script:
-- ./gradlew clean build
-before_install:
-  - pip install --user codecov
-  - openssl aes-256-cbc -K $encrypted_ee19969afbf8_key -iv $encrypted_ee19969afbf8_iv
-    -in deploy/secring.gpg.enc -out deploy/secring.gpg -d
+    # The BuildTools version used by your project
+    - tools
+    - build-tools-23.0.2 # 23.0.2 was not available on build
+    - build-tools-23.0.1
+    # The SDK version used to compile your project
+    - android-24
+    - android-23
+    - android-22
+    - android-21
+    - android-19
+    - android-18
+    - android-15
+    - android-10
+    - android-8
+    - addon-google_apis-google-10
+    - addon-google_apis-google-15
+    - addon-google_apis-google-18
+    - addon-google_apis-google-19
+    - addon-google_apis-google-21
+    - addon-google_apis-google-22
+    - addon-google_apis-google-23
+    - addon-google_apis-google-8
+
+    # Additional components
+    - extra-google-google_play_services
+    - extra-google-m2repository
+    - extra-android-m2repository
+    - addon-google_apis-google-19
+    - sys-img-armeabi-android-8
+    - sys-img-armeabi-android-10
+    - sys-img-armeabi-android-15
+    - sys-img-armeabi-android-19
+    - sys-img-armeabi-android-21
+    - sys-img-x86-android-22
+    - sys-img-x86-android-23
+    - addon-google_apis-google-23
+
+sudo: required
+
+# fun fact, travis doesn't really support multiple AVDs running currently for a single build (tried it, build timed out constantly while starting up the AVDs)
+# thus we're using a build matrix (which makes more sense anyhow)
 env:
-  global:
-  - signing.secretKeyRingFile=deploy/secring.gpg
-  - secure: kaqqiHrQhVXjFecwDlPA7U2cDQJIR8Pzc8SQFJSd05h5hLXeTJ71bBwFWfpRrxqoHZzxX18nt8WX28gpmGWxOBnSZGkG7b/sIowZzxcEMU6snqcR6wRKb9GMK4gOm84sDQArYfkhZfxECFBshdh7KDzZyowRZ3y2OgmhTXjpF8PcnBg8DUJLoLefTtQFYGHm9s9DRAvoMxP/JdGq4UmhaqelfArIa3cFgXt886Snr/nWIG4gM54jJ73K45aga7d1LWHWxLj3TmFW91Jc8a9bi9RsvqNzfDM912H31CZlF+t6dPVfNQtqN0UAU9VGJwuLXhBncyIIF6s4WZqA/OaL2siOvB0pHiWjNTPaVkXxVo/3Tu2oPv7cBXdyU/ysqf001vLhb+Oe7hVKdi2sUN07dM4fD9QGX23kFDb3x2HxmZ9k7Qknn+hyOF/my+A6BM8o48wPjp7LNxgC1kON1SzVVLdp6U/6GoBfnFWIjaHA7c0pjnjbG1+yCiOl/OgEar5hHgg7WThOPbt82Xpdkhqjw3G75yMixeJ1oX5R5I2P1FFB/KH1h0Bd+4zdnQK73Z+NgSQ+7hNIw/8Nkur2D1f6sQswnUKQad1/erO1aHKNotlPUCWSYIBU/HN2/A0BTy4wLairzz2868knVctXLVXf16G/Gm3WcAZIaIaiEgTL9LQ=
-  - secure: ejT20N27Nz1VBk5DMhPwm3Hy0yLws1RJOoXRgvIr0OTIJjBvbwnM6Ae+Xz3re+s4oowL8AkfH831/gx0Btq1dJWK31dVC5+lEE0TJ5sA2yxNKyPikUn8KESg+VQpxml1u0g8VGALZuD+z4i3OjllxpwGgWK0hhdkvtEkU+Atej+OcVsBK32fWZiie8bKcYAEmxEAhelD0E4XdMR3LRXdLMPHza/Zw6saPSBFn3+k/5e+QnlgBZmwigdS7hbzl6bBaMmQhN/I4NXSU2VHZuHnVehqDYkhEo2teN0Yv5ME/+Q1580SJ7CQOi8QUEZSuqUjTi81618BlnT5rT2G7zZ61bbRBzssxEK2XUhy0NGr5kMC6muPoVBbmVFUbBsn1qHduEoYsvboiF8pBMqBeQp4IQr6bonJBxKnqhg60VIhoNN8kie7bSX64LfevKAukGGVV/ayp8jOxslTMSl2WSo1RrExU3qxQY3ff3Xn7UEIQg2kHWxvylWEpWbQiq/OrwMNGcjVAEROEFHyUwIjdAl95CRa+dVe87+PjwsUx4zG5iV276cEeh/KpLRhfBrMntM5soCSz7CX5mIPDOhtgTE4XoxQufbdqFF0PEG4HgQSHAlGOwigQrjFyxG4jQXNLXLUx7ndApTeU0oxOt/EbZun/Qj9RpqotArWsUgz99Ti+Xs=
-  - secure: Qzk/onJZhh1ArvkwXgelWqoZkfbrepv2RnEniJkl6o2VkMaEmBA/v0bESlEhlwzCw4x+CZsniUOTOARLOT9rhyDiVJIj8qVAhicGjP4y4z3rOzFFBRsqp7RMg8C8PeVmtnwJQm+mT6yQVwETJJJV9cT087i8nzI6gQychC2AAou/Pqftqd0t4mraekryCU8Sz9z4wzJVFRaXiMZenTce1wabA644QKMImNMo9m8w+d7xvgXiWeMUmqDW97qBN3YBTBb/IawGfmZHtugQS4A/duql7Ch4hFC6p53VzAHGHICWZDJnBSCZ4m9kNCn1eij4ci/XVOLxAvrxgKgleSs2PZkAjy3XpVthIr4QYHiBgsul4dC9yIeZknpIURbBWZf3IZD5M+aDE5pNKrBS0NTQbPiTpkcSdjG/wrkeBR8thkTVpmuR4YxCQ2tOtvMNeB3PpQtbpi9JChHceGaDv63EKRmC0uvaKcgkU5VBSlJFyCFlM/J4on07E+FaG2JwR2qHTe1rW9DEYJNfYoup40NQTlVnSTBvEDvqWDzUZS6ZWA+zlImqqLPKUWfVnmytGys20wCwPLxbQV/2FJRhwGe31mVcxbmemZOfhzAaqZNf1yOB2EwR2uGIy2Rj9AmzICZnvFZ455r/VKJy1oTspFTaC2NJb9Pbwx1XtrszjFSGR9M=
-  - secure: UG2/nlfzKTPIt2m9t87CVwkW++WKSloEvysQvSIqGunFQfmUif/8Nr9EFzuZ+AmwRu4sSfSd6UfrFosiA2iWMsdlXIdlek4puIBjfro8NnczjUuvgMxl5CyoFizqD3kDB4QbEvs2ZQmZtsql3AZKAHhFURcmay4skDWZKgwOInbIPQydzAGXlTnJIw7fn8qsP2a+rvOo+FD+bHKXUeUNe/bF2Qi2WI4eStcAKaFbPkl39VUMs6jyIji9v4djfcCtfqZcSlvS5BtzDYQ6D0sMgum1oh8/NgkjU7bg6fj+cvjfK1rS2p/J/qMILFGaPxUfLwH+EEb7Y1IhCRnDUgm6xen7nDXaihiC6JAgALTjTTAMcul2In+UAT1rZdfH2H6bwHuffGe/7rA9XarP2kUn4GEjVHHZkvPyyQxunLZ5uaehXhudOf05FaTsSrWcyDUCG7mv1Vl6EAmwhcQPlpAsTQn2TjeTPeWeMUjx+IsXB+oI2AUavEvWzy666PWA02i+S/dlGo3SpEzJL0qCJgBaS+fik732sHRL65VYMpXNQsdNd6iVQY2qhyRqBwNPK1nYJIJpaiKZJd/ZL6Uy6anvT1MsHil2CuZrJwtu0rU642WeAzsToQVtQNBbfm35MXPwOOpLc4Rdby55UL3QQuVE7GRGrmlBbdqaS0iz2GRHh9c=
-  - secure: dpmJdS1BL8ggLP/dEthMNW9PRMkZr9lqQisJpyBUzhjGco0gG0/kcXY2QMWM5UFvnLmNvhgLt/+IggsY/B2WJyaYfsHeaNPxKdKY4RLIxHu0SwQIMwyXnlq1NmHHPm4jSswVzBsqtImzDS6tw2z+gLtZ9ddbLOOgukw5ApjGAYLvcJHseLM9eAlS+Idq011M5SDbCPf4hzqS3lcktMDuzn9Oq0iNoVa4pcLRP6+/j0L2F+fPWV+ApGOUuiC++I8rybLEh3jA+oLxrFLLl1YwWJxNtVG84wfWzUR561fJcR4rXmZyfguNtSBvVcSIQYBSvXkYcaIVljIR3t7xtLJRs03oPaLatB/+FOlvW5XHMFwNCK9e7WTw7bRU7fcKT+zYRTuIsngNyY2cFlXuXb4kRiWxwHKdKFV+VPaADpV5B6Z155jIwM+b5gkCYrZuXgOJWMIeTEM8VYPnrSUKRqRECvWvYWdAQlcYHO0CdM4HwTa3BsRzoUImboE0smitNF16aLrwvc6wqUsArK+gPIC1iFGjq/4gP4kD28He0rq8VWRAmmUdRMqQ8JMZzcHtmFn3G8HQ9jYMNORwJurSQxdQ56KERNB2X9uLvJeCL9yumPGKOSnzT1uidA1ILl3ivaCwRL4nDEGXhKdVO5k03hdUNy2uERpIhDX0pGB7mL6397o=
-  - secure: e47psDP7pGMPx88OaSRbo7xVATUyKdqHHXisJwe6NbmhXhNO8BQMHY//D4cv/McNPGe5yGuijnI8xqR4lpOpotzAVYk6IMPU18ABpp9pUs43b8ejfKczu3C1CUv2Pn4Okk87w6JvRmh8vQ1yBNUCNGvHhJg78WhlN66TyJlyd463J7QASYp7w45SAlZxKyifuE/1mMXU7Lhhs0GY6VPazEWKcUUegocI7YAGY3KvN0OIaqUCr+a4MtEnkXywwWpsYknuFrosalzRfQ2+c2Csz1PoULXPieqWkUfFVsUmNgce1L/X3AgQ5YnKN5SGFnBHJKcM39vQDtSvAm7yJyZNranlb4qA6pt0IeVLXoQpUIM/dbedDOVbBd4+x0rDeKt5x5A7lhHKGn+5F/cXSdNCR/oulfJ46ttD+8fHFoqwlV+xZa83Ee7uRN33n3xqz0ydnOf9njXEXJ5uELgNMrgAifrjBK+1nR0rlYFSn88AVez2Jla1/BWtVAERr5X5v0z+YL9KqoAkoC+mKmSX5GQ7do8KqsOOY4Z6waJTVTfZJU5SNhGSy24jO6+0NPDmMsF+35awCBc09SJ9iMWaGvg7vUm8mp8xAM3DsjKXgDwGfQNDdOHQXqm4o9sFrEoVYTMh2oVThANZFzv/C2av7QbhwQpnFh0EFeES5yzB/6koByI=
-  - secure: dZ42Hwb+HRwB6fkYL1jauqKUJGqlkwbyzVvvnD0WtVDztCitrLsgZpetdV0L0/RPyr1Id7isa/JyhmATtHMMJx8hVSzvItXR/dfXbCzqGmwrYx+HqQiroAG2cmrv8+8doMHhIBjmAE06vGSy0EgABREAMCsgwbNHU8oTBvcsvVSB2+mFklNiRJGvfrzWlr6IvEIc8kAN+izBZIjhsWCMUFFYzjzcEIJ92fmAr84EBDNavJGhc3O61RYuJwVz4PvLMggxPCA216Uj99rZST3MTDZP+kPksqy5mQmqgo5dRKi+O20JzoxRNZ/68sd4GqKSvDAHStNysA76neZXOu0bVKXpk/xLgeNk0eipzy3KAguh/5PaLqqm4cBC3pbEKy4Z6/xjxrewRd+vRlW4qW+uEkHDIaL1y2q5snIs9NT+mia/48lvnJdXnSyUQ9jH1tNvPm+h2mTJHwrYetqJTBG1k8ZsIpIJk3bv4dw134CEGGt92r52W8iDaxzdLQqy6AWaz0mTl0mUJ73e4IvJj5R/M/OMqbzCCIoIzF/Y6e9pwRoufX0zJGW5kRLTsi8Cz5c0RGrX5YqXYfUrh1rQolVya8jnDlTphOSarKSN4iQISTc9xLUmXb8hoeFbnFSEHo6WXx9uIl1qUqTucJpv+vBU5UCQNutRtKZsu2DC0HhgNmU=
-deploy:
-  provider: script
-  script: ./gradlew uploadArchives -PNEXUS_USERNAME="${NEXUS_USERNAME}" -PNEXUS_PASSWORD="${NEXUS_PASSWORD}" -Psigning.keyId="${SIGNING_KEY_ID}" -Psigning.password="${SIGNING_KEY_PASSWORD}" -Pbintray.user="${BINTRAY_USER}" -Pbintray.apikey="${BINTRAY_API_KEY}" -Pbintray.gpg.password="${BINTRAY_GPG_PWD}" -Psigning.secretKeyRingFile=/home/travis/build/anothem/android-range-seek-bar/deploy/secring.gpg
-  skip_cleanup: true
-  on:
-    branch: master
-after_success:
-  - codecov
+    global:
+    #minutes (2 minutes by default), prevents CommandShellUnresponsiveExceptions
+    - ADB_INSTALL_TIMEOUT=14
+
+    matrix:
+    #note when changing these, updating the gradle build file for the GoogleWrapper project
+    # first env var is just for display purposes
+    #api8 with google
+    - API=8g ANDROID_TARGET=12  ANDROID_ABI=armeabi
+    #api8
+    - API=8 ANDROID_TARGET=1  ANDROID_ABI=armeabi
+    #api10
+    - API=10 ANDROID_TARGET=2  ANDROID_ABI=armeabi
+    #api10 with google
+    - API=10g ANDROID_TARGET=13  ANDROID_ABI=armeabi
+    #api15
+    - API=15 ANDROID_TARGET=3  ANDROID_ABI=armeabi-v7a
+    #api15 with google
+    - API=15g ANDROID_TARGET=14  ANDROID_ABI=armeabi-v7a
+    #api19
+    - API=19 ANDROID_TARGET=7  ANDROID_ABI=armeabi-v7a
+    #api19 with google
+    - API=19g ANDROID_TARGET=16  ANDROID_ABI=armeabi-v7a
+    #api21
+    #- ANDROID_TARGET=17  ANDROID_ABI=armeabi-v7a no abi available with google apis
+    #api22
+    # ANDROID_TARGET=18  ANDROID_ABI=x86 not currently possible with travis, missing some kind of hardware acceleration driver
+    #api23
+    # ANDROID_TARGET=19  ANDROID_ABI=x86 not currently possible with travis, missing some kind of hardware acceleration driver
+
+before_install:
+  # create and start emulators
+  - android list targets
+  - echo no | android create avd --force -n test$ANDROID_TARGET -t $ANDROID_TARGET --abi $ANDROID_ABI --sdcard 100M
+  - emulator -memory 1536 -avd test$ANDROID_TARGET -no-skin -no-audio -no-window &
+  - android-wait-for-emulator
+  - adb shell input keyevent 82 &
+
+# mvn sdk deploy
+before_script:
+  - android-wait-for-emulator
+  - adb shell input keyevent 82 &
+
+#build
+script:
+  #build using gradle
+  - ./gradlew -version
+  - ./gradlew clean connectedCheck
+  # fun fact, maven runs android tests concurrently for all connected devices, gradle does not
+  # since we're using build matrix, each build target compiles the source, fires up it's specific vm, runs the tests, then exits.
+  # --stacktrace

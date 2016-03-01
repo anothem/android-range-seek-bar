@@ -1,7 +1,6 @@
 package org.florescu.android.rangeseekbar;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
@@ -11,6 +10,7 @@ import org.robolectric.annotation.Config;
 @Config(constants = BuildConfig.class, sdk = 21)
 public class RangeSeekBarTest {
 
+    @Ignore
     @Test
     public void rsb_should_handle_long_values() {
         RangeSeekBar<Long> mSeekBar = new RangeSeekBar<>(RuntimeEnvironment.application);
