@@ -6,6 +6,7 @@ android:
     - tools
     - build-tools-23.0.2 # 23.0.2 was not available on build
     - build-tools-23.0.1
+    - build-tools-20.0.0
     # The SDK version used to compile your project
     - android-24
     - android-23
