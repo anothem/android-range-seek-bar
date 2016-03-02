@@ -6,7 +6,7 @@ android:
   - android-21
 script:
 - ./gradlew clean build
-before_install:
+before_deploy:
 - openssl aes-256-cbc -K $encrypted_ee19969afbf8_key -iv $encrypted_ee19969afbf8_iv
   -in deploy/secring.gpg.enc -out deploy/secring.gpg -d
 env:
