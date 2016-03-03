@@ -99,6 +99,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     protected double absoluteMinValuePrim, absoluteMaxValuePrim;
     protected double normalizedMinValue = 0d;
     protected double normalizedMaxValue = 1d;
+    protected double minDeltaForDefault = 0;
     private Thumb pressedThumb = null;
     private boolean notifyWhileDragging = false;
     private OnRangeSeekBarChangeListener<T> listener;
@@ -606,7 +607,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         mRect.right = getWidth() - padding;
         canvas.drawRect(mRect, paint);
 
-        boolean selectedValuesAreDefault = (normalizedMinValue < 0.00001 && normalizedMaxValue > 0.99999);
+        boolean selectedValuesAreDefault = (normalizedMinValue <= minDeltaForDefault && normalizedMaxValue >= 1 - minDeltaForDefault);
 
         int colorToUseForButtonsAndHighlightedLine = !mAlwaysActive && !mActivateOnDefaultValues && selectedValuesAreDefault ?
                 mDefaultColor : // default values
