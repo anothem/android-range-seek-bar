@@ -86,9 +86,13 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint shadowPaint = new Paint();
 
-    private Bitmap thumbImage;
-    private Bitmap thumbPressedImage;
-    private Bitmap thumbDisabledImage;
+    private Bitmap minThumbImage;
+    private Bitmap minThumbPressedImage;
+    private Bitmap minThumbDisabledImage;
+
+    private Bitmap maxThumbImage;
+    private Bitmap maxThumbPressedImage;
+    private Bitmap maxThumbDisabledImage;
 
     private float mThumbHalfWidth;
     private float mThumbHalfHeight;
@@ -208,18 +212,32 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 mDefaultColor = a.getColor(R.styleable.RangeSeekBar_defaultColor, Color.GRAY);
                 mAlwaysActive = a.getBoolean(R.styleable.RangeSeekBar_alwaysActive, false);
 
-                Drawable normalDrawable = a.getDrawable(R.styleable.RangeSeekBar_thumbNormal);
+                Drawable normalDrawable = a.getDrawable(R.styleable.RangeSeekBar_minThumbNormal);
                 if (normalDrawable != null) {
-                    thumbImage = BitmapUtil.drawableToBitmap(normalDrawable);
+                    minThumbImage = BitmapUtil.drawableToBitmap(normalDrawable);
                 }
-                Drawable disabledDrawable = a.getDrawable(R.styleable.RangeSeekBar_thumbDisabled);
+                Drawable disabledDrawable = a.getDrawable(R.styleable.RangeSeekBar_minThumbDisabled);
                 if (disabledDrawable != null) {
-                    thumbDisabledImage = BitmapUtil.drawableToBitmap(disabledDrawable);
+                    minThumbDisabledImage = BitmapUtil.drawableToBitmap(disabledDrawable);
                 }
-                Drawable pressedDrawable = a.getDrawable(R.styleable.RangeSeekBar_thumbPressed);
+                Drawable pressedDrawable = a.getDrawable(R.styleable.RangeSeekBar_minThumbPressed);
                 if (pressedDrawable != null) {
-                    thumbPressedImage = BitmapUtil.drawableToBitmap(pressedDrawable);
+                    minThumbPressedImage = BitmapUtil.drawableToBitmap(pressedDrawable);
                 }
+
+                normalDrawable = a.getDrawable(R.styleable.RangeSeekBar_maxThumbNormal);
+                if (normalDrawable != null) {
+                    maxThumbImage = BitmapUtil.drawableToBitmap(normalDrawable);
+                }
+                disabledDrawable = a.getDrawable(R.styleable.RangeSeekBar_maxThumbDisabled);
+                if (disabledDrawable != null) {
+                    maxThumbDisabledImage = BitmapUtil.drawableToBitmap(disabledDrawable);
+                }
+                pressedDrawable = a.getDrawable(R.styleable.RangeSeekBar_maxThumbPressed);
+                if (pressedDrawable != null) {
+                    maxThumbPressedImage = BitmapUtil.drawableToBitmap(pressedDrawable);
+                }
+
                 mThumbShadow = a.getBoolean(R.styleable.RangeSeekBar_thumbShadow, false);
                 thumbShadowColor = a.getColor(R.styleable.RangeSeekBar_thumbShadowColor, defaultShadowColor);
                 mThumbShadowXOffset = a.getDimensionPixelSize(R.styleable.RangeSeekBar_thumbShadowXOffset, defaultShadowXOffset);
@@ -232,18 +250,28 @@ public class RangeSeekBar<T extends Number> extends ImageView {
             }
         }
 
-        if (thumbImage == null) {
-            thumbImage = BitmapFactory.decodeResource(getResources(), thumbNormal);
+        if (minThumbImage == null) {
+            minThumbImage = BitmapFactory.decodeResource(getResources(), thumbNormal);
         }
-        if (thumbPressedImage == null) {
-            thumbPressedImage = BitmapFactory.decodeResource(getResources(), thumbPressed);
+        if (minThumbPressedImage == null) {
+            minThumbPressedImage = BitmapFactory.decodeResource(getResources(), thumbPressed);
         }
-        if (thumbDisabledImage == null) {
-            thumbDisabledImage = BitmapFactory.decodeResource(getResources(), thumbDisabled);
+        if (minThumbDisabledImage == null) {
+            minThumbDisabledImage = BitmapFactory.decodeResource(getResources(), thumbDisabled);
         }
 
-        mThumbHalfWidth = 0.5f * thumbImage.getWidth();
-        mThumbHalfHeight = 0.5f * thumbImage.getHeight();
+        if (maxThumbImage == null) {
+            maxThumbImage= BitmapFactory.decodeResource(getResources(), thumbNormal);
+        }
+        if (maxThumbPressedImage == null) {
+            maxThumbPressedImage = BitmapFactory.decodeResource(getResources(), thumbPressed);
+        }
+        if (maxThumbDisabledImage == null) {
+            maxThumbDisabledImage = BitmapFactory.decodeResource(getResources(), thumbDisabled);
+        }
+
+        mThumbHalfWidth = 0.5f * minThumbImage.getWidth();
+        mThumbHalfHeight = 0.5f * minThumbImage.getHeight();
 
         setValuePrimAndNumberType();
 
@@ -568,7 +596,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
             width = MeasureSpec.getSize(widthMeasureSpec);
         }
 
-        int height = thumbImage.getHeight()
+        int height = minThumbImage.getHeight()
                 + (!mShowTextAboveThumbs ? 0 : PixelUtil.dpToPx(getContext(), HEIGHT_IN_DP))
                 + (mThumbShadow ? mThumbShadowYOffset + mThumbShadowBlur : 0);
         if (MeasureSpec.UNSPECIFIED != MeasureSpec.getMode(heightMeasureSpec)) {
@@ -626,7 +654,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 drawThumbShadow(normalizedToScreen(normalizedMinValue), canvas);
             }
             drawThumb(normalizedToScreen(normalizedMinValue), Thumb.MIN.equals(pressedThumb), canvas,
-                    selectedValuesAreDefault);
+                    selectedValuesAreDefault, Thumb.MIN);
         }
 
         // draw maximum thumb & shadow (if necessary)
@@ -634,7 +662,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
             drawThumbShadow(normalizedToScreen(normalizedMaxValue), canvas);
         }
         drawThumb(normalizedToScreen(normalizedMaxValue), Thumb.MAX.equals(pressedThumb), canvas,
-                selectedValuesAreDefault);
+                selectedValuesAreDefault, Thumb.MAX);
 
         // draw the text if sliders have moved from default edges
         if (mShowTextAboveThumbs && (mActivateOnDefaultValues || !selectedValuesAreDefault)) {
@@ -694,12 +722,20 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      * @param pressed     Is the thumb currently in "pressed" state?
      * @param canvas      The canvas to draw upon.
      */
-    private void drawThumb(float screenCoord, boolean pressed, Canvas canvas, boolean areSelectedValuesDefault) {
+    private void drawThumb(float screenCoord, boolean pressed, Canvas canvas, boolean areSelectedValuesDefault, Thumb thumb) {
         Bitmap buttonToDraw;
         if (!mActivateOnDefaultValues && areSelectedValuesDefault) {
-            buttonToDraw = thumbDisabledImage;
+            if (thumb.equals(Thumb.MIN)) {
+                buttonToDraw = minThumbDisabledImage;
+            } else {
+                buttonToDraw = maxThumbDisabledImage;
+            }
         } else {
-            buttonToDraw = pressed ? thumbPressedImage : thumbImage;
+            if (thumb.equals(Thumb.MIN)) {
+                buttonToDraw = pressed ? minThumbPressedImage : minThumbImage;
+            } else {
+                buttonToDraw = pressed ? maxThumbPressedImage : maxThumbImage;
+            }
         }
 
         canvas.drawBitmap(buttonToDraw, screenCoord - mThumbHalfWidth,

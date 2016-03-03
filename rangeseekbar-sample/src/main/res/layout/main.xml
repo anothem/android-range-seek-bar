@@ -41,7 +41,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             rsb:absoluteMaxValue="150"
-            rsb:absoluteMinValue="20"/>
+            rsb:absoluteMinValue="20"
+            rsb:showLabels="false"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -105,9 +106,12 @@
             android:layout_height="wrap_content"
             rsb:absoluteMaxValue="150"
             rsb:absoluteMinValue="20"
-            rsb:thumbDisabled="@mipmap/ic_launcher"
-            rsb:thumbNormal="@mipmap/ic_launcher"
-            rsb:thumbPressed="@mipmap/ic_launcher"/>
+            rsb:minThumbDisabled="@mipmap/ic_launcher"
+            rsb:minThumbNormal="@mipmap/ic_launcher"
+            rsb:minThumbPressed="@mipmap/ic_launcher"
+            rsb:maxThumbDisabled="@drawable/custom_slider_thumb"
+            rsb:maxThumbNormal="@drawable/custom_slider_thumb"
+            rsb:maxThumbPressed="@drawable/custom_slider_thumb"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -138,32 +142,9 @@
             rsb:absoluteMaxValue="150"
             rsb:absoluteMinValue="20"
             rsb:textAboveThumbsColor="@android:color/holo_purple"
-            rsb:thumbDisabled="@drawable/custom_slider_thumb"
-            rsb:thumbNormal="@drawable/custom_slider_thumb"
-            rsb:thumbPressed="@drawable/custom_slider_thumb"
-            rsb:thumbShadow="true"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="8dp"
-            android:text="Range seek bar from xml with custom shadow"
-            />
-
-        <org.florescu.android.rangeseekbar.RangeSeekBar
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            rsb:absoluteMaxValue="150"
-            rsb:absoluteMinValue="20"
-            rsb:textAboveThumbsColor="@android:color/holo_purple"
-            rsb:thumbDisabled="@drawable/custom_slider_thumb"
-            rsb:thumbNormal="@drawable/custom_slider_thumb"
-            rsb:thumbPressed="@drawable/custom_slider_thumb"
-            rsb:thumbShadow="true"
-            rsb:thumbShadowBlur="3dp"
-            rsb:thumbShadowColor="@color/primary_material_light"
-            rsb:thumbShadowXOffset="1dp"
-            rsb:thumbShadowYOffset="2dp"
+            rsb:minThumbDisabled="@drawable/custom_slider_thumb"
+            rsb:minThumbNormal="@drawable/custom_slider_thumb"
+            rsb:minThumbPressed="@drawable/custom_slider_thumb"
             />
 
 
