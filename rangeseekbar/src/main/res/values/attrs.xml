@@ -36,9 +36,12 @@
         <attr name="textAboveThumbsColor" format="color"/>
 
         <!-- set drawables for thumb handles -->
-        <attr name="thumbNormal" format="reference"/>
-        <attr name="thumbPressed" format="reference"/>
-        <attr name="thumbDisabled" format="reference"/>
+        <attr name="minThumbNormal" format="reference"/>
+        <attr name="minThumbPressed" format="reference"/>
+        <attr name="minThumbDisabled" format="reference"/>
+        <attr name="maxThumbNormal" format="reference"/>
+        <attr name="maxThumbPressed" format="reference"/>
+        <attr name="maxThumbDisabled" format="reference"/>
 
         <!-- thumb shadow specifications -->
         <attr name="thumbShadow" format="boolean"/>
