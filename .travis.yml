@@ -2,48 +2,46 @@ language: android
 jdk: oraclejdk7
 android:
   components:
-    # The BuildTools version used by your project
-    - tools
-    - build-tools-20.0.0
-    # The SDK version used to compile your project
-    - android-24
-    - android-23
-    - android-22
-    - android-21
-    - android-19
-    - android-18
-    - android-15
-    - android-10
-    - android-8
-    - addon-google_apis-google-10
-    - addon-google_apis-google-15
-    - addon-google_apis-google-18
-    - addon-google_apis-google-19
-    - addon-google_apis-google-21
-    - addon-google_apis-google-22
-    - addon-google_apis-google-23
-    - addon-google_apis-google-8
+  # The BuildTools version used by your project
+  - tools
+  - build-tools-20.0.0
+  # The SDK version used to compile your project
+  - android-24
+  - android-23
+  - android-22
+  - android-21
+  - android-19
+  - android-18
+  - android-15
+  - android-10
+  - android-8
+  - addon-google_apis-google-10
+  - addon-google_apis-google-15
+  - addon-google_apis-google-18
+  - addon-google_apis-google-19
+  - addon-google_apis-google-21
+  - addon-google_apis-google-22
+  - addon-google_apis-google-23
+  - addon-google_apis-google-8
 
-    # Additional components
-    - extra-google-google_play_services
-    - extra-google-m2repository
-    - extra-android-m2repository
-    - addon-google_apis-google-19
-    - sys-img-armeabi-android-8
-    - sys-img-armeabi-android-10
-    - sys-img-armeabi-android-15
-    - sys-img-armeabi-android-19
-    - sys-img-armeabi-android-21
-    - sys-img-x86-android-22
-    - sys-img-x86-android-23
-    - addon-google_apis-google-23
+  # Additional components
+  - extra-google-google_play_services
+  - extra-google-m2repository
+  - extra-android-m2repository
+  - addon-google_apis-google-19
+  - sys-img-armeabi-android-8
+  - sys-img-armeabi-android-10
+  - sys-img-armeabi-android-15
+  - sys-img-armeabi-android-19
+  - sys-img-armeabi-android-21
+  - sys-img-x86-android-22
+  - sys-img-x86-android-23
+  - addon-google_apis-google-23
 
 sudo: required
 
 # fun fact, travis doesn't really support multiple AVDs running currently for a single build (tried it, build timed out constantly while starting up the AVDs)
 # thus we're using a build matrix (which makes more sense anyhow)
-  - build-tools-20.0.0
-  - android-21
 
 
 before_script:
