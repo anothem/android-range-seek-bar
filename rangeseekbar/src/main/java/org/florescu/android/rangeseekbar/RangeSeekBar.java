@@ -30,7 +30,9 @@ import android.graphics.Paint.Style;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Parcelable;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
@@ -262,16 +264,18 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         setFocusableInTouchMode(true);
         mScaledTouchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
 
-        if (mThumbShadow) {
-            // We need to remove hardware acceleration in order to blur the shadow
-            setLayerType(LAYER_TYPE_SOFTWARE, null);
-            shadowPaint.setColor(thumbShadowColor);
-            shadowPaint.setMaskFilter(new BlurMaskFilter(mThumbShadowBlur, BlurMaskFilter.Blur.NORMAL));
-            mThumbShadowPath = new Path();
-            mThumbShadowPath.addCircle(0,
-                    0,
-                    mThumbHalfHeight,
-                    Path.Direction.CW);
+        if (Build.VERSION.SDK_INT > 11) {
+            if (mThumbShadow) {
+                // We need to remove hardware acceleration in order to blur the shadow
+                setLayerType(LAYER_TYPE_SOFTWARE, null);
+                shadowPaint.setColor(thumbShadowColor);
+                shadowPaint.setMaskFilter(new BlurMaskFilter(mThumbShadowBlur, BlurMaskFilter.Blur.NORMAL));
+                mThumbShadowPath = new Path();
+                mThumbShadowPath.addCircle(0,
+                        0,
+                        mThumbHalfHeight,
+                        Path.Direction.CW);
+            }
         }
     }
 
@@ -715,9 +719,11 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      */
     private void drawThumbShadow(float screenCoord, Canvas canvas) {
         mThumbShadowMatrix.setTranslate(screenCoord + mThumbShadowXOffset, mTextOffset + mThumbHalfHeight + mThumbShadowYOffset);
-        mTranslatedThumbShadowPath.set(mThumbShadowPath);
-        mTranslatedThumbShadowPath.transform(mThumbShadowMatrix);
-        canvas.drawPath(mTranslatedThumbShadowPath, shadowPaint);
+        if (mTranslatedThumbShadowPath!=null && mThumbShadowPath!=null`) {
+            mTranslatedThumbShadowPath.set(mThumbShadowPath);
+            mTranslatedThumbShadowPath.transform(mThumbShadowMatrix);
+            canvas.drawPath(mTranslatedThumbShadowPath, shadowPaint);
+        }
     }
 
     /**
