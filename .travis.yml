@@ -46,6 +46,16 @@ sudo: required
   - android-21
 
 
+before_script:
+  - android-wait-for-emulator
+  - adb shell input keyevent 82 &
+
+#build
+script:
+  #build using gradle
+  - ./gradlew -version
+  - ./gradlew clean build connectedCheck
+
 before_deploy:
   - openssl aes-256-cbc -K $encrypted_ee19969afbf8_key -iv $encrypted_ee19969afbf8_iv
   - in deploy/secring.gpg.enc -out deploy/secring.gpg -d
@@ -60,7 +70,7 @@ env:
   - secure: e47psDP7pGMPx88OaSRbo7xVATUyKdqHHXisJwe6NbmhXhNO8BQMHY//D4cv/McNPGe5yGuijnI8xqR4lpOpotzAVYk6IMPU18ABpp9pUs43b8ejfKczu3C1CUv2Pn4Okk87w6JvRmh8vQ1yBNUCNGvHhJg78WhlN66TyJlyd463J7QASYp7w45SAlZxKyifuE/1mMXU7Lhhs0GY6VPazEWKcUUegocI7YAGY3KvN0OIaqUCr+a4MtEnkXywwWpsYknuFrosalzRfQ2+c2Csz1PoULXPieqWkUfFVsUmNgce1L/X3AgQ5YnKN5SGFnBHJKcM39vQDtSvAm7yJyZNranlb4qA6pt0IeVLXoQpUIM/dbedDOVbBd4+x0rDeKt5x5A7lhHKGn+5F/cXSdNCR/oulfJ46ttD+8fHFoqwlV+xZa83Ee7uRN33n3xqz0ydnOf9njXEXJ5uELgNMrgAifrjBK+1nR0rlYFSn88AVez2Jla1/BWtVAERr5X5v0z+YL9KqoAkoC+mKmSX5GQ7do8KqsOOY4Z6waJTVTfZJU5SNhGSy24jO6+0NPDmMsF+35awCBc09SJ9iMWaGvg7vUm8mp8xAM3DsjKXgDwGfQNDdOHQXqm4o9sFrEoVYTMh2oVThANZFzv/C2av7QbhwQpnFh0EFeES5yzB/6koByI=
   - secure: dZ42Hwb+HRwB6fkYL1jauqKUJGqlkwbyzVvvnD0WtVDztCitrLsgZpetdV0L0/RPyr1Id7isa/JyhmATtHMMJx8hVSzvItXR/dfXbCzqGmwrYx+HqQiroAG2cmrv8+8doMHhIBjmAE06vGSy0EgABREAMCsgwbNHU8oTBvcsvVSB2+mFklNiRJGvfrzWlr6IvEIc8kAN+izBZIjhsWCMUFFYzjzcEIJ92fmAr84EBDNavJGhc3O61RYuJwVz4PvLMggxPCA216Uj99rZST3MTDZP+kPksqy5mQmqgo5dRKi+O20JzoxRNZ/68sd4GqKSvDAHStNysA76neZXOu0bVKXpk/xLgeNk0eipzy3KAguh/5PaLqqm4cBC3pbEKy4Z6/xjxrewRd+vRlW4qW+uEkHDIaL1y2q5snIs9NT+mia/48lvnJdXnSyUQ9jH1tNvPm+h2mTJHwrYetqJTBG1k8ZsIpIJk3bv4dw134CEGGt92r52W8iDaxzdLQqy6AWaz0mTl0mUJ73e4IvJj5R/M/OMqbzCCIoIzF/Y6e9pwRoufX0zJGW5kRLTsi8Cz5c0RGrX5YqXYfUrh1rQolVya8jnDlTphOSarKSN4iQISTc9xLUmXb8hoeFbnFSEHo6WXx9uIl1qUqTucJpv+vBU5UCQNutRtKZsu2DC0HhgNmU=
     #minutes (2 minutes by default), prevents CommandShellUnresponsiveExceptions
-    - ADB_INSTALL_TIMEOUT=14
+  - ADB_INSTALL_TIMEOUT=14
 
     matrix:
     #note when changing these, updating the gradle build file for the GoogleWrapper project
@@ -95,17 +105,6 @@ before_install:
   - emulator -memory 1536 -avd test$ANDROID_TARGET -no-skin -no-audio -no-window &
   - android-wait-for-emulator
   - adb shell input keyevent 82 &
-
-# mvn sdk deploy
-before_script:
-  - android-wait-for-emulator
-  - adb shell input keyevent 82 &
-
-#build
-script:
-  #build using gradle
-  - ./gradlew -version
-  - ./gradlew clean connectedCheck
 
 deploy:
   provider: script
