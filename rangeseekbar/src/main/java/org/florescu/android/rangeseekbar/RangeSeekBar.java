@@ -719,7 +719,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      */
     private void drawThumbShadow(float screenCoord, Canvas canvas) {
         mThumbShadowMatrix.setTranslate(screenCoord + mThumbShadowXOffset, mTextOffset + mThumbHalfHeight + mThumbShadowYOffset);
-        if (mTranslatedThumbShadowPath!=null && mThumbShadowPath!=null`) {
+        if (mTranslatedThumbShadowPath!=null && mThumbShadowPath!=null) {
             mTranslatedThumbShadowPath.set(mThumbShadowPath);
             mTranslatedThumbShadowPath.transform(mThumbShadowMatrix);
             canvas.drawPath(mTranslatedThumbShadowPath, shadowPaint);
