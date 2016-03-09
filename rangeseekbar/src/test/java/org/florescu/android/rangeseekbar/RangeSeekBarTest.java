@@ -9,8 +9,7 @@ import org.robolectric.annotation.Config;
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public class RangeSeekBarTest {
-
-    @Ignore
+    
     @Test
     public void rsb_should_handle_long_values() {
         RangeSeekBar<Long> mSeekBar = new RangeSeekBar<>(RuntimeEnvironment.application);
