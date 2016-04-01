@@ -49,6 +49,12 @@
         <attr name="thumbPressed" format="reference"/>
         <attr name="thumbDisabled" format="reference"/>
 
+        <!-- set drawables for right thumb handles -->
+        <attr name="hasDifferentRightThumb" format="boolean"/>
+        <attr name="rightThumbNormal" format="reference"/>
+        <attr name="rightThumbPressed" format="reference"/>
+        <attr name="rightThumbDisabled" format="reference"/>
+
         <!-- thumb shadow specifications -->
         <attr name="thumbShadow" format="boolean"/>
         <attr name="thumbShadowColor" format="color"/>

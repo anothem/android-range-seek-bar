@@ -112,6 +112,25 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="Range seek bar from xml with 2 different thumb handles"/>
+
+
+        <org.florescu.android.rangeseekbar.RangeSeekBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            rsb:absoluteMaxValue="150"
+            rsb:absoluteMinValue="20"
+            rsb:thumbDisabled="@mipmap/ic_launcher"
+            rsb:thumbNormal="@mipmap/ic_launcher"
+            rsb:thumbPressed="@mipmap/ic_launcher"
+            rsb:hasDifferentRightThumb="true"
+            rsb:rightThumbDisabled="@drawable/seek_thumb_disabled"
+            rsb:rightThumbNormal="@drawable/seek_thumb_normal"
+            rsb:rightThumbPressed="@drawable/seek_thumb_pressed"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:paddingBottom="4dp"
             android:paddingTop="8dp"
             android:text="Range seek bar from xml with no text above"/>

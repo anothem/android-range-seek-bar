@@ -91,6 +91,11 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private Bitmap thumbPressedImage;
     private Bitmap thumbDisabledImage;
 
+    private boolean mHasDifferentRightThumb;
+    private Bitmap rightThumbImage;
+    private Bitmap rightThumbPressedImage;
+    private Bitmap rightThumbDisabledImage;
+
     private float mThumbHalfWidth;
     private float mThumbHalfHeight;
 
@@ -231,6 +236,24 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 if (pressedDrawable != null) {
                     thumbPressedImage = BitmapUtil.drawableToBitmap(pressedDrawable);
                 }
+
+                mHasDifferentRightThumb = a.getBoolean(R.styleable.RangeSeekBar_hasDifferentRightThumb, false);
+
+                if (mHasDifferentRightThumb) {
+                    Drawable rightNormalDrawable = a.getDrawable(R.styleable.RangeSeekBar_rightThumbNormal);
+                    if (rightNormalDrawable != null) {
+                        rightThumbImage = BitmapUtil.drawableToBitmap(rightNormalDrawable);
+                    }
+                    Drawable rightDisabledDrawable = a.getDrawable(R.styleable.RangeSeekBar_rightThumbDisabled);
+                    if (rightDisabledDrawable != null) {
+                        rightThumbDisabledImage = BitmapUtil.drawableToBitmap(rightDisabledDrawable);
+                    }
+                    Drawable rightPressedDrawable = a.getDrawable(R.styleable.RangeSeekBar_rightThumbPressed);
+                    if (rightPressedDrawable != null) {
+                        rightThumbPressedImage = BitmapUtil.drawableToBitmap(rightPressedDrawable);
+                    }
+                }
+
                 mThumbShadow = a.getBoolean(R.styleable.RangeSeekBar_thumbShadow, false);
                 thumbShadowColor = a.getColor(R.styleable.RangeSeekBar_thumbShadowColor, defaultShadowColor);
                 mThumbShadowXOffset = a.getDimensionPixelSize(R.styleable.RangeSeekBar_thumbShadowXOffset, defaultShadowXOffset);
@@ -256,6 +279,18 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         }
         if (thumbDisabledImage == null) {
             thumbDisabledImage = BitmapFactory.decodeResource(getResources(), thumbDisabled);
+        }
+
+        if (mHasDifferentRightThumb) {
+            if (rightThumbImage == null) {
+                rightThumbImage = BitmapFactory.decodeResource(getResources(), thumbNormal);
+            }
+            if (rightThumbPressedImage == null) {
+                rightThumbPressedImage = BitmapFactory.decodeResource(getResources(), thumbPressed);
+            }
+            if (rightThumbDisabledImage == null) {
+                rightThumbDisabledImage = BitmapFactory.decodeResource(getResources(), thumbDisabled);
+            }
         }
 
         mThumbHalfWidth = 0.5f * thumbImage.getWidth();
@@ -698,8 +733,14 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         if (mThumbShadow) {
             drawThumbShadow(normalizedToScreen(normalizedMaxValue), canvas);
         }
-        drawThumb(normalizedToScreen(normalizedMaxValue), Thumb.MAX.equals(pressedThumb), canvas,
-                selectedValuesAreDefault);
+
+        if (mHasDifferentRightThumb) {
+            drawRightThumb(normalizedToScreen(normalizedMaxValue), Thumb.MAX.equals(pressedThumb), canvas,
+                    selectedValuesAreDefault);
+        } else {
+            drawThumb(normalizedToScreen(normalizedMaxValue), Thumb.MAX.equals(pressedThumb), canvas,
+                    selectedValuesAreDefault);
+        }
 
         // draw the text if sliders have moved from default edges
         if (mShowTextAboveThumbs && (mActivateOnDefaultValues || !selectedValuesAreDefault)) {
@@ -760,9 +801,30 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      * @param canvas      The canvas to draw upon.
      */
     private void drawThumb(float screenCoord, boolean pressed, Canvas canvas, boolean areSelectedValuesDefault) {
+        drawThumb(screenCoord, pressed, canvas, areSelectedValuesDefault, thumbDisabledImage, thumbPressedImage, thumbImage);
+    }
+
+    /**
+     * Draws the "normal" resp. "pressed" right thumb image on specified x-coordinate.
+     *
+     * @param screenCoord The x-coordinate in screen space where to draw the image.
+     * @param pressed     Is the right thumb currently in "pressed" state?
+     * @param canvas      The canvas to draw upon.
+     */
+    private void drawRightThumb(float screenCoord, boolean pressed, Canvas canvas, boolean areSelectedValuesDefault) {
+        drawThumb(screenCoord, pressed, canvas, areSelectedValuesDefault, rightThumbDisabledImage, rightThumbPressedImage, rightThumbImage);
+    }
+
+    private void drawThumb(float screenCoord,
+                           boolean pressed,
+                           Canvas canvas,
+                           boolean areSelectedValuesDefault,
+                           Bitmap disabledThumbImage,
+                           Bitmap thumbPressedImage,
+                           Bitmap thumbImage) {
         Bitmap buttonToDraw;
         if (!mActivateOnDefaultValues && areSelectedValuesDefault) {
-            buttonToDraw = thumbDisabledImage;
+            buttonToDraw = disabledThumbImage;
         } else {
             buttonToDraw = pressed ? thumbPressedImage : thumbImage;
         }
