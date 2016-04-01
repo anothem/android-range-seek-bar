@@ -314,7 +314,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
 
         mBorderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mBorderPaint.setStyle(Paint.Style.FILL_AND_STROKE);
-        mBorderPaint.setStrokeWidth(3);
+        mBorderPaint.setStrokeWidth(5);
 
         // make RangeSeekBar focusable. This solves focus handling issues in case EditText widgets are being used along with the RangeSeekBar within ScrollViews.
         setFocusable(true);
