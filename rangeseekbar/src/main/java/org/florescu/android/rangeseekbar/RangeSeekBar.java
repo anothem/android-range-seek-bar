@@ -309,12 +309,12 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 mTextOffset + mThumbHalfHeight + barHeight / 2);
 
         mBorderRect = new RectF();
-        mBorderRect.top = mTextOffset + PixelUtil.dpToPx(context, 1);
-        mBorderRect.bottom = (mTextOffset + (mThumbHalfHeight*2.0f)) - PixelUtil.dpToPx(context, 1);
+        mBorderRect.top = mTextOffset + PixelUtil.dpToPx(context, 2);
+        mBorderRect.bottom = (mTextOffset + (mThumbHalfHeight*2.0f)) - PixelUtil.dpToPx(context, 2);
 
         mBorderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mBorderPaint.setStyle(Paint.Style.FILL_AND_STROKE);
-        mBorderPaint.setStrokeWidth(PixelUtil.dpToPx(context, 2));
+        mBorderPaint.setStrokeWidth(PixelUtil.dpToPx(context, 4));
 
         // make RangeSeekBar focusable. This solves focus handling issues in case EditText widgets are being used along with the RangeSeekBar within ScrollViews.
         setFocusable(true);
