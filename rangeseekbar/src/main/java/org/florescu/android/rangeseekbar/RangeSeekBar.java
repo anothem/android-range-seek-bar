@@ -309,8 +309,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 mTextOffset + mThumbHalfHeight + barHeight / 2);
 
         mBorderRect = new RectF();
-        mBorderRect.top =  (mTextOffset - barHeight / 2) + PixelUtil.dpToPx(context, 3);
-        mBorderRect.bottom = (mTextOffset + (mThumbHalfHeight*2.0f) + barHeight / 2) - PixelUtil.dpToPx(context, 3);
+        mBorderRect.top =  (mTextOffset - barHeight / 2) + PixelUtil.dpToPx(context, 1);
+        mBorderRect.bottom = (mTextOffset + (mThumbHalfHeight*2.0f) + barHeight / 2) - PixelUtil.dpToPx(context, 1);
 
         mBorderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mBorderPaint.setStyle(Paint.Style.FILL_AND_STROKE);
