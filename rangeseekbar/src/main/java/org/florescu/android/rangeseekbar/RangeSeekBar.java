@@ -707,13 +707,15 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         if (mShowSelectedBorder) {
             mBorderRect.left = mRect.left + mThumbHalfWidth;
             mBorderRect.right = normalizedToScreen(normalizedMaxValue) - mThumbHalfWidth;
-            mBorderPaint.setStyle(Paint.Style.STROKE);
-            mBorderPaint.setColor(mSelectedRectStrokeColor);
-            mBorderPaint.setAlpha(255);
-            canvas.drawRect(mBorderRect, mBorderPaint);
+
             mBorderPaint.setStyle(Paint.Style.FILL);
             mBorderPaint.setColor(mSelectedRectColor);
             mBorderPaint.setAlpha(200);
+            canvas.drawRect(mBorderRect, mBorderPaint);
+
+            mBorderPaint.setStyle(Paint.Style.STROKE);
+            mBorderPaint.setColor(mSelectedRectStrokeColor);
+            mBorderPaint.setAlpha(255);
             canvas.drawRect(mBorderRect, mBorderPaint);
         }
 
