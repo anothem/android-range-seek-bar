@@ -673,14 +673,14 @@ public class RangeSeekBar<T extends Number> extends ImageView {
 
       if (!mSingleThumb) {
         canvas.drawText(minText,
-            normalizedToScreen(normalizedMinValue) - minTextWidth * 0.5f,
+            normalizedToScreen(normalizedMinValue, minTextWidth) - minTextWidth * 0.5f,
             mDistanceToTop + mTextSize,
             paint);
 
       }
 
       canvas.drawText(maxText,
-          normalizedToScreen(normalizedMaxValue) - maxTextWidth * 0.5f,
+          normalizedToScreen(normalizedMaxValue, maxTextWidth) - maxTextWidth * 0.5f,
           mDistanceToTop + mTextSize,
           paint);
     }
@@ -827,6 +827,19 @@ public class RangeSeekBar<T extends Number> extends ImageView {
    */
   private float normalizedToScreen(double normalizedCoord) {
     return (float) (padding + normalizedCoord * (getWidth() - 2 * padding));
+  }
+
+  private float normalizedToScreen(double normalizedCoord, float width) {
+    normalizedCoord = normalizedToScreen(normalizedCoord);
+    float halfWidth = width / 2;
+    float max = getWidth();
+    if (normalizedCoord - halfWidth < 0) {
+      return (float) Math.max(halfWidth, normalizedCoord);
+    } else if (normalizedCoord + halfWidth > max) {
+      return (float) Math.min(max - halfWidth, normalizedCoord);
+    } else {
+      return (float) normalizedCoord;
+    }
   }
 
   /**
