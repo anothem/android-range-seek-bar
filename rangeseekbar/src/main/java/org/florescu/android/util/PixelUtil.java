@@ -18,7 +18,6 @@ limitations under the License.
 package org.florescu.android.util;
 
 import android.content.Context;
-import android.util.DisplayMetrics;
 
 /**
  * Util class for converting between dp, px and other magical pixel units
@@ -29,18 +28,27 @@ public class PixelUtil {
     }
 
     public static int dpToPx(Context context, int dp) {
-        int px = Math.round(dp * getPixelScaleFactor(context));
-        return px;
+        return Math.round(dp * getDensity(context));
     }
 
     public static int pxToDp(Context context, int px) {
-        int dp = Math.round(px / getPixelScaleFactor(context));
-        return dp;
+        return Math.round(px / getDensity(context));
     }
 
-    private static float getPixelScaleFactor(Context context) {
-        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-        return (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT);
+    public static int spToPx(Context context, float sp) {
+        return Math.round(sp * getScaledDensity(context));
+    }
+
+    public static int pxToSp(Context context, float px) {
+        return Math.round(px / getScaledDensity(context));
+    }
+
+    private static float getDensity(Context context) {
+        return context.getResources().getDisplayMetrics().density;
+    }
+
+    private static float getScaledDensity(Context context) {
+        return context.getResources().getDisplayMetrics().scaledDensity;
     }
 
 }

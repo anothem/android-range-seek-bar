@@ -18,9 +18,9 @@ limitations under the License.
 package org.florescu.android.rangeseekbar;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -63,7 +63,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
   /**
    * Default color of a {@link RangeSeekBar}, #FF33B5E5. This is also known as "Ice Cream Sandwich" blue.
    */
-  public static final int ACTIVE_COLOR = Color.argb(0xFF, 0x33, 0xB5, 0xE5);
+  public static final int ACTIVE_COLOR = Color.argb(0xFF, 0x00, 0xDC, 0xE8);
   /**
    * An invalid pointer id.
    */
@@ -79,11 +79,11 @@ public class RangeSeekBar<T extends Number> extends ImageView {
   public static final int TEXT_LATERAL_PADDING_IN_DP = 3;
 
   private static final int INITIAL_PADDING_IN_DP = 8;
-  private static final int DEFAULT_TEXT_SIZE_IN_DP = 14;
+  private static final float DEFAULT_TEXT_SIZE_IN_SP = 11.3f;
   private static final int DEFAULT_TEXT_DISTANCE_TO_BUTTON_IN_DP = 8;
   private static final int DEFAULT_TEXT_DISTANCE_TO_TOP_IN_DP = 8;
 
-  private static final int LINE_HEIGHT_IN_DP = 1;
+  private static final int LINE_HEIGHT_IN_DP = 10;
   private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final Paint shadowPaint = new Paint();
 
@@ -184,8 +184,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
       mInternalPad = PixelUtil.dpToPx(context, INITIAL_PADDING_IN_DP);
       barHeight = PixelUtil.dpToPx(context, LINE_HEIGHT_IN_DP);
       mActiveColor = ACTIVE_COLOR;
-      mDefaultColor = Color.GRAY;
-      mAlwaysActive = false;
+      mDefaultColor = Color.parseColor("#e5e8eb");
+      mAlwaysActive = true;
       mShowTextAboveThumbs = true;
       mTextAboveThumbsColor = Color.WHITE;
       thumbShadowColor = defaultShadowColor;
@@ -207,8 +207,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         mInternalPad = a.getDimensionPixelSize(R.styleable.RangeSeekBar_internalPadding, INITIAL_PADDING_IN_DP);
         barHeight = a.getDimensionPixelSize(R.styleable.RangeSeekBar_barHeight, LINE_HEIGHT_IN_DP);
         mActiveColor = a.getColor(R.styleable.RangeSeekBar_activeColor, ACTIVE_COLOR);
-        mDefaultColor = a.getColor(R.styleable.RangeSeekBar_defaultColor, Color.GRAY);
-        mAlwaysActive = a.getBoolean(R.styleable.RangeSeekBar_alwaysActive, false);
+        mDefaultColor = a.getColor(R.styleable.RangeSeekBar_defaultColor, Color.parseColor("#e5e8eb"));
+        mAlwaysActive = a.getBoolean(R.styleable.RangeSeekBar_alwaysActive, true);
 
         Drawable normalDrawable = a.getDrawable(R.styleable.RangeSeekBar_thumbNormal);
         if (normalDrawable != null) {
@@ -234,14 +234,25 @@ public class RangeSeekBar<T extends Number> extends ImageView {
       }
     }
 
+    Resources resources = getResources();
+    int px = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 18, resources.getDisplayMetrics());
+
+    Drawable thumbDrawableNormal = getResources().getDrawable(thumbNormal);
+    thumbDrawableNormal.setBounds(0, 0, px, px);
+
     if (thumbImage == null) {
-      thumbImage = BitmapFactory.decodeResource(getResources(), thumbNormal);
+      thumbImage = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888);
+      thumbDrawableNormal.draw(new Canvas(thumbImage));
     }
     if (thumbPressedImage == null) {
-      thumbPressedImage = BitmapFactory.decodeResource(getResources(), thumbPressed);
+      Drawable thumbDrawablePressed = getResources().getDrawable(thumbPressed);
+      thumbDrawablePressed.setBounds(0, 0, px, px);
+      thumbPressedImage = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888);
+      thumbDrawableNormal.draw(new Canvas(thumbPressedImage));
     }
     if (thumbDisabledImage == null) {
-      thumbDisabledImage = BitmapFactory.decodeResource(getResources(), thumbDisabled);
+      thumbDisabledImage = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888);
+      thumbDrawableNormal.draw(new Canvas(thumbDisabledImage));
     }
 
     mThumbHalfWidth = 0.5f * thumbImage.getWidth();
@@ -249,7 +260,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
 
     setValuePrimAndNumberType();
 
-    mTextSize = PixelUtil.dpToPx(context, DEFAULT_TEXT_SIZE_IN_DP);
+    mTextSize = PixelUtil.spToPx(context, DEFAULT_TEXT_SIZE_IN_SP);
     mDistanceToTop = PixelUtil.dpToPx(context, DEFAULT_TEXT_DISTANCE_TO_TOP_IN_DP);
     mTextOffset = !mShowTextAboveThumbs ? 0 : this.mTextSize + PixelUtil.dpToPx(context,
         DEFAULT_TEXT_DISTANCE_TO_BUTTON_IN_DP) + this.mDistanceToTop;
@@ -447,7 +458,6 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         // Only handle thumb presses.
         if (pressedThumb == null) {
           pressedThumb = getClosestThumb(mDownMotionX);
-          return super.onTouchEvent(event);
         }
 
         setPressed(true);
@@ -649,8 +659,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     drawThumb(normalizedToScreen(normalizedMaxValue), Thumb.MAX.equals(pressedThumb), canvas,
         selectedValuesAreDefault);
 
-    // draw the text if sliders have moved from default edges
-    if (mShowTextAboveThumbs && (mActivateOnDefaultValues || !selectedValuesAreDefault)) {
+    // draw the text
+    if (mShowTextAboveThumbs) {
       paint.setTextSize(mTextSize);
       paint.setColor(mTextAboveThumbsColor);
       // give text a bit more space here so it doesn't get cut off
@@ -827,7 +837,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
    */
   private final Thumb getClosestThumb(float touchX) {
     double xValue = screenToNormalized(touchX);
-    return (Math.abs(xValue - normalizedMinValue) < Math.abs(xValue - normalizedMaxValue)) ? Thumb.MIN : Thumb.MAX;
+    return mSingleThumb ? Thumb.MAX : (Math.abs(xValue - normalizedMinValue) < Math.abs(xValue - normalizedMaxValue)) ? Thumb.MIN : Thumb.MAX;
   }
 
   /**
