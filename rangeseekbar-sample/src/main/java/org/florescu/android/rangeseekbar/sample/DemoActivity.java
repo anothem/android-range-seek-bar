@@ -23,6 +23,8 @@ import android.widget.LinearLayout;
 
 import org.florescu.android.rangeseekbar.RangeSeekBar;
 
+import java.text.DecimalFormat;
+
 public class DemoActivity extends Activity {
 
     /**
@@ -36,9 +38,9 @@ public class DemoActivity extends Activity {
         // Setup the new range seek bar
         RangeSeekBar<Integer> rangeSeekBar = new RangeSeekBar<Integer>(this);
         // Set the range
-        rangeSeekBar.setRangeValues(1000, 10000);
-        rangeSeekBar.setSelectedMinValue(1000);
-        rangeSeekBar.setSelectedMaxValue(8000);
+        rangeSeekBar.setRangeValues(0, 100000);
+        rangeSeekBar.setSelectedMaxValue(80000);
+        rangeSeekBar.setTextFormatter(new DecimalFormat("\u00A4###,###,###"));
 
         // Add to layout
         LinearLayout layout = (LinearLayout) findViewById(R.id.seekbar_placeholder);

@@ -34,6 +34,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
+import android.support.v4.util.Pair;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.MotionEvent;
@@ -847,7 +848,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
   private void drawThumbText(final Canvas canvas) {
     String minText = formatter == null ? String.valueOf(getSelectedMinValue()) : formatter.format(getSelectedMinValue());
     String maxText = formatter == null ? String.valueOf(getSelectedMaxValue()) : formatter.format(getSelectedMaxValue());
-    float minTextHalfWidth = (paint.measureText(minText) + offset) / 2;
+    float minTextWidth = paint.measureText(minText) + offset;
+    float minTextHalfWidth = minTextWidth / 2;
     float maxTextWidth = paint.measureText(maxText) + offset;
     float maxTextHalfWidth = maxTextWidth / 2;
 
@@ -855,14 +857,9 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     float maxTextX = normalizedToScreen(normalizedMaxValue, maxTextHalfWidth) - maxTextHalfWidth;
 
     if (!mSingleThumb) {
-      float overlapOffset = getTextOverlapOffset(minTextX, maxTextX, minTextHalfWidth, maxTextHalfWidth);
-      if (overlapOffset > 0) {
-        float absoluteMaxX = getWidth() - maxTextWidth;
-        float newMin = minTextX - overlapOffset;
-        float newMax = maxTextX + overlapOffset;
-        minTextX = newMin < minTextHalfWidth ? minTextX : (newMax > absoluteMaxX ? newMin - overlapOffset : newMin);
-        maxTextX = newMin < minTextHalfWidth ? newMax + overlapOffset : (newMax > absoluteMaxX ? maxTextX : newMax);
-      }
+      Pair<Float, Float> values = getTextOverlapOffset(minTextX, maxTextX, minTextWidth, maxTextWidth);
+      minTextX = values.first;
+      maxTextX = values.second;
 
       canvas.drawText(minText,
           minTextX,
@@ -880,13 +877,30 @@ public class RangeSeekBar<T extends Number> extends ImageView {
    *
    * @param minTextX The X value for the min text
    * @param maxTextX The X value for the max text
-   * @param minTextHalfWidth The width of the text for the min thumb label
-   * @param maxTextHalfWidth the width of the text for the max thumb label
+   * @param minTextWidth The width of the text for the min thumb label
+   * @param maxTextWidth the width of the text for the max thumb label
    * @return any offset necessary to properly display text without overlap
    */
-  private float getTextOverlapOffset(float minTextX, float maxTextX, float minTextHalfWidth, float maxTextHalfWidth) {
-    float diff = minTextX + minTextHalfWidth - (maxTextX - maxTextHalfWidth) + textSeperation;
-    return Math.max(diff / 2, 0);
+  private Pair<Float, Float> getTextOverlapOffset(float minTextX, float maxTextX, float minTextWidth, float maxTextWidth) {
+    float diff = textSeperation + minTextX + minTextWidth - maxTextX;
+    if (diff > 0) {
+      float absoluteMaxX = getWidth() - maxTextWidth;
+      float minOffset = diff * minTextWidth / (minTextWidth + maxTextWidth);
+      float maxOffset = diff - minOffset;
+      float newMin = minTextX - minOffset;
+      float newMax = maxTextX + maxOffset;
+      if (newMin < 0) {
+        minTextX = 0;
+        maxTextX += textSeperation + minTextWidth - maxTextX;
+      } else if (newMax > absoluteMaxX) {
+        maxTextX = absoluteMaxX;
+        minTextX -= textSeperation + minTextX + minTextWidth - absoluteMaxX;
+      } else {
+        minTextX = newMin;
+        maxTextX = newMax;
+      }
+    }
+    return new Pair<>(minTextX, maxTextX);
   }
 
   /**
