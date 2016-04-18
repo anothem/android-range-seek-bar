@@ -41,6 +41,7 @@ public class DemoActivity extends Activity {
         rangeSeekBar.setRangeValues(0, 100000);
         rangeSeekBar.setSelectedMaxValue(80000);
         rangeSeekBar.setTextFormatter(new DecimalFormat("\u00A4###,###,###"));
+        rangeSeekBar.setStep(500);
 
         // Add to layout
         LinearLayout layout = (LinearLayout) findViewById(R.id.seekbar_placeholder);
