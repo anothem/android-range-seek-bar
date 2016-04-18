@@ -82,6 +82,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
   private static final float DEFAULT_TEXT_SIZE_IN_SP = 11.3f;
   private static final int DEFAULT_TEXT_DISTANCE_TO_BUTTON_IN_DP = 8;
   private static final int DEFAULT_TEXT_DISTANCE_TO_TOP_IN_DP = 8;
+  private static final int DEFAULT_TEXT_SEPERATION_IN_DP = 8;
 
   private static final int LINE_HEIGHT_IN_DP = 2;
   private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -125,6 +126,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
   private int mActiveColor;
   private int mDefaultColor;
   private int mTextAboveThumbsColor;
+  private int offset;
+  private float textSeperation;
 
   private boolean mThumbShadow;
   private int mThumbShadowXOffset;
@@ -178,6 +181,9 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     int defaultShadowYOffset = PixelUtil.dpToPx(context, 2);
     int defaultShadowXOffset = PixelUtil.dpToPx(context, 0);
     int defaultShadowBlur = PixelUtil.dpToPx(context, 2);
+
+    offset = PixelUtil.dpToPx(context, TEXT_LATERAL_PADDING_IN_DP);
+    textSeperation = PixelUtil.dpToPx(context, DEFAULT_TEXT_SEPERATION_IN_DP);
 
     if (attrs == null) {
       setRangeToDefaultValues();
@@ -666,26 +672,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     if (mShowTextAboveThumbs) {
       paint.setTextSize(mTextSize);
       paint.setColor(mTextAboveThumbsColor);
-      // give text a bit more space here so it doesn't get cut off
-      int offset = PixelUtil.dpToPx(getContext(), TEXT_LATERAL_PADDING_IN_DP);
 
-      String minText = formatter == null ? String.valueOf(getSelectedMinValue()) : formatter.format(getSelectedMinValue());
-      String maxText = formatter == null ? String.valueOf(getSelectedMaxValue()) : formatter.format(getSelectedMaxValue());
-      float minTextWidth = paint.measureText(minText) + offset;
-      float maxTextWidth = paint.measureText(maxText) + offset;
-
-      if (!mSingleThumb) {
-        canvas.drawText(minText,
-            normalizedToScreen(normalizedMinValue, minTextWidth) - minTextWidth * 0.5f,
-            mDistanceToTop + mTextSize,
-            paint);
-
-      }
-
-      canvas.drawText(maxText,
-          normalizedToScreen(normalizedMaxValue, maxTextWidth) - maxTextWidth * 0.5f,
-          mDistanceToTop + mTextSize,
-          paint);
+      drawThumbText(canvas);
     }
 
   }
@@ -832,9 +820,15 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     return (float) (padding + normalizedCoord * (getWidth() - 2 * padding));
   }
 
-  private float normalizedToScreen(double normalizedCoord, float width) {
+  /**
+   * Normalizes to screen accounting for long text
+   *
+   * @param normalizedCoord normalized value to convert
+   * @param halfWidth the half width of the object being drawn
+   * @return the normalized coord after accounting for min/max drawing range
+   */
+  private float normalizedToScreen(double normalizedCoord, float halfWidth) {
     normalizedCoord = normalizedToScreen(normalizedCoord);
-    float halfWidth = width / 2;
     float max = getWidth();
     if (normalizedCoord - halfWidth < 0) {
       return (float) Math.max(halfWidth, normalizedCoord);
@@ -843,6 +837,56 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     } else {
       return (float) normalizedCoord;
     }
+  }
+
+  /**
+   * Draws text above thumbs accounting for collision
+   *
+   * @param canvas The canvas to draw on
+   */
+  private void drawThumbText(final Canvas canvas) {
+    String minText = formatter == null ? String.valueOf(getSelectedMinValue()) : formatter.format(getSelectedMinValue());
+    String maxText = formatter == null ? String.valueOf(getSelectedMaxValue()) : formatter.format(getSelectedMaxValue());
+    float minTextHalfWidth = (paint.measureText(minText) + offset) / 2;
+    float maxTextWidth = paint.measureText(maxText) + offset;
+    float maxTextHalfWidth = maxTextWidth / 2;
+
+    float minTextX = normalizedToScreen(normalizedMinValue, minTextHalfWidth) - minTextHalfWidth;
+    float maxTextX = normalizedToScreen(normalizedMaxValue, maxTextHalfWidth) - maxTextHalfWidth;
+
+    if (!mSingleThumb) {
+      float overlapOffset = getTextOverlapOffset(minTextX, maxTextX, minTextHalfWidth, maxTextHalfWidth);
+      if (overlapOffset > 0) {
+        float absoluteMaxX = getWidth() - maxTextWidth;
+        float newMin = minTextX - overlapOffset;
+        float newMax = maxTextX + overlapOffset;
+        minTextX = newMin < minTextHalfWidth ? minTextX : (newMax > absoluteMaxX ? newMin - overlapOffset : newMin);
+        maxTextX = newMin < minTextHalfWidth ? newMax + overlapOffset : (newMax > absoluteMaxX ? maxTextX : newMax);
+      }
+
+      canvas.drawText(minText,
+          minTextX,
+          mDistanceToTop + mTextSize,
+          paint);
+    }
+    canvas.drawText(maxText,
+        maxTextX,
+        mDistanceToTop + mTextSize,
+        paint);
+  }
+
+  /**
+   * Returns an offset for thumb text if the two texts are to overlap
+   *
+   * @param minTextX The X value for the min text
+   * @param maxTextX The X value for the max text
+   * @param minTextHalfWidth The width of the text for the min thumb label
+   * @param maxTextHalfWidth the width of the text for the max thumb label
+   * @return any offset necessary to properly display text without overlap
+   */
+  private float getTextOverlapOffset(float minTextX, float maxTextX, float minTextHalfWidth, float maxTextHalfWidth) {
+    float diff = minTextX + minTextHalfWidth - (maxTextX - maxTextHalfWidth) + textSeperation;
+    return Math.max(diff / 2, 0);
   }
 
   /**
