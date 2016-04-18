@@ -76,14 +76,14 @@ public class RangeSeekBar<T extends Number> extends ImageView {
   public static final Integer DEFAULT_MINIMUM = 0;
   public static final Integer DEFAULT_MAXIMUM = 100;
   public static final int HEIGHT_IN_DP = 30;
-  public static final int TEXT_LATERAL_PADDING_IN_DP = 3;
+  public static final int TEXT_LATERAL_PADDING_IN_DP = 0;
 
-  private static final int INITIAL_PADDING_IN_DP = 8;
+  private static final int INITIAL_PADDING_IN_DP = 0;
   private static final float DEFAULT_TEXT_SIZE_IN_SP = 11.3f;
   private static final int DEFAULT_TEXT_DISTANCE_TO_BUTTON_IN_DP = 8;
   private static final int DEFAULT_TEXT_DISTANCE_TO_TOP_IN_DP = 8;
 
-  private static final int LINE_HEIGHT_IN_DP = 10;
+  private static final int LINE_HEIGHT_IN_DP = 2;
   private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final Paint shadowPaint = new Paint();
 
@@ -204,8 +204,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         mTextAboveThumbsColor = a.getColor(R.styleable.RangeSeekBar_textAboveThumbsColor, Color.WHITE);
         mSingleThumb = a.getBoolean(R.styleable.RangeSeekBar_singleThumb, false);
         mShowLabels = a.getBoolean(R.styleable.RangeSeekBar_showLabels, true);
-        mInternalPad = a.getDimensionPixelSize(R.styleable.RangeSeekBar_internalPadding, INITIAL_PADDING_IN_DP);
-        barHeight = a.getDimensionPixelSize(R.styleable.RangeSeekBar_barHeight, LINE_HEIGHT_IN_DP);
+        mInternalPad = PixelUtil.dpToPx(context, a.getInt(R.styleable.RangeSeekBar_internalPadding, INITIAL_PADDING_IN_DP));
+        barHeight = PixelUtil.dpToPx(context, a.getInt(R.styleable.RangeSeekBar_barHeight, LINE_HEIGHT_IN_DP));
         mActiveColor = a.getColor(R.styleable.RangeSeekBar_activeColor, ACTIVE_COLOR);
         mDefaultColor = a.getColor(R.styleable.RangeSeekBar_defaultColor, Color.parseColor("#e5e8eb"));
         mAlwaysActive = a.getBoolean(R.styleable.RangeSeekBar_alwaysActive, true);
@@ -622,7 +622,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
       canvas.drawText(minLabel, 0, minMaxHeight, paint);
       canvas.drawText(maxLabel, getWidth() - minMaxLabelSize, minMaxHeight, paint);
     }
-    padding = mInternalPad + minMaxLabelSize + mThumbHalfWidth;
+
+    padding = mInternalPad + minMaxLabelSize;
 
     // draw seek bar background line
     mRect.left = padding;
@@ -642,6 +643,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
 
     paint.setColor(colorToUseForButtonsAndHighlightedLine);
     canvas.drawRect(mRect, paint);
+
+    padding = mInternalPad + minMaxLabelSize + mThumbHalfWidth;
 
     // draw minimum thumb (& shadow if requested) if not a single thumb control
     if (!mSingleThumb) {

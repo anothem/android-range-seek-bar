@@ -36,7 +36,7 @@ public class DemoActivity extends Activity {
         // Setup the new range seek bar
         RangeSeekBar<Integer> rangeSeekBar = new RangeSeekBar<Integer>(this);
         // Set the range
-        rangeSeekBar.setRangeValues(15, 90);
+        rangeSeekBar.setRangeValues(15, 10000);
         rangeSeekBar.setSelectedMinValue(20);
         rangeSeekBar.setSelectedMaxValue(88);
 
