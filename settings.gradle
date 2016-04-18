@@ -1,1 +1,1 @@
-include ':rangeseekbar'
+include ':rangeseekbar', ':rangeseekbar-sample'
