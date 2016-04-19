@@ -180,7 +180,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     float barHeight;
     int thumbNormal = R.drawable.seek_thumb;
     int thumbPressed = R.drawable.seek_thumb_pressed;
-    int thumbDisabled = R.drawable.seek_thumb;
+    int thumbDisabled = R.drawable.seek_thumb_disabled;
     int thumbShadowColor;
     int defaultShadowColor = Color.argb(75, 0, 0, 0);
     int defaultShadowYOffset = PixelUtil.dpToPx(context, 2);
@@ -250,22 +250,23 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     Resources resources = getResources();
     int px = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 18, resources.getDisplayMetrics());
 
-    Drawable thumbDrawableNormal = getResources().getDrawable(thumbNormal);
-    thumbDrawableNormal.setBounds(0, 0, px, px);
-
     if (thumbImage == null) {
       thumbImage = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888);
+      Drawable thumbDrawableNormal = getResources().getDrawable(thumbNormal);
+      thumbDrawableNormal.setBounds(0, 0, px, px);
       thumbDrawableNormal.draw(new Canvas(thumbImage));
     }
     if (thumbPressedImage == null) {
       Drawable thumbDrawablePressed = getResources().getDrawable(thumbPressed);
       thumbDrawablePressed.setBounds(0, 0, px, px);
       thumbPressedImage = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888);
-      thumbDrawableNormal.draw(new Canvas(thumbPressedImage));
+      thumbDrawablePressed.draw(new Canvas(thumbPressedImage));
     }
     if (thumbDisabledImage == null) {
+      Drawable thumbDrawableDisabled = getResources().getDrawable(thumbDisabled);
+      thumbDrawableDisabled.setBounds(0, 0, px, px);
       thumbDisabledImage = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888);
-      thumbDrawableNormal.draw(new Canvas(thumbDisabledImage));
+      thumbDrawableDisabled.draw(new Canvas(thumbDisabledImage));
     }
 
     mThumbHalfWidth = 0.5f * thumbImage.getWidth();
