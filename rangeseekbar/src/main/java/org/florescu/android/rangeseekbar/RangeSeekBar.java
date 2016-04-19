@@ -85,6 +85,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
   private static final int DEFAULT_TEXT_DISTANCE_TO_TOP_IN_DP = 8;
   private static final int DEFAULT_TEXT_SEPERATION_IN_DP = 8;
   private static final double DEFAULT_STEP = 1d;
+  private static final double DEFAULT_SNAP_TOLERANCE_PERCENT = 10d;
 
   private static final int LINE_HEIGHT_IN_DP = 2;
   private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -131,6 +132,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
   private int offset;
   private float textSeperation;
   private double step;
+  private double snapTolerance;
 
   private boolean mThumbShadow;
   private int mThumbShadowXOffset;
@@ -188,6 +190,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     offset = PixelUtil.dpToPx(context, TEXT_LATERAL_PADDING_IN_DP);
     textSeperation = PixelUtil.dpToPx(context, DEFAULT_TEXT_SEPERATION_IN_DP);
     step = DEFAULT_STEP;
+    snapTolerance = DEFAULT_SNAP_TOLERANCE_PERCENT / 100;
 
     if (attrs == null) {
       setRangeToDefaultValues();
@@ -477,6 +480,9 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         // Only handle thumb presses.
         if (pressedThumb == null) {
           pressedThumb = getClosestThumb(mDownMotionX);
+          if (pressedThumb == null) {
+            return false;
+          }
         }
 
         setPressed(true);
@@ -921,9 +927,18 @@ public class RangeSeekBar<T extends Number> extends ImageView {
    * @param touchX The touch location on the SeekBar
    * @return The thumb closest to the touch location
    */
-  private final Thumb getClosestThumb(float touchX) {
+  private Thumb getClosestThumb(float touchX) {
     double xValue = screenToNormalized(touchX);
-    return mSingleThumb ? Thumb.MAX : (Math.abs(xValue - normalizedMinValue) < Math.abs(xValue - normalizedMaxValue)) ? Thumb.MIN : Thumb.MAX;
+    if (Math.abs(xValue - normalizedMinValue) <= snapTolerance || Math.abs(xValue - normalizedMaxValue) <= snapTolerance) {
+      if (mSingleThumb) return Thumb.MAX;
+      double diff = Math.abs(xValue - normalizedMaxValue) - Math.abs(xValue - normalizedMinValue);
+      if (diff == 0d) {
+        return xValue < normalizedMinValue ? Thumb.MIN : Thumb.MAX;
+      }
+      return diff < 0 ? Thumb.MAX : Thumb.MIN;
+    } else {
+      return null;
+    }
   }
 
   /**
