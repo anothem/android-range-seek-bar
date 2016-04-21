@@ -54,7 +54,7 @@
     <attr name="rangeType" format="enum">
       <enum name="linear" value="0"/>
       <enum name="predefined" value="1"/>
-      <enum name="quadratic" value="2"/>
+      <enum name="cubic" value="2"/>
     </attr>
 
     <!-- custom min and max value label -->

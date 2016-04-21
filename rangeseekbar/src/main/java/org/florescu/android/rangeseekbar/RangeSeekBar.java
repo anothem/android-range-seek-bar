@@ -73,7 +73,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
   public enum RangeType {
     LINEAR,
     PREDEFINED,
-    QUADRATIC
+    CUBIC
   }
 
   // Localized constants from MotionEvent for compatibility
@@ -84,6 +84,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
   public static final Integer DEFAULT_MAXIMUM = 100;
   public static final int HEIGHT_IN_DP = 30;
   public static final int TEXT_LATERAL_PADDING_IN_DP = 0;
+  public static final double DEFAULT_MINIMUM_DISTANCE = 0.01;
 
   private static final int INITIAL_PADDING_IN_DP = 0;
   private static final float DEFAULT_TEXT_SIZE_IN_SP = 11.3f;
@@ -141,6 +142,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
   private float textSeperation;
   private double step;
   private double snapTolerance;
+  private double minimumDistance;
 
   private boolean mThumbShadow;
   private int mThumbShadowXOffset;
@@ -154,6 +156,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
   private T[] predefinedRangeValues;
   private String customMinValueLabel;
   private String customMaxValueLabel;
+  private double cubicMultiplier = 1.0;
 
   private boolean mActivateOnDefaultValues;
 
@@ -204,8 +207,10 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     textSeperation = PixelUtil.dpToPx(context, DEFAULT_TEXT_SEPERATION_IN_DP);
     step = DEFAULT_STEP;
     snapTolerance = DEFAULT_SNAP_TOLERANCE_PERCENT / 100;
+    minimumDistance = DEFAULT_MINIMUM_DISTANCE;
 
     if (attrs == null) {
+      rangeType = DEFAULT_RANGE_TYPE;
       setRangeToDefaultValues();
       mInternalPad = PixelUtil.dpToPx(context, INITIAL_PADDING_IN_DP);
       barHeight = PixelUtil.dpToPx(context, LINE_HEIGHT_IN_DP);
@@ -219,10 +224,22 @@ public class RangeSeekBar<T extends Number> extends ImageView {
       mThumbShadowYOffset = defaultShadowYOffset;
       mThumbShadowBlur = defaultShadowBlur;
       mActivateOnDefaultValues = true;
-      rangeType = DEFAULT_RANGE_TYPE;
     } else {
       TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.RangeSeekBar, 0, 0);
       try {
+        switch (a.getInt(R.styleable.RangeSeekBar_rangeType, 0)) {
+          case 0:
+            rangeType = RangeType.LINEAR;
+            break;
+          case 1:
+            rangeType = RangeType.PREDEFINED;
+            break;
+          case 2:
+            rangeType = RangeType.CUBIC;
+            break;
+          default:
+            rangeType = RangeType.LINEAR;
+        }
         setRangeValues(
             extractNumericValueFromAttributes(a, R.styleable.RangeSeekBar_absoluteMinValue, DEFAULT_MINIMUM),
             extractNumericValueFromAttributes(a, R.styleable.RangeSeekBar_absoluteMaxValue, DEFAULT_MAXIMUM)
@@ -236,19 +253,6 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         mActiveColor = a.getColor(R.styleable.RangeSeekBar_activeColor, ACTIVE_COLOR);
         mDefaultColor = a.getColor(R.styleable.RangeSeekBar_defaultColor, Color.parseColor("#e5e8eb"));
         mAlwaysActive = a.getBoolean(R.styleable.RangeSeekBar_alwaysActive, true);
-        switch (a.getInt(R.styleable.RangeSeekBar_rangeType, 0)) {
-          case 0:
-            rangeType = RangeType.LINEAR;
-            break;
-          case 1:
-            rangeType = RangeType.PREDEFINED;
-            break;
-          case 2:
-            rangeType = RangeType.QUADRATIC;
-            break;
-          default:
-            rangeType = RangeType.LINEAR;
-        }
         customMinValueLabel = a.getString(R.styleable.RangeSeekBar_minValueLabel);
         customMaxValueLabel = a.getString(R.styleable.RangeSeekBar_maxValueLabel);
 
@@ -334,6 +338,10 @@ public class RangeSeekBar<T extends Number> extends ImageView {
   public void setRangeValues(T minValue, T maxValue) {
     this.absoluteMinValue = minValue;
     this.absoluteMaxValue = maxValue;
+    if (rangeType == RangeType.CUBIC) {
+      cubicMultiplier = Math.cbrt(absoluteMaxValue.doubleValue() - absoluteMinValue.doubleValue());
+    }
+    updateMinDistance();
     setValuePrimAndNumberType();
   }
 
@@ -421,6 +429,25 @@ public class RangeSeekBar<T extends Number> extends ImageView {
   }
 
   /**
+   * Sets the min distance sliders can be from each other
+   */
+  private void updateMinDistance() {
+    switch (rangeType) {
+      case LINEAR:
+        minimumDistance = normalizedMaxValue / ((absoluteMaxValue.doubleValue() - absoluteMinValue.doubleValue()) / step);
+        break;
+      case PREDEFINED:
+        if (predefinedRangeValues != null) {
+          minimumDistance = normalizedMaxValue / (predefinedRangeValues.length - 1);
+        }
+        break;
+      case CUBIC:
+        minimumDistance = DEFAULT_MINIMUM_DISTANCE;
+        break;
+    }
+  }
+
+  /**
    * Returns the currently selected max value.
    *
    * @return The currently selected max value.
@@ -450,6 +477,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
    */
   public void setStep(double step) {
     this.step = step;
+    updateMinDistance();
+    invalidate();
   }
 
   /**
@@ -824,7 +853,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
    * @param value The new normalized min value to set.
    */
   private void setNormalizedMinValue(double value) {
-    normalizedMinValue = Math.max(0d, Math.min(1d, Math.min(value, normalizedMaxValue)));
+    normalizedMinValue = Math.max(0d, Math.min(1d, Math.min(value, normalizedMaxValue - minimumDistance)));
     invalidate();
   }
 
@@ -834,7 +863,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
    * @param value The new normalized max value to set.
    */
   private void setNormalizedMaxValue(double value) {
-    normalizedMaxValue = Math.max(0d, Math.min(1d, Math.max(value, normalizedMinValue)));
+    normalizedMaxValue = Math.max(0d, Math.min(1d, Math.max(value, normalizedMinValue + (mSingleThumb ? 0 : minimumDistance))));
     invalidate();
   }
 
@@ -848,13 +877,13 @@ public class RangeSeekBar<T extends Number> extends ImageView {
       case LINEAR:
         return (T) numberType.toNumber(Math.round(v / step) * step);
       case PREDEFINED:
-        int index = (int)(normalized * predefinedRangeValues.length);
+        int index = (int)(normalized * (predefinedRangeValues.length - 1));
         if (index >= predefinedRangeValues.length) index = predefinedRangeValues.length - 1;
         return predefinedRangeValues[index];
-      case QUADRATIC:
-        return (T) numberType.toNumber(Math.round(v / step) * step);
+      case CUBIC:
+        double val = Math.pow(normalized * cubicMultiplier, 3) + absoluteMinValue.doubleValue();
+        return (T) numberType.toNumber((int) ((int) (val / Math.pow(10, (int) Math.log10(val)-1)) * Math.pow(10, (int) Math.log10(val)-1)));
     }
-    // TODO parameterize this rounding to allow variable decimal points
     return (T) numberType.toNumber(Math.round(v / step) * step);
   }
 
@@ -892,8 +921,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
   private float normalizedToScreen(double normalizedCoord, float halfWidth) {
     normalizedCoord = normalizedToScreen(normalizedCoord);
     float max = getWidth() - mThumbHalfWidth;
-    if (normalizedCoord - halfWidth < 0) {
-      return (float) Math.max(halfWidth, normalizedCoord);
+    if (normalizedCoord - halfWidth < mThumbHalfWidth) {
+      return (float) Math.max(halfWidth + (mThumbHalfWidth * (mSingleThumb ? -1 : 1)), normalizedCoord);
     } else if (normalizedCoord + halfWidth > max) {
       return (float) Math.min(max - halfWidth, normalizedCoord);
     } else {
@@ -918,6 +947,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     if (customMaxValueLabel != null && selectedMaxValue.equals(absoluteMaxValue)) {
       maxText = customMaxValueLabel;
     }
+
     float minTextWidth = paint.measureText(minText) + offset;
     float minTextHalfWidth = minTextWidth / 2;
     float maxTextWidth = paint.measureText(maxText) + offset;
@@ -1023,9 +1053,14 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     if (values.length < 1) {
       throw new IllegalArgumentException("Predefined range values must have length >= 1");
     }
-    setRangeValues(values[0], values[values.length-1]);
     this.predefinedRangeValues = values;
     rangeType = RangeType.PREDEFINED;
+    setRangeValues(values[0], values[values.length-1]);
+    invalidate();
+  }
+
+  public void setRangeType(RangeType rangeType) {
+    this.rangeType = rangeType;
     invalidate();
   }
 
