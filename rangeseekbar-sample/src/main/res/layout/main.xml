@@ -33,6 +33,20 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="Range seek bar from xml with predefined values"/>
+
+        <org.florescu.android.rangeseekbar.RangeSeekBar
+            android:id="@+id/predefined"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            rsb:rangeType="predefined"
+            rsb:singleThumb="true"
+            rsb:maxValueLabel="Aluminium"
+            rsb:showLabels="false"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:text="Range seek bar from xml with ranges set"/>
 
 
@@ -51,8 +65,8 @@
         <org.florescu.android.rangeseekbar.RangeSeekBar
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            rsb:absoluteMaxValue="140.54"
-            rsb:absoluteMinValue="15.23"/>
+            rsb:absoluteMaxValue="140"
+            rsb:absoluteMinValue="15"/>
 
         <TextView
             android:layout_width="match_parent"
