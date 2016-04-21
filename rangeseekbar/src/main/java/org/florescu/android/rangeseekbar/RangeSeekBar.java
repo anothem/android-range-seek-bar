@@ -881,9 +881,9 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         if (index >= predefinedRangeValues.length) index = predefinedRangeValues.length - 1;
         return predefinedRangeValues[index];
       case CUBIC:
-        double val = Math.pow(normalized * cubicMultiplier, 3) + absoluteMinValue.doubleValue();
-        int round = (int)Math.pow(10, (int) Math.log10(val)-1);
-        return (T) numberType.toNumber(((int) val / round) * round);
+        double rawValue = Math.pow(normalized * cubicMultiplier, 3) + absoluteMinValue.doubleValue();
+        int round = (int)Math.pow(10, (int) Math.log10(rawValue)-1);
+        return (T) numberType.toNumber(((int) rawValue / round) * round);
     }
     return (T) numberType.toNumber(Math.round(v / step) * step);
   }
