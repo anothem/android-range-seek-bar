@@ -890,9 +890,9 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      * @param <T> The Number type the RangeSeekBar has been declared with.
      * @author Stephan Tittel (stephan.tittel@kom.tu-darmstadt.de)
      */
-    public interface OnRangeSeekBarChangeListener<T> {
+    public interface OnRangeSeekBarChangeListener<T extends Number> {
 
-        void onRangeSeekBarValuesChanged(RangeSeekBar<?> bar, T minValue, T maxValue);
+        void onRangeSeekBarValuesChanged(RangeSeekBar<T> bar, T minValue, T maxValue);
     }
 
 }
