@@ -544,6 +544,10 @@ public class RangeSeekBar<T extends Number> extends ImageView {
           }
         }
 
+        if (listener != null) {
+          listener.onRangeSeekBarPressed(this, getSelectedMinValue(), getSelectedMaxValue());
+        }
+
         setPressed(true);
         invalidate();
         onStartTrackingTouch();
@@ -1133,8 +1137,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
    * @author Stephan Tittel (stephan.tittel@kom.tu-darmstadt.de)
    */
   public interface OnRangeSeekBarChangeListener<T> {
-
     void onRangeSeekBarValuesChanged(RangeSeekBar<?> bar, T minValue, T maxValue);
+    void onRangeSeekBarPressed(RangeSeekBar<?> bar, T minValue, T maxValue);
   }
 
 }
