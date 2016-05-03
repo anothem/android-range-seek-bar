@@ -350,6 +350,11 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         return normalizedToValue(normalizedMinValue);
     }
 
+    public boolean isDragging()
+    {
+        return mIsDragging;
+    }
+
     /**
      * Sets the currently selected minimum value. The widget will be invalidated and redrawn.
      *
