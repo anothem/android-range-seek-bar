@@ -784,7 +784,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private T normalizedToValue(double normalized) {
         double v = absoluteMinValuePrim + normalized * (absoluteMaxValuePrim - absoluteMinValuePrim);
         // TODO parameterize this rounding to allow variable decimal points
-        return (T) numberType.toNumber(Math.round(v * 100) / 100d);
+        return (T) numberType.toNumber(Math.round(v));
     }
 
     /**
