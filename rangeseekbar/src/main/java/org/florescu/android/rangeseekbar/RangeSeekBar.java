@@ -533,20 +533,22 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         final int pointerIndex = event.findPointerIndex(mActivePointerId);
         final float x = event.getX(pointerIndex);
 
-        double screenX = screenToNormalized(x);
-        if(Thumb.MIN.equals(pressedThumb) && screenX > normalizedMaxValue)
+        double normalX = screenToNormalized(x);
+        if(Thumb.MIN.equals(pressedThumb) && normalX > normalizedMaxValue)
         {
+            setNormalizedMinValue(normalX);
             pressedThumb = Thumb.MAX;
         }
-        else if(Thumb.MAX.equals(pressedThumb) && screenX < normalizedMinValue)
+        else if(Thumb.MAX.equals(pressedThumb) && normalX < normalizedMinValue)
         {
+            setNormalizedMaxValue(normalX);
             pressedThumb = Thumb.MIN;
         }
 
         if (Thumb.MIN.equals(pressedThumb) && !mSingleThumb) {
-            setNormalizedMinValue(screenX);
+            setNormalizedMinValue(normalX);
         } else if (Thumb.MAX.equals(pressedThumb)) {
-            setNormalizedMaxValue(screenX);
+            setNormalizedMaxValue(normalX);
         }
     }
 
