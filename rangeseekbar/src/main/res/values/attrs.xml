@@ -38,8 +38,9 @@
         <!-- the color of the text above thumbs -->
         <attr name="textAboveThumbsColor" format="color"/>
 
-        <!-- the color of the selected rect (if visible) -->
+        <!-- the color and opacity of the selected rect (if visible) -->
         <attr name="selectedRectColor" format="color"/>
+        <attr name="selectedRectAlpha" format="integer"/>
 
         <!-- the stroke color of the selected rect (if visible) -->
         <attr name="selectedRectStrokeColor" format="color"/>
@@ -70,6 +71,13 @@
 
         <!-- if the selected rect is visible we can also allow the user to drag it (i.e so the min and max handles move at the same time) -->
         <attr name="allowSelectedRectDrag" format="boolean"/>
+
+        <!-- set drawable for any icon that should be displayed to right of min value -->
+        <attr name="iconOnBar" format="reference"/>
+
+        <!-- the color of the icon on the bar -->
+        <attr name="iconOnBarColor" format="color"/>
+
     </declare-styleable>
 
 </resources>

@@ -18,7 +18,10 @@ limitations under the License.
 package org.florescu.android.rangeseekbar.sample;
 
 import android.app.Activity;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.widget.LinearLayout;
 
 import org.florescu.android.rangeseekbar.RangeSeekBar;
@@ -47,5 +50,10 @@ public class DemoActivity extends Activity {
         // Seek bar for which we will set text color in code
         RangeSeekBar rangeSeekBarTextColorWithCode = (RangeSeekBar) findViewById(R.id.rangeSeekBarTextColorWithCode);
         rangeSeekBarTextColorWithCode.setTextAboveThumbsColorResource(android.R.color.holo_blue_bright);
+
+        // Seek bar for which we will set icon on bar and its color in code
+        RangeSeekBar rangeSeekBarIconOnBarWithCode = (RangeSeekBar) findViewById(R.id.rangeSeekBarIconOnBarWithCode);
+        Drawable iconOnBarDrawable = ContextCompat.getDrawable(this, android.R.drawable.ic_lock_idle_alarm);
+        rangeSeekBarIconOnBarWithCode.setIconOnBar(iconOnBarDrawable, Color.WHITE);
     }
 }

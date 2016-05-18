@@ -18,6 +18,7 @@ limitations under the License.
 package org.florescu.android.rangeseekbar;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -28,6 +29,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Path;
+import android.graphics.PorterDuff;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -83,6 +85,13 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private static final int DEFAULT_TEXT_DISTANCE_TO_TOP_IN_DP = 8;
 
     private static final int LINE_HEIGHT_IN_DP = 1;
+
+    private static final int ICON_ON_BAR_TOP_MARGIN_IN_DP = 10;
+    private static final int ICON_ON_BAR_LEFT_MARGIN_IN_DP = 20;
+    private static final int ICON_ON_BAR_SIDE_IN_DP = 20;
+
+    private static final int DEFAULT_SELECTED_RECT_ALPHA = 150;
+
     private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint shadowPaint = new Paint();
     private Paint mBorderPaint;
@@ -133,6 +142,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private int mActiveColor;
     private int mDefaultColor;
     private int mSelectedRectColor;
+    private int mSelectedRectAlpha;
     private int mSelectedRectStrokeColor;
     private int mTextAboveThumbsColor;
     private double mInBetweenDragMarker;
@@ -146,6 +156,10 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private Matrix mThumbShadowMatrix = new Matrix();
 
     private boolean mActivateOnDefaultValues;
+
+    // Use drawable and not bitmap so we can handle vector drawables
+    private Drawable mIconOnBarDrawable;
+    private int mIconOnBarColor;
 
     public RangeSeekBar(Context context) {
         super(context);
@@ -219,6 +233,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 mActiveColor = a.getColor(R.styleable.RangeSeekBar_activeColor, ACTIVE_COLOR);
                 mDefaultColor = a.getColor(R.styleable.RangeSeekBar_defaultColor, Color.GRAY);
                 mSelectedRectColor = a.getColor(R.styleable.RangeSeekBar_selectedRectColor, Color.parseColor("#4D4D4D"));
+                mSelectedRectAlpha = a.getInt(R.styleable.RangeSeekBar_selectedRectAlpha, DEFAULT_SELECTED_RECT_ALPHA);
                 mSelectedRectStrokeColor = a.getColor(R.styleable.RangeSeekBar_selectedRectStrokeColor, Color.WHITE);
                 mAllowSectedRectDrag = mShowSelectedBorder && a.getBoolean(R.styleable.RangeSeekBar_allowSelectedRectDrag, false);
 
@@ -265,6 +280,16 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 if(mIsProgressBar) {
                     absoluteProgressValue = (T) Integer.valueOf(0);
                     mAlwaysActive = true;
+                }
+
+                mIconOnBarDrawable = a.getDrawable(R.styleable.RangeSeekBar_iconOnBar);
+                mIconOnBarColor = a.getColor(R.styleable.RangeSeekBar_iconOnBarColor,
+                        Color.WHITE);
+
+                if (mIconOnBarDrawable != null) {
+                    // Mutate so we don't change color filter for other drawables from same image rsc
+                    mIconOnBarDrawable.mutate();
+                    mIconOnBarDrawable.setColorFilter(mIconOnBarColor, PorterDuff.Mode.SRC_IN);
                 }
             } finally {
                 a.recycle();
@@ -455,6 +480,24 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         } else {
             setNormalizedMaxValue(valueToNormalized(value));
         }
+    }
+
+    /**
+     * Sets the icon to draw to the right of the min value
+     * @param iconOnBarDrawable Drawable of icon to draw
+     * @param iconOnBarColor Color of icon to draw
+     */
+    public void setIconOnBar(Drawable iconOnBarDrawable, int iconOnBarColor) {
+        mIconOnBarDrawable = iconOnBarDrawable;
+        mIconOnBarColor = iconOnBarColor;
+
+        if (mIconOnBarDrawable != null) {
+            // Mutate so we don't change color filter for other drawables from same image rsc
+            mIconOnBarDrawable.mutate();
+            mIconOnBarDrawable.setColorFilter(mIconOnBarColor, PorterDuff.Mode.SRC_IN);
+        }
+
+        invalidate();
     }
 
     /**
@@ -714,7 +757,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
 
             mBorderPaint.setStyle(Paint.Style.FILL);
             mBorderPaint.setColor(mSelectedRectColor);
-            mBorderPaint.setAlpha(150);
+            mBorderPaint.setAlpha(mSelectedRectAlpha);
             canvas.drawRect(mBorderRect, mBorderPaint);
 
             mBorderPaint.setStyle(Paint.Style.STROKE);
@@ -771,6 +814,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                     paint);
         }
 
+        drawIconOnBarIfExists(canvas);
     }
 
     /**
@@ -848,6 +892,33 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         mTranslatedThumbShadowPath.set(mThumbShadowPath);
         mTranslatedThumbShadowPath.transform(mThumbShadowMatrix);
         canvas.drawPath(mTranslatedThumbShadowPath, shadowPaint);
+    }
+
+    /**
+     * Draws icon to right of min value if an icon has been specified
+     *
+     * @param canvas      The canvas to draw upon.
+     */
+    private void drawIconOnBarIfExists(Canvas canvas) {
+        if (mIconOnBarDrawable == null) {
+            return;
+        }
+
+        final int iconLeftMarginPx = dpToPx(ICON_ON_BAR_LEFT_MARGIN_IN_DP);
+        final int iconTopMarginPx = dpToPx(ICON_ON_BAR_TOP_MARGIN_IN_DP);
+        final int sidePx = dpToPx(ICON_ON_BAR_SIDE_IN_DP);
+        int left = (int) (normalizedToScreen(normalizedMinValue) + iconLeftMarginPx);
+        int top = iconTopMarginPx;
+        int right = left + sidePx;
+        int bottom = top + sidePx;
+
+        // Don't draw icon if right thumb overlaps it
+        if (right < normalizedToScreen(normalizedMaxValue) - (mThumbHalfWidth * 2)) {
+            // Mutate so we don't change color filter for other drawables from same image rsc
+            mIconOnBarDrawable.setBounds(left, top, right, bottom);
+            mIconOnBarDrawable.draw(canvas);
+        }
+
     }
 
     /**
@@ -976,6 +1047,12 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 ? 0d
                 : absoluteMinAllowedGapValue.doubleValue() / (absoluteMaxValuePrim - absoluteMinValuePrim);
     }
+
+    private static int dpToPx(int dp)
+    {
+        return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
+    }
+
 
     /**
      * Thumb constants (min and max).

@@ -185,6 +185,61 @@
             rsb:thumbShadowYOffset="2dp"
             />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:text="Transparent range seek bar from xml with 2 different thumb handles and icon on bar"
+            />
+
+        <org.florescu.android.rangeseekbar.RangeSeekBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            rsb:selectedRectColor="@android:color/holo_red_light"
+            rsb:selectedRectAlpha="50"
+            rsb:thumbNormal="@drawable/left_trim_handle"
+            rsb:thumbDisabled="@drawable/left_trim_handle"
+            rsb:thumbPressed="@drawable/left_trim_handle"
+            rsb:hasDifferentRightThumb="true"
+            rsb:rightThumbNormal="@drawable/right_trim_handle"
+            rsb:rightThumbDisabled="@drawable/right_trim_handle"
+            rsb:rightThumbPressed="@drawable/right_trim_handle"
+            rsb:iconOnBar="@mipmap/ic_launcher"
+            rsb:iconOnBarColor="@android:color/holo_purple"
+            rsb:barHeight="2dp"
+            rsb:showLabels="false"
+            rsb:valuesAboveThumbs="false"
+            rsb:showSelectedRect="true"
+            rsb:allowSelectedRectDrag="false"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:text="Draggable range seek bar from xml with 2 different thumb handles and icon on bar"
+            />
+
+        <org.florescu.android.rangeseekbar.RangeSeekBar
+            android:id="@+id/rangeSeekBarIconOnBarWithCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            rsb:activeColor="@android:color/holo_orange_dark"
+            rsb:selectedRectColor="@android:color/holo_blue_light"
+            rsb:selectedRectAlpha="255"
+            rsb:thumbNormal="@drawable/left_trim_handle"
+            rsb:thumbDisabled="@drawable/left_trim_handle"
+            rsb:thumbPressed="@drawable/left_trim_handle"
+            rsb:hasDifferentRightThumb="true"
+            rsb:rightThumbNormal="@drawable/right_trim_handle"
+            rsb:rightThumbDisabled="@drawable/right_trim_handle"
+            rsb:rightThumbPressed="@drawable/right_trim_handle"
+            rsb:barHeight="2dp"
+            rsb:showLabels="false"
+            rsb:valuesAboveThumbs="false"
+            rsb:showSelectedRect="true"
+            rsb:allowSelectedRectDrag="true"
+            />
 
     </LinearLayout>
 
