@@ -351,6 +351,11 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         return normalizedToValue(normalizedMinValue);
     }
 
+    public boolean isDragging()
+    {
+        return mIsDragging;
+    }
+
     /**
      * Sets the currently selected minimum value. The widget will be invalidated and redrawn.
      *
@@ -529,10 +534,22 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         final int pointerIndex = event.findPointerIndex(mActivePointerId);
         final float x = event.getX(pointerIndex);
 
+        double normalX = screenToNormalized(x);
+        if(Thumb.MIN.equals(pressedThumb) && normalX > normalizedMaxValue)
+        {
+            setNormalizedMinValue(normalX);
+            pressedThumb = Thumb.MAX;
+        }
+        else if(Thumb.MAX.equals(pressedThumb) && normalX < normalizedMinValue)
+        {
+            setNormalizedMaxValue(normalX);
+            pressedThumb = Thumb.MIN;
+        }
+
         if (Thumb.MIN.equals(pressedThumb) && !mSingleThumb) {
-            setNormalizedMinValue(screenToNormalized(x));
+            setNormalizedMinValue(normalX);
         } else if (Thumb.MAX.equals(pressedThumb)) {
-            setNormalizedMaxValue(screenToNormalized(x));
+            setNormalizedMaxValue(normalX);
         }
     }
 
@@ -793,7 +810,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     protected T normalizedToValue(double normalized) {
         double v = absoluteMinValuePrim + normalized * (absoluteMaxValuePrim - absoluteMinValuePrim);
         // TODO parameterize this rounding to allow variable decimal points
-        return (T) numberType.toNumber(Math.round(v * 100) / 100d);
+        return (T) numberType.toNumber(Math.round(v));
     }
 
     /**
