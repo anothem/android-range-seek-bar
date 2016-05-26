@@ -90,8 +90,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private Bitmap thumbPressedImage;
     private Bitmap thumbDisabledImage;
 
-    private float mThumbHalfWidth;
-    private float mThumbHalfHeight;
+    private float thumbHalfWidth;
+    private float thumbHalfHeight;
 
     private float padding;
     protected T absoluteMinValue, absoluteMaxValue;
@@ -104,37 +104,37 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private boolean notifyWhileDragging = false;
     private OnRangeSeekBarChangeListener<T> listener;
 
-    private float mDownMotionX;
+    private float downMotionX;
 
-    private int mActivePointerId = INVALID_POINTER_ID;
+    private int activePointerId = INVALID_POINTER_ID;
 
-    private int mScaledTouchSlop;
+    private int scaledTouchSlop;
 
-    private boolean mIsDragging;
+    private boolean isDragging;
 
-    private int mTextOffset;
-    private int mTextSize;
-    private int mDistanceToTop;
-    private RectF mRect;
+    private int textOffset;
+    private int textSize;
+    private int distanceToTop;
+    private RectF rect;
 
-    private boolean mSingleThumb;
-    private boolean mAlwaysActive;
-    private boolean mShowLabels;
-    private boolean mShowTextAboveThumbs;
-    private float mInternalPad;
-    private int mActiveColor;
-    private int mDefaultColor;
-    private int mTextAboveThumbsColor;
+    private boolean singleThumb;
+    private boolean alwaysActive;
+    private boolean showLabels;
+    private boolean showTextAboveThumbs;
+    private float internalPad;
+    private int activeColor;
+    private int defaultColor;
+    private int textAboveThumbsColor;
 
-    private boolean mThumbShadow;
-    private int mThumbShadowXOffset;
-    private int mThumbShadowYOffset;
-    private int mThumbShadowBlur;
-    private Path mThumbShadowPath;
-    private Path mTranslatedThumbShadowPath = new Path();
-    private Matrix mThumbShadowMatrix = new Matrix();
+    private boolean thumbShadow;
+    private int thumbShadowXOffset;
+    private int thumbShadowYOffset;
+    private int thumbShadowBlur;
+    private Path thumbShadowPath;
+    private Path translatedThumbShadowPath = new Path();
+    private Matrix thumbShadowMatrix = new Matrix();
 
-    private boolean mActivateOnDefaultValues;
+    private boolean activateOnDefaultValues;
 
 
     public RangeSeekBar(Context context) {
@@ -180,18 +180,18 @@ public class RangeSeekBar<T extends Number> extends ImageView {
 
         if (attrs == null) {
             setRangeToDefaultValues();
-            mInternalPad = PixelUtil.dpToPx(context, INITIAL_PADDING_IN_DP);
+            internalPad = PixelUtil.dpToPx(context, INITIAL_PADDING_IN_DP);
             barHeight = PixelUtil.dpToPx(context, LINE_HEIGHT_IN_DP);
-            mActiveColor = ACTIVE_COLOR;
-            mDefaultColor = Color.GRAY;
-            mAlwaysActive = false;
-            mShowTextAboveThumbs = true;
-            mTextAboveThumbsColor = Color.WHITE;
+            activeColor = ACTIVE_COLOR;
+            defaultColor = Color.GRAY;
+            alwaysActive = false;
+            showTextAboveThumbs = true;
+            textAboveThumbsColor = Color.WHITE;
             thumbShadowColor = defaultShadowColor;
-            mThumbShadowXOffset = defaultShadowXOffset;
-            mThumbShadowYOffset = defaultShadowYOffset;
-            mThumbShadowBlur = defaultShadowBlur;
-            mActivateOnDefaultValues = false;
+            thumbShadowXOffset = defaultShadowXOffset;
+            thumbShadowYOffset = defaultShadowYOffset;
+            thumbShadowBlur = defaultShadowBlur;
+            activateOnDefaultValues = false;
         } else {
             TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.RangeSeekBar, 0, 0);
             try {
@@ -199,15 +199,15 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                         extractNumericValueFromAttributes(a, R.styleable.RangeSeekBar_absoluteMinValue, DEFAULT_MINIMUM),
                         extractNumericValueFromAttributes(a, R.styleable.RangeSeekBar_absoluteMaxValue, DEFAULT_MAXIMUM)
                 );
-                mShowTextAboveThumbs = a.getBoolean(R.styleable.RangeSeekBar_valuesAboveThumbs, true);
-                mTextAboveThumbsColor = a.getColor(R.styleable.RangeSeekBar_textAboveThumbsColor, Color.WHITE);
-                mSingleThumb = a.getBoolean(R.styleable.RangeSeekBar_singleThumb, false);
-                mShowLabels = a.getBoolean(R.styleable.RangeSeekBar_showLabels, true);
-                mInternalPad = a.getDimensionPixelSize(R.styleable.RangeSeekBar_internalPadding, INITIAL_PADDING_IN_DP);
+                showTextAboveThumbs = a.getBoolean(R.styleable.RangeSeekBar_valuesAboveThumbs, true);
+                textAboveThumbsColor = a.getColor(R.styleable.RangeSeekBar_textAboveThumbsColor, Color.WHITE);
+                singleThumb = a.getBoolean(R.styleable.RangeSeekBar_singleThumb, false);
+                showLabels = a.getBoolean(R.styleable.RangeSeekBar_showLabels, true);
+                internalPad = a.getDimensionPixelSize(R.styleable.RangeSeekBar_internalPadding, INITIAL_PADDING_IN_DP);
                 barHeight = a.getDimensionPixelSize(R.styleable.RangeSeekBar_barHeight, LINE_HEIGHT_IN_DP);
-                mActiveColor = a.getColor(R.styleable.RangeSeekBar_activeColor, ACTIVE_COLOR);
-                mDefaultColor = a.getColor(R.styleable.RangeSeekBar_defaultColor, Color.GRAY);
-                mAlwaysActive = a.getBoolean(R.styleable.RangeSeekBar_alwaysActive, false);
+                activeColor = a.getColor(R.styleable.RangeSeekBar_activeColor, ACTIVE_COLOR);
+                defaultColor = a.getColor(R.styleable.RangeSeekBar_defaultColor, Color.GRAY);
+                alwaysActive = a.getBoolean(R.styleable.RangeSeekBar_alwaysActive, false);
 
                 Drawable normalDrawable = a.getDrawable(R.styleable.RangeSeekBar_thumbNormal);
                 if (normalDrawable != null) {
@@ -221,13 +221,13 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 if (pressedDrawable != null) {
                     thumbPressedImage = BitmapUtil.drawableToBitmap(pressedDrawable);
                 }
-                mThumbShadow = a.getBoolean(R.styleable.RangeSeekBar_thumbShadow, false);
+                thumbShadow = a.getBoolean(R.styleable.RangeSeekBar_thumbShadow, false);
                 thumbShadowColor = a.getColor(R.styleable.RangeSeekBar_thumbShadowColor, defaultShadowColor);
-                mThumbShadowXOffset = a.getDimensionPixelSize(R.styleable.RangeSeekBar_thumbShadowXOffset, defaultShadowXOffset);
-                mThumbShadowYOffset = a.getDimensionPixelSize(R.styleable.RangeSeekBar_thumbShadowYOffset, defaultShadowYOffset);
-                mThumbShadowBlur = a.getDimensionPixelSize(R.styleable.RangeSeekBar_thumbShadowBlur, defaultShadowBlur);
+                thumbShadowXOffset = a.getDimensionPixelSize(R.styleable.RangeSeekBar_thumbShadowXOffset, defaultShadowXOffset);
+                thumbShadowYOffset = a.getDimensionPixelSize(R.styleable.RangeSeekBar_thumbShadowYOffset, defaultShadowYOffset);
+                thumbShadowBlur = a.getDimensionPixelSize(R.styleable.RangeSeekBar_thumbShadowBlur, defaultShadowBlur);
 
-                mActivateOnDefaultValues = a.getBoolean(R.styleable.RangeSeekBar_activateOnDefaultValues, false);
+                activateOnDefaultValues = a.getBoolean(R.styleable.RangeSeekBar_activateOnDefaultValues, false);
             } finally {
                 a.recycle();
             }
@@ -243,35 +243,35 @@ public class RangeSeekBar<T extends Number> extends ImageView {
             thumbDisabledImage = BitmapFactory.decodeResource(getResources(), thumbDisabled);
         }
 
-        mThumbHalfWidth = 0.5f * thumbImage.getWidth();
-        mThumbHalfHeight = 0.5f * thumbImage.getHeight();
+        thumbHalfWidth = 0.5f * thumbImage.getWidth();
+        thumbHalfHeight = 0.5f * thumbImage.getHeight();
 
         setValuePrimAndNumberType();
 
-        mTextSize = PixelUtil.dpToPx(context, DEFAULT_TEXT_SIZE_IN_DP);
-        mDistanceToTop = PixelUtil.dpToPx(context, DEFAULT_TEXT_DISTANCE_TO_TOP_IN_DP);
-        mTextOffset = !mShowTextAboveThumbs ? 0 : this.mTextSize + PixelUtil.dpToPx(context,
-                DEFAULT_TEXT_DISTANCE_TO_BUTTON_IN_DP) + this.mDistanceToTop;
+        textSize = PixelUtil.dpToPx(context, DEFAULT_TEXT_SIZE_IN_DP);
+        distanceToTop = PixelUtil.dpToPx(context, DEFAULT_TEXT_DISTANCE_TO_TOP_IN_DP);
+        textOffset = !showTextAboveThumbs ? 0 : this.textSize + PixelUtil.dpToPx(context,
+                DEFAULT_TEXT_DISTANCE_TO_BUTTON_IN_DP) + this.distanceToTop;
 
-        mRect = new RectF(padding,
-                mTextOffset + mThumbHalfHeight - barHeight / 2,
+        rect = new RectF(padding,
+                textOffset + thumbHalfHeight - barHeight / 2,
                 getWidth() - padding,
-                mTextOffset + mThumbHalfHeight + barHeight / 2);
+                textOffset + thumbHalfHeight + barHeight / 2);
 
         // make RangeSeekBar focusable. This solves focus handling issues in case EditText widgets are being used along with the RangeSeekBar within ScrollViews.
         setFocusable(true);
         setFocusableInTouchMode(true);
-        mScaledTouchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
+        scaledTouchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
 
-        if (mThumbShadow) {
+        if (thumbShadow) {
             // We need to remove hardware acceleration in order to blur the shadow
             setLayerType(LAYER_TYPE_SOFTWARE, null);
             shadowPaint.setColor(thumbShadowColor);
-            shadowPaint.setMaskFilter(new BlurMaskFilter(mThumbShadowBlur, BlurMaskFilter.Blur.NORMAL));
-            mThumbShadowPath = new Path();
-            mThumbShadowPath.addCircle(0,
+            shadowPaint.setMaskFilter(new BlurMaskFilter(thumbShadowBlur, BlurMaskFilter.Blur.NORMAL));
+            thumbShadowPath = new Path();
+            thumbShadowPath.addCircle(0,
                     0,
-                    mThumbHalfHeight,
+                    thumbHalfHeight,
                     Path.Direction.CW);
         }
     }
@@ -283,7 +283,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     }
 
     public void setTextAboveThumbsColor(int textAboveThumbsColor) {
-        this.mTextAboveThumbsColor = textAboveThumbsColor;
+        this.textAboveThumbsColor = textAboveThumbsColor;
         invalidate();
     }
 
@@ -407,7 +407,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      */
     @SuppressWarnings("unused")
     public void setThumbShadowPath(Path thumbShadowPath) {
-        this.mThumbShadowPath = thumbShadowPath;
+        this.thumbShadowPath = thumbShadowPath;
     }
 
     /**
@@ -427,11 +427,11 @@ public class RangeSeekBar<T extends Number> extends ImageView {
 
             case MotionEvent.ACTION_DOWN:
                 // Remember where the motion event started
-                mActivePointerId = event.getPointerId(event.getPointerCount() - 1);
-                pointerIndex = event.findPointerIndex(mActivePointerId);
-                mDownMotionX = event.getX(pointerIndex);
+                activePointerId = event.getPointerId(event.getPointerCount() - 1);
+                pointerIndex = event.findPointerIndex(activePointerId);
+                downMotionX = event.getX(pointerIndex);
 
-                pressedThumb = evalPressedThumb(mDownMotionX);
+                pressedThumb = evalPressedThumb(downMotionX);
 
                 // Only handle thumb presses.
                 if (pressedThumb == null) {
@@ -448,14 +448,14 @@ public class RangeSeekBar<T extends Number> extends ImageView {
             case MotionEvent.ACTION_MOVE:
                 if (pressedThumb != null) {
 
-                    if (mIsDragging) {
+                    if (isDragging) {
                         trackTouchEvent(event);
                     } else {
                         // Scroll to follow the motion event
-                        pointerIndex = event.findPointerIndex(mActivePointerId);
+                        pointerIndex = event.findPointerIndex(activePointerId);
                         final float x = event.getX(pointerIndex);
 
-                        if (Math.abs(x - mDownMotionX) > mScaledTouchSlop) {
+                        if (Math.abs(x - downMotionX) > scaledTouchSlop) {
                             setPressed(true);
                             invalidate();
                             onStartTrackingTouch();
@@ -470,7 +470,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                if (mIsDragging) {
+                if (isDragging) {
                     trackTouchEvent(event);
                     onStopTrackingTouch();
                     setPressed(false);
@@ -491,8 +491,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
             case MotionEvent.ACTION_POINTER_DOWN: {
                 final int index = event.getPointerCount() - 1;
                 // final int index = ev.getActionIndex();
-                mDownMotionX = event.getX(index);
-                mActivePointerId = event.getPointerId(index);
+                downMotionX = event.getX(index);
+                activePointerId = event.getPointerId(index);
                 invalidate();
                 break;
             }
@@ -501,7 +501,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 invalidate();
                 break;
             case MotionEvent.ACTION_CANCEL:
-                if (mIsDragging) {
+                if (isDragging) {
                     onStopTrackingTouch();
                     setPressed(false);
                 }
@@ -515,21 +515,21 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         final int pointerIndex = (ev.getAction() & ACTION_POINTER_INDEX_MASK) >> ACTION_POINTER_INDEX_SHIFT;
 
         final int pointerId = ev.getPointerId(pointerIndex);
-        if (pointerId == mActivePointerId) {
+        if (pointerId == activePointerId) {
             // This was our active pointer going up. Choose
             // a new active pointer and adjust accordingly.
             // TODO: Make this decision more intelligent.
             final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
-            mDownMotionX = ev.getX(newPointerIndex);
-            mActivePointerId = ev.getPointerId(newPointerIndex);
+            downMotionX = ev.getX(newPointerIndex);
+            activePointerId = ev.getPointerId(newPointerIndex);
         }
     }
 
     private void trackTouchEvent(MotionEvent event) {
-        final int pointerIndex = event.findPointerIndex(mActivePointerId);
+        final int pointerIndex = event.findPointerIndex(activePointerId);
         final float x = event.getX(pointerIndex);
 
-        if (Thumb.MIN.equals(pressedThumb) && !mSingleThumb) {
+        if (Thumb.MIN.equals(pressedThumb) && !singleThumb) {
             setNormalizedMinValue(screenToNormalized(x));
         } else if (Thumb.MAX.equals(pressedThumb)) {
             setNormalizedMaxValue(screenToNormalized(x));
@@ -549,14 +549,14 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      * This is called when the user has started touching this widget.
      */
     void onStartTrackingTouch() {
-        mIsDragging = true;
+        isDragging = true;
     }
 
     /**
      * This is called when the user either releases his touch or the touch is canceled.
      */
     void onStopTrackingTouch() {
-        mIsDragging = false;
+        isDragging = false;
     }
 
     /**
@@ -570,8 +570,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         }
 
         int height = thumbImage.getHeight()
-                + (!mShowTextAboveThumbs ? 0 : PixelUtil.dpToPx(getContext(), HEIGHT_IN_DP))
-                + (mThumbShadow ? mThumbShadowYOffset + mThumbShadowBlur : 0);
+                + (!showTextAboveThumbs ? 0 : PixelUtil.dpToPx(getContext(), HEIGHT_IN_DP))
+                + (thumbShadow ? thumbShadowYOffset + thumbShadowBlur : 0);
         if (MeasureSpec.UNSPECIFIED != MeasureSpec.getMode(heightMeasureSpec)) {
             height = Math.min(height, MeasureSpec.getSize(heightMeasureSpec));
         }
@@ -585,44 +585,44 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     protected synchronized void onDraw(@NonNull Canvas canvas) {
         super.onDraw(canvas);
 
-        paint.setTextSize(mTextSize);
+        paint.setTextSize(textSize);
         paint.setStyle(Style.FILL);
-        paint.setColor(mDefaultColor);
+        paint.setColor(defaultColor);
         paint.setAntiAlias(true);
         float minMaxLabelSize = 0;
 
-        if (mShowLabels) {
+        if (showLabels) {
             // draw min and max labels
             String minLabel = getContext().getString(R.string.demo_min_label);
             String maxLabel = getContext().getString(R.string.demo_max_label);
             minMaxLabelSize = Math.max(paint.measureText(minLabel), paint.measureText(maxLabel));
-            float minMaxHeight = mTextOffset + mThumbHalfHeight + mTextSize / 3;
+            float minMaxHeight = textOffset + thumbHalfHeight + textSize / 3;
             canvas.drawText(minLabel, 0, minMaxHeight, paint);
             canvas.drawText(maxLabel, getWidth() - minMaxLabelSize, minMaxHeight, paint);
         }
-        padding = mInternalPad + minMaxLabelSize + mThumbHalfWidth;
+        padding = internalPad + minMaxLabelSize + thumbHalfWidth;
 
         // draw seek bar background line
-        mRect.left = padding;
-        mRect.right = getWidth() - padding;
-        canvas.drawRect(mRect, paint);
+        rect.left = padding;
+        rect.right = getWidth() - padding;
+        canvas.drawRect(rect, paint);
 
         boolean selectedValuesAreDefault = (normalizedMinValue <= minDeltaForDefault && normalizedMaxValue >= 1 - minDeltaForDefault);
 
-        int colorToUseForButtonsAndHighlightedLine = !mAlwaysActive && !mActivateOnDefaultValues && selectedValuesAreDefault ?
-                mDefaultColor : // default values
-                mActiveColor;   // non default, filter is active
+        int colorToUseForButtonsAndHighlightedLine = !alwaysActive && !activateOnDefaultValues && selectedValuesAreDefault ?
+                defaultColor : // default values
+                activeColor;   // non default, filter is active
 
         // draw seek bar active range line
-        mRect.left = normalizedToScreen(normalizedMinValue);
-        mRect.right = normalizedToScreen(normalizedMaxValue);
+        rect.left = normalizedToScreen(normalizedMinValue);
+        rect.right = normalizedToScreen(normalizedMaxValue);
 
         paint.setColor(colorToUseForButtonsAndHighlightedLine);
-        canvas.drawRect(mRect, paint);
+        canvas.drawRect(rect, paint);
 
         // draw minimum thumb (& shadow if requested) if not a single thumb control
-        if (!mSingleThumb) {
-            if (mThumbShadow) {
+        if (!singleThumb) {
+            if (thumbShadow) {
                 drawThumbShadow(normalizedToScreen(normalizedMinValue), canvas);
             }
             drawThumb(normalizedToScreen(normalizedMinValue), Thumb.MIN.equals(pressedThumb), canvas,
@@ -630,16 +630,16 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         }
 
         // draw maximum thumb & shadow (if necessary)
-        if (mThumbShadow) {
+        if (thumbShadow) {
             drawThumbShadow(normalizedToScreen(normalizedMaxValue), canvas);
         }
         drawThumb(normalizedToScreen(normalizedMaxValue), Thumb.MAX.equals(pressedThumb), canvas,
                 selectedValuesAreDefault);
 
         // draw the text if sliders have moved from default edges
-        if (mShowTextAboveThumbs && (mActivateOnDefaultValues || !selectedValuesAreDefault)) {
-            paint.setTextSize(mTextSize);
-            paint.setColor(mTextAboveThumbsColor);
+        if (showTextAboveThumbs && (activateOnDefaultValues || !selectedValuesAreDefault)) {
+            paint.setTextSize(textSize);
+            paint.setColor(textAboveThumbsColor);
 
             String minText = valueToString(getSelectedMinValue());
             String maxText = valueToString(getSelectedMaxValue());
@@ -649,7 +649,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
             float minPosition = Math.max(0f, normalizedToScreen(normalizedMinValue) - minTextWidth * 0.5f);
             float maxPosition = Math.min(getWidth() - maxTextWidth, normalizedToScreen(normalizedMaxValue) - maxTextWidth * 0.5f);
 
-            if (!mSingleThumb) {
+            if (!singleThumb) {
                 // check if the labels overlap, or are too close to each other
                 int spacing = PixelUtil.dpToPx(getContext(), TEXT_LATERAL_PADDING_IN_DP);
                 float overlap = minPosition + minTextWidth - maxPosition + spacing;
@@ -661,14 +661,14 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 }
                 canvas.drawText(minText,
                         minPosition,
-                        mDistanceToTop + mTextSize,
+                        distanceToTop + textSize,
                         paint);
 
             }
 
             canvas.drawText(maxText,
                     maxPosition,
-                    mDistanceToTop + mTextSize,
+                    distanceToTop + textSize,
                     paint);
         }
 
@@ -710,14 +710,14 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      */
     private void drawThumb(float screenCoord, boolean pressed, Canvas canvas, boolean areSelectedValuesDefault) {
         Bitmap buttonToDraw;
-        if (!mActivateOnDefaultValues && areSelectedValuesDefault) {
+        if (!activateOnDefaultValues && areSelectedValuesDefault) {
             buttonToDraw = thumbDisabledImage;
         } else {
             buttonToDraw = pressed ? thumbPressedImage : thumbImage;
         }
 
-        canvas.drawBitmap(buttonToDraw, screenCoord - mThumbHalfWidth,
-                mTextOffset,
+        canvas.drawBitmap(buttonToDraw, screenCoord - thumbHalfWidth,
+                textOffset,
                 paint);
     }
 
@@ -728,10 +728,10 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      * @param canvas      the canvas on which to draw the shadow
      */
     private void drawThumbShadow(float screenCoord, Canvas canvas) {
-        mThumbShadowMatrix.setTranslate(screenCoord + mThumbShadowXOffset, mTextOffset + mThumbHalfHeight + mThumbShadowYOffset);
-        mTranslatedThumbShadowPath.set(mThumbShadowPath);
-        mTranslatedThumbShadowPath.transform(mThumbShadowMatrix);
-        canvas.drawPath(mTranslatedThumbShadowPath, shadowPaint);
+        thumbShadowMatrix.setTranslate(screenCoord + thumbShadowXOffset, textOffset + thumbHalfHeight + thumbShadowYOffset);
+        translatedThumbShadowPath.set(thumbShadowPath);
+        translatedThumbShadowPath.transform(thumbShadowMatrix);
+        canvas.drawPath(translatedThumbShadowPath, shadowPaint);
     }
 
     /**
@@ -763,7 +763,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      * @return true if x-coordinate is in thumb range, false otherwise.
      */
     private boolean isInThumbRange(float touchX, double normalizedThumbValue) {
-        return Math.abs(touchX - normalizedToScreen(normalizedThumbValue)) <= mThumbHalfWidth;
+        return Math.abs(touchX - normalizedToScreen(normalizedThumbValue)) <= thumbHalfWidth;
     }
 
     /**
