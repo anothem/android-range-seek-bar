@@ -53,6 +53,17 @@ The rangeseekbar-sample shows the available features and customizations in code 
 	}
 ```
 
+ Using the latest work-in-progress snapshot also requires including the snapshot repository as a depencency:
+ 
+ ```groovy
+apply plugin: 'com.android.application'
+repositories {
+	maven {
+		url "https://oss.sonatype.org/content/repositories/snapshots"
+	}
+}
+```
+
 # Credits
 
 The android-range-seek-bar started as a fork of the following project: https://code.google.com/p/range-seek-bar/ under Apache license.
