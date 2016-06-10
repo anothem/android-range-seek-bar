@@ -352,7 +352,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     }
 
     public boolean isDragging() {
-        return mIsDragging;
+        return isDragging;
     }
 
     /**
