@@ -204,7 +204,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 singleThumb = a.getBoolean(R.styleable.RangeSeekBar_singleThumb, false);
                 showLabels = a.getBoolean(R.styleable.RangeSeekBar_showLabels, true);
                 internalPad = a.getDimensionPixelSize(R.styleable.RangeSeekBar_internalPadding, INITIAL_PADDING_IN_DP);
-                barHeight = a.getDimensionPixelSize(R.styleable.RangeSeekBar_barHeight, LINE_HEIGHT_IN_DP);
+                barHeight = a.getDimensionPixelSize(R.styleable.RangeSeekBar_rangeBarHeight, LINE_HEIGHT_IN_DP);
                 activeColor = a.getColor(R.styleable.RangeSeekBar_activeColor, ACTIVE_COLOR);
                 defaultColor = a.getColor(R.styleable.RangeSeekBar_defaultColor, Color.GRAY);
                 alwaysActive = a.getBoolean(R.styleable.RangeSeekBar_alwaysActive, false);

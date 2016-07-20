@@ -24,7 +24,7 @@
         <attr name="internalPadding" format="dimension"/>
 
         <!-- the height of the bar -->
-        <attr name="barHeight" format="dimension"/>
+        <attr name="rangeBarHeight" format="dimension"/>
 
         <!-- the color of the bar that is not selected -->
         <attr name="defaultColor" format="color"/>
