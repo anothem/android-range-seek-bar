@@ -3,4 +3,5 @@
     <string name="app_name">RangeSeekBar Demo</string>
     <string name="demo_min_label">Min</string>
     <string name="demo_max_label">Max</string>
+    <string name="currency">NT$</string>
 </resources>
