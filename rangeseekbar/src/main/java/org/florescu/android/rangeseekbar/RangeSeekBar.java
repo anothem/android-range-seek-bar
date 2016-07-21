@@ -35,6 +35,7 @@ import android.os.Parcelable;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
@@ -44,6 +45,7 @@ import org.florescu.android.util.BitmapUtil;
 import org.florescu.android.util.PixelUtil;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 
 /**
  * Widget that lets users select a minimum and maximum value on a given numerical range.
@@ -62,7 +64,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     /**
      * Default color of a {@link RangeSeekBar}, #FF33B5E5. This is also known as "Ice Cream Sandwich" blue.
      */
-    public static final int ACTIVE_COLOR = Color.argb(0xFF, 0x33, 0xB5, 0xE5);
+    public static final int ACTIVE_COLOR = Color.argb(0xFF, 0xFF, 0x40, 0x81);
     /**
      * An invalid pointer id.
      */
@@ -74,7 +76,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
 
     public static final Integer DEFAULT_MINIMUM = 0;
     public static final Integer DEFAULT_MAXIMUM = 100;
-    public static final int HEIGHT_IN_DP = 30;
+    public static final int HEIGHT_IN_DP = 30; //LayoutHeight
     public static final int TEXT_LATERAL_PADDING_IN_DP = 3;
 
     private static final int INITIAL_PADDING_IN_DP = 8;
@@ -82,7 +84,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private static final int DEFAULT_TEXT_DISTANCE_TO_BUTTON_IN_DP = 8;
     private static final int DEFAULT_TEXT_DISTANCE_TO_TOP_IN_DP = 8;
 
-    private static final int LINE_HEIGHT_IN_DP = 1;
+    //BarHeight
+    private static final int LINE_HEIGHT_IN_DP = 5;
     private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint shadowPaint = new Paint();
 
@@ -94,6 +97,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private float thumbHalfHeight;
 
     private float padding;
+
     protected T absoluteMinValue, absoluteMaxValue;
     protected NumberType numberType;
     protected double absoluteMinValuePrim, absoluteMaxValuePrim;
@@ -447,7 +451,6 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 onStartTrackingTouch();
                 trackTouchEvent(event);
                 attemptClaimDrag();
-
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (pressedThumb != null) {
@@ -533,9 +536,11 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         final int pointerIndex = event.findPointerIndex(activePointerId);
         final float x = event.getX(pointerIndex);
 
+        //讓rangeBar滑動
         if (Thumb.MIN.equals(pressedThumb) && !singleThumb) {
             setNormalizedMinValue(screenToNormalized(x));
-        } else if (Thumb.MAX.equals(pressedThumb)) {
+        }
+        else if (Thumb.MAX.equals(pressedThumb)) {
             setNormalizedMaxValue(screenToNormalized(x));
         }
     }
@@ -613,15 +618,16 @@ public class RangeSeekBar<T extends Number> extends ImageView {
 
         boolean selectedValuesAreDefault = (normalizedMinValue <= minDeltaForDefault && normalizedMaxValue >= 1 - minDeltaForDefault);
 
-        int colorToUseForButtonsAndHighlightedLine = !alwaysActive && !activateOnDefaultValues && selectedValuesAreDefault ?
-                defaultColor : // default values
-                activeColor;   // non default, filter is active
+
+//        int colorToUseForButtonsAndHighlightedLine = !alwaysActive && !activateOnDefaultValues && selectedValuesAreDefault ?
+//                activeColor : // default values
+//                activeColor;   // non default, filter is active
 
         // draw seek bar active range line
         rect.left = normalizedToScreen(normalizedMinValue);
         rect.right = normalizedToScreen(normalizedMaxValue);
 
-        paint.setColor(colorToUseForButtonsAndHighlightedLine);
+        paint.setColor(activeColor);
         canvas.drawRect(rect, paint);
 
         // draw minimum thumb (& shadow if requested) if not a single thumb control
@@ -640,8 +646,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         drawThumb(normalizedToScreen(normalizedMaxValue), Thumb.MAX.equals(pressedThumb), canvas,
                 selectedValuesAreDefault);
 
-        // draw the text if sliders have moved from default edges
-        if (showTextAboveThumbs && (activateOnDefaultValues || !selectedValuesAreDefault)) {
+        if (showTextAboveThumbs) {
             paint.setTextSize(textSize);
             paint.setColor(textAboveThumbsColor);
 
@@ -679,7 +684,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     }
 
     protected String valueToString(T value) {
-        return String.valueOf(value);
+        DecimalFormat decimal = (DecimalFormat) DecimalFormat.getInstance();
+        return String.valueOf(getResources().getString(R.string.currency) + " " + decimal.format(value));
     }
 
     /**
@@ -713,13 +719,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      * @param canvas      The canvas to draw upon.
      */
     private void drawThumb(float screenCoord, boolean pressed, Canvas canvas, boolean areSelectedValuesDefault) {
-        Bitmap buttonToDraw;
-        if (!activateOnDefaultValues && areSelectedValuesDefault) {
-            buttonToDraw = thumbDisabledImage;
-        } else {
-            buttonToDraw = pressed ? thumbPressedImage : thumbImage;
-        }
-
+        Bitmap buttonToDraw = pressed ? thumbPressedImage : thumbImage;;
         canvas.drawBitmap(buttonToDraw, screenCoord - thumbHalfWidth,
                 textOffset,
                 paint);
@@ -830,6 +830,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      * @param screenCoord The x-coordinate in screen space to convert.
      * @return The normalized value.
      */
+    //issued hundred unit
     private double screenToNormalized(float screenCoord) {
         int width = getWidth();
         if (width <= 2 * padding) {
