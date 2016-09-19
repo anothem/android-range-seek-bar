@@ -44,6 +44,8 @@ import org.florescu.android.util.BitmapUtil;
 import org.florescu.android.util.PixelUtil;
 
 import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 /**
  * Widget that lets users select a minimum and maximum value on a given numerical range.
@@ -81,6 +83,10 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private static final int DEFAULT_TEXT_SIZE_IN_DP = 14;
     private static final int DEFAULT_TEXT_DISTANCE_TO_BUTTON_IN_DP = 8;
     private static final int DEFAULT_TEXT_DISTANCE_TO_TOP_IN_DP = 8;
+
+    private static final int NUMBER_FORMAT_NONE = 0;
+    private static final int NUMBER_FORMAT_DEFAULT = 1;
+    private static final int NUMBER_FORMAT_CURRENCY = 2;
 
     private static final int LINE_HEIGHT_IN_DP = 1;
     private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -120,6 +126,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private boolean singleThumb;
     private boolean alwaysActive;
     private boolean showLabels;
+    private int numberFormat;
     private boolean showTextAboveThumbs;
     private float internalPad;
     private int activeColor;
@@ -203,6 +210,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 textAboveThumbsColor = a.getColor(R.styleable.RangeSeekBar_textAboveThumbsColor, Color.WHITE);
                 singleThumb = a.getBoolean(R.styleable.RangeSeekBar_singleThumb, false);
                 showLabels = a.getBoolean(R.styleable.RangeSeekBar_showLabels, true);
+                numberFormat = a.getInt(R.styleable.RangeSeekBar_numberFormat, NUMBER_FORMAT_NONE);
                 internalPad = a.getDimensionPixelSize(R.styleable.RangeSeekBar_internalPadding, INITIAL_PADDING_IN_DP);
                 barHeight = a.getDimensionPixelSize(R.styleable.RangeSeekBar_barHeight, LINE_HEIGHT_IN_DP);
                 activeColor = a.getColor(R.styleable.RangeSeekBar_activeColor, ACTIVE_COLOR);
@@ -647,6 +655,19 @@ public class RangeSeekBar<T extends Number> extends ImageView {
 
             String minText = valueToString(getSelectedMinValue());
             String maxText = valueToString(getSelectedMaxValue());
+
+
+            if(numberFormat != NUMBER_FORMAT_NONE){
+                NumberFormat formatter = NumberFormat.getInstance(Locale.US);
+                minText = formatter.format(Integer.parseInt(minText));
+                maxText = formatter.format(Integer.parseInt(maxText));
+
+                if(numberFormat == NUMBER_FORMAT_CURRENCY){
+                    minText = "$" + minText;
+                    maxText = "$" + maxText;
+                }
+            }
+
             float minTextWidth = paint.measureText(minText);
             float maxTextWidth = paint.measureText(maxText);
             // keep the position so that the labels don't get cut off
