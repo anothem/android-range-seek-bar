@@ -26,6 +26,9 @@
         <!-- the height of the bar -->
         <attr name="barHeight" format="dimension"/>
 
+        <!-- the height of the active bar -->
+        <attr name="activeBarHeight" format="dimension"/>
+
         <!-- the color of the bar that is not selected -->
         <attr name="defaultColor" format="color"/>
 

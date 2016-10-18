@@ -83,6 +83,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private static final int DEFAULT_TEXT_DISTANCE_TO_TOP_IN_DP = 8;
 
     private static final int LINE_HEIGHT_IN_DP = 1;
+    private static final int ACTIVE_LINE_HEIGHT_IN_DP = 1;
     private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint shadowPaint = new Paint();
 
@@ -116,6 +117,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private int textSize;
     private int distanceToTop;
     private RectF rect;
+    private RectF rectActive;
 
     private boolean singleThumb;
     private boolean alwaysActive;
@@ -169,6 +171,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
 
     private void init(Context context, AttributeSet attrs) {
         float barHeight;
+        float activeBarHeight;
         int thumbNormal = R.drawable.seek_thumb_normal;
         int thumbPressed = R.drawable.seek_thumb_pressed;
         int thumbDisabled = R.drawable.seek_thumb_disabled;
@@ -182,6 +185,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
             setRangeToDefaultValues();
             internalPad = PixelUtil.dpToPx(context, INITIAL_PADDING_IN_DP);
             barHeight = PixelUtil.dpToPx(context, LINE_HEIGHT_IN_DP);
+            activeBarHeight = PixelUtil.dpToPx(context, ACTIVE_LINE_HEIGHT_IN_DP);
             activeColor = ACTIVE_COLOR;
             defaultColor = Color.GRAY;
             alwaysActive = false;
@@ -205,6 +209,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 showLabels = a.getBoolean(R.styleable.RangeSeekBar_showLabels, true);
                 internalPad = a.getDimensionPixelSize(R.styleable.RangeSeekBar_internalPadding, INITIAL_PADDING_IN_DP);
                 barHeight = a.getDimensionPixelSize(R.styleable.RangeSeekBar_barHeight, LINE_HEIGHT_IN_DP);
+                activeBarHeight = a.getDimensionPixelSize(R.styleable.RangeSeekBar_activeBarHeight, ACTIVE_LINE_HEIGHT_IN_DP);
                 activeColor = a.getColor(R.styleable.RangeSeekBar_activeColor, ACTIVE_COLOR);
                 defaultColor = a.getColor(R.styleable.RangeSeekBar_defaultColor, Color.GRAY);
                 alwaysActive = a.getBoolean(R.styleable.RangeSeekBar_alwaysActive, false);
@@ -257,6 +262,11 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 textOffset + thumbHalfHeight - barHeight / 2,
                 getWidth() - padding,
                 textOffset + thumbHalfHeight + barHeight / 2);
+
+        rectActive = new RectF(padding,
+                textOffset + thumbHalfHeight - activeBarHeight / 2,
+                getWidth() - padding,
+                textOffset + thumbHalfHeight + activeBarHeight / 2);
 
         // make RangeSeekBar focusable. This solves focus handling issues in case EditText widgets are being used along with the RangeSeekBar within ScrollViews.
         setFocusable(true);
@@ -640,6 +650,13 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         drawThumb(normalizedToScreen(normalizedMaxValue), Thumb.MAX.equals(pressedThumb), canvas,
                 selectedValuesAreDefault);
 
+        // draw activeBar if sliders have moved from default edges or is always active
+        if (alwaysActive || (activateOnDefaultValues || !selectedValuesAreDefault)) {
+            rectActive.left = normalizedToScreen(normalizedMinValue);
+            rectActive.right = normalizedToScreen(normalizedMaxValue);
+            canvas.drawRect(rectActive, paint);
+        }
+
         // draw the text if sliders have moved from default edges
         if (showTextAboveThumbs && (activateOnDefaultValues || !selectedValuesAreDefault)) {
             paint.setTextSize(textSize);
@@ -707,14 +724,18 @@ public class RangeSeekBar<T extends Number> extends ImageView {
 
     /**
      * Draws the "normal" resp. "pressed" thumb image on specified x-coordinate.
+     * alwaysActive variable overwrites activateOnDefaultValues
      *
-     * @param screenCoord The x-coordinate in screen space where to draw the image.
-     * @param pressed     Is the thumb currently in "pressed" state?
-     * @param canvas      The canvas to draw upon.
+     * @param screenCoord               The x-coordinate in screen space where to draw the image.
+     * @param pressed                   Is the thumb currently in "pressed" state?
+     * @param canvas                    The canvas to draw upon.
+     * @param areSelectedValuesDefault  Should show active state button if selected values are selected
      */
     private void drawThumb(float screenCoord, boolean pressed, Canvas canvas, boolean areSelectedValuesDefault) {
         Bitmap buttonToDraw;
-        if (!activateOnDefaultValues && areSelectedValuesDefault) {
+        if (alwaysActive) {
+            buttonToDraw = pressed ? thumbPressedImage : thumbImage;
+        } else if (!activateOnDefaultValues && areSelectedValuesDefault){
             buttonToDraw = thumbDisabledImage;
         } else {
             buttonToDraw = pressed ? thumbPressedImage : thumbImage;
