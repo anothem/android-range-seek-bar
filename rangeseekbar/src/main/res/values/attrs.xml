@@ -8,6 +8,9 @@
         <!-- the maximum of the range -->
         <attr name="absoluteMaxValue" format="integer|float"/>
 
+        <!-- the step value -->
+        <attr name="step" format="integer|float"/>
+
         <!-- show a single slider -->
         <attr name="singleThumb" format="boolean"/>
 
