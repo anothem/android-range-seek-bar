@@ -8,15 +8,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="8dp"
-        >
+        android:padding="8dp">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Range seek bar initialized in code with ranges set"/>
 
-        <LinearLayout
+        <FrameLayout
             android:id="@+id/seekbar_placeholder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -42,6 +41,19 @@
             android:layout_height="wrap_content"
             rsb:absoluteMaxValue="150"
             rsb:absoluteMinValue="20"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Range seek bar from xml with ranges and step set"/>
+
+
+        <org.florescu.android.rangeseekbar.RangeSeekBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            rsb:absoluteMaxValue="150"
+            rsb:absoluteMinValue="20"
+            rsb:step="10" />
 
         <TextView
             android:layout_width="match_parent"

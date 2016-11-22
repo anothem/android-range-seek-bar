@@ -74,6 +74,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
 
     public static final Integer DEFAULT_MINIMUM = 0;
     public static final Integer DEFAULT_MAXIMUM = 100;
+    public static final Integer DEFAULT_STEP = 1;
     public static final int HEIGHT_IN_DP = 30;
     public static final int TEXT_LATERAL_PADDING_IN_DP = 3;
 
@@ -94,9 +95,9 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private float thumbHalfHeight;
 
     private float padding;
-    protected T absoluteMinValue, absoluteMaxValue;
+    protected T absoluteMinValue, absoluteMaxValue, absoluteStepValue;
     protected NumberType numberType;
-    protected double absoluteMinValuePrim, absoluteMaxValuePrim;
+    protected double absoluteMinValuePrim, absoluteMaxValuePrim, absoluteStepValuePrim;
     protected double normalizedMinValue = 0d;
     protected double normalizedMaxValue = 1d;
     protected double minDeltaForDefault = 0;
@@ -197,7 +198,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
             try {
                 setRangeValues(
                         extractNumericValueFromAttributes(a, R.styleable.RangeSeekBar_absoluteMinValue, DEFAULT_MINIMUM),
-                        extractNumericValueFromAttributes(a, R.styleable.RangeSeekBar_absoluteMaxValue, DEFAULT_MAXIMUM)
+                        extractNumericValueFromAttributes(a, R.styleable.RangeSeekBar_absoluteMaxValue, DEFAULT_MAXIMUM),
+                        extractNumericValueFromAttributes(a, R.styleable.RangeSeekBar_step, DEFAULT_STEP)
                 );
                 showTextAboveThumbs = a.getBoolean(R.styleable.RangeSeekBar_valuesAboveThumbs, true);
                 textAboveThumbsColor = a.getColor(R.styleable.RangeSeekBar_textAboveThumbsColor, Color.WHITE);
@@ -282,6 +284,11 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         setValuePrimAndNumberType();
     }
 
+    public void setRangeValues(T minValue, T maxValue, T step) {
+        this.absoluteStepValue = step;
+        setRangeValues(minValue, maxValue);
+    }
+
     public void setTextAboveThumbsColor(int textAboveThumbsColor) {
         this.textAboveThumbsColor = textAboveThumbsColor;
         invalidate();
@@ -296,12 +303,14 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private void setRangeToDefaultValues() {
         this.absoluteMinValue = (T) DEFAULT_MINIMUM;
         this.absoluteMaxValue = (T) DEFAULT_MAXIMUM;
+        this.absoluteStepValue = (T) DEFAULT_STEP;
         setValuePrimAndNumberType();
     }
 
     private void setValuePrimAndNumberType() {
         absoluteMinValuePrim = absoluteMinValue.doubleValue();
         absoluteMaxValuePrim = absoluteMaxValue.doubleValue();
+        absoluteStepValuePrim = absoluteStepValue.doubleValue();
         numberType = NumberType.fromNumber(absoluteMinValue);
     }
 
@@ -343,12 +352,23 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     }
 
     /**
+      * Round off value using the {@link #absoluteStepValue}
+      * @param value to be rounded off
+      * @return rounded off value
+      */
+    @SuppressWarnings("unchecked")
+    private T roundOffValueToStep(T value) {
+        double d = Math.round(value.doubleValue() / absoluteStepValuePrim) * absoluteStepValuePrim;
+        return (T) numberType.toNumber(Math.max(absoluteMinValuePrim, Math.min(absoluteMaxValuePrim, d)));
+    }
+
+    /**
      * Returns the currently selected min value.
      *
      * @return The currently selected min value.
      */
     public T getSelectedMinValue() {
-        return normalizedToValue(normalizedMinValue);
+        return roundOffValueToStep(normalizedToValue(normalizedMinValue));
     }
 
     public boolean isDragging() {
@@ -375,7 +395,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      * @return The currently selected max value.
      */
     public T getSelectedMaxValue() {
-        return normalizedToValue(normalizedMaxValue);
+        return roundOffValueToStep(normalizedToValue(normalizedMaxValue));
     }
 
     /**

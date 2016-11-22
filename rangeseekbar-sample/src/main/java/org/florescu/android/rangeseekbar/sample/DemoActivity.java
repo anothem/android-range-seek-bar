@@ -19,6 +19,7 @@ package org.florescu.android.rangeseekbar.sample;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import org.florescu.android.rangeseekbar.RangeSeekBar;
@@ -34,14 +35,14 @@ public class DemoActivity extends Activity {
         setContentView(R.layout.main);
 
         // Setup the new range seek bar
-        RangeSeekBar<Integer> rangeSeekBar = new RangeSeekBar<Integer>(this);
+        RangeSeekBar<Integer> rangeSeekBar = new RangeSeekBar<>(this);
         // Set the range
         rangeSeekBar.setRangeValues(15, 90);
         rangeSeekBar.setSelectedMinValue(20);
         rangeSeekBar.setSelectedMaxValue(88);
 
         // Add to layout
-        LinearLayout layout = (LinearLayout) findViewById(R.id.seekbar_placeholder);
+        FrameLayout layout = (FrameLayout) findViewById(R.id.seekbar_placeholder);
         layout.addView(rangeSeekBar);
 
         // Seek bar for which we will set text color in code
