@@ -34,8 +34,10 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.MotionEvent;
@@ -47,7 +49,7 @@ import org.florescu.android.util.PixelUtil;
 
 /**
  * Widget that lets users select a minimum and maximum value on a given numerical range.
- * The range value types can be any {@link Number}.<br>
+ * The range value types can be any {@link Number}.<br> // TODO get rid of all number references
  * <br>
  * Improved {@link android.view.MotionEvent} handling for smoother use, anti-aliased painting for improved aesthetics.
  *
@@ -61,21 +63,21 @@ public class RangeSeekBar extends ImageView {
     /**
      * Default color of a {@link RangeSeekBar}, #FF33B5E5. This is also known as "Ice Cream Sandwich" blue.
      */
-    public static final int ACTIVE_COLOR = Color.argb(0xFF, 0x33, 0xB5, 0xE5);
+    private static final int ACTIVE_COLOR = Color.argb(0xFF, 0x33, 0xB5, 0xE5);
     /**
      * An invalid pointer id.
      */
-    public static final int INVALID_POINTER_ID = 255;
+    private static final int INVALID_POINTER_ID = 255;
 
     // Localized constants from MotionEvent for compatibility
     // with API < 8 "Froyo".
-    public static final int ACTION_POINTER_INDEX_MASK = 0x0000ff00, ACTION_POINTER_INDEX_SHIFT = 8;
+    private static final int ACTION_POINTER_INDEX_MASK = 0x0000ff00, ACTION_POINTER_INDEX_SHIFT = 8;
 
-    public static final Integer DEFAULT_MINIMUM = 0;
-    public static final Integer DEFAULT_MAXIMUM = 100;
-    public static final Integer DEFAULT_STEP = 1;
-    public static final int HEIGHT_IN_DP = 30;
-    public static final int TEXT_LATERAL_PADDING_IN_DP = 3;
+    private static final Integer DEFAULT_MINIMUM = 0;
+    private static final Integer DEFAULT_MAXIMUM = 100;
+    private static final Integer DEFAULT_STEP = 1;
+    private static final int HEIGHT_IN_DP = 30;
+    private static final int TEXT_LATERAL_PADDING_IN_DP = 3;
 
     private static final int INITIAL_PADDING_IN_DP = 8;
     private static final int DEFAULT_TEXT_SIZE_IN_DP = 14;
@@ -94,11 +96,11 @@ public class RangeSeekBar extends ImageView {
     private float thumbHalfHeight;
 
     private float padding;
-    protected int absoluteMinValue, absoluteMaxValue, absoluteStepValue;
-    protected double absoluteMinValuePrim, absoluteMaxValuePrim, absoluteStepValuePrim;
-    protected double normalizedMinValue = 0d;
-    protected double normalizedMaxValue = 1d;
-    protected double minDeltaForDefault = 0;
+    private int absoluteMinValue, absoluteMaxValue, absoluteStepValue;
+    private double absoluteMinValuePrim, absoluteMaxValuePrim, absoluteStepValuePrim;
+    private double normalizedMinValue = 0d;
+    private double normalizedMaxValue = 1d;
+    private double minDeltaForDefault = 0;
     private Thumb pressedThumb = null;
     private boolean notifyWhileDragging = false;
     private OnRangeSeekBarChangeListener listener;
@@ -123,6 +125,7 @@ public class RangeSeekBar extends ImageView {
     private float internalPad;
     private int activeColor;
     private int defaultColor;
+    @ColorInt
     private int textAboveThumbsColor;
 
     private boolean thumbShadow;
@@ -287,14 +290,14 @@ public class RangeSeekBar extends ImageView {
         setRangeValues(minValue, maxValue);
     }
 
-    public void setTextAboveThumbsColor(int textAboveThumbsColor) {
+    // TODO should this be just @ColorRes
+    public void setTextAboveThumbsColor(@ColorInt int textAboveThumbsColor) {
         this.textAboveThumbsColor = textAboveThumbsColor;
         invalidate();
     }
 
     public void setTextAboveThumbsColorResource(@ColorRes int resId) {
-        setTextAboveThumbsColor(// TODO looks like you would need contextcompat here
-                getResources().getColor(resId));
+        setTextAboveThumbsColor(ContextCompat.getColor(getContext(), resId));
     }
 
     @SuppressWarnings("unchecked")
@@ -312,7 +315,7 @@ public class RangeSeekBar extends ImageView {
         absoluteStepValuePrim = absoluteStepValue;
     }
 
-    @SuppressWarnings("unused")
+    @SuppressWarnings("unused") // we're a library
     public void resetSelectedValues() {
         setSelectedMinValue(absoluteMinValue);
         setSelectedMaxValue(absoluteMaxValue);
@@ -421,23 +424,10 @@ public class RangeSeekBar extends ImageView {
     }
 
     /**
-     * Set the path that defines the shadow of the thumb. This path should be defined assuming
-     * that the center of the shadow is at the top left corner (0,0) of the canvas. The
-     * {@link #drawThumbShadow(float, Canvas)} method will place the shadow appropriately.
-     *
-     * @param thumbShadowPath The path defining the thumb shadow
-     */
-    @SuppressWarnings("unused")
-    public void setThumbShadowPath(Path thumbShadowPath) {
-        this.thumbShadowPath = thumbShadowPath;
-    }
-
-    /**
      * Handles thumb selection and movement. Notifies listener callback on certain events.
      */
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
-
         if (!isEnabled()) {
             return false;
         }
@@ -570,15 +560,21 @@ public class RangeSeekBar extends ImageView {
     /**
      * This is called when the user has started touching this widget.
      */
-    void onStartTrackingTouch() {
+    private void onStartTrackingTouch() {
         isDragging = true;
+        if (listener != null) {
+            listener.onStartTrackingTouch(this);
+        }
     }
 
     /**
      * This is called when the user either releases his touch or the touch is canceled.
      */
-    void onStopTrackingTouch() {
+    private void onStopTrackingTouch() {
         isDragging = false;
+        if (listener != null) {
+            listener.onStopTrackingTouch(this);
+        }
     }
 
     /**
@@ -697,7 +693,7 @@ public class RangeSeekBar extends ImageView {
     }
 
     // TODO maaaaybe make this private and add formatter?
-    protected String valueToString(int value) {
+    private String valueToString(int value) {
         return String.valueOf(value);
     }
 
@@ -705,6 +701,7 @@ public class RangeSeekBar extends ImageView {
      * Overridden to save instance state when device orientation changes. This method is called automatically if you assign an id to the RangeSeekBar widget using the {@link #setId(int)} method. Other members of this class than the normalized min and max values don't need to be saved.
      */
     @Override
+    // TODO test these
     protected Parcelable onSaveInstanceState() {
         final Bundle bundle = new Bundle();
         bundle.putParcelable("SUPER", super.onSaveInstanceState());
@@ -813,7 +810,7 @@ public class RangeSeekBar extends ImageView {
      * Converts a normalized value to a Number object in the value space between absolute minimum and maximum.
      */
     @SuppressWarnings("unchecked")
-    protected int normalizedToValue(double normalized) {
+    private int normalizedToValue(double normalized) {
         double v = absoluteMinValuePrim + normalized * (absoluteMaxValuePrim - absoluteMinValuePrim);
         // TODO parameterize this rounding to allow variable decimal points
         return (int) (Math.round(v * 100) / 100d);
@@ -825,7 +822,7 @@ public class RangeSeekBar extends ImageView {
      * @param value The Number value to normalize.
      * @return The normalized double.
      */
-    protected double valueToNormalized(int value) {
+    private double valueToNormalized(int value) {
         if (0 == absoluteMaxValuePrim - absoluteMinValuePrim) {
             // prevent division by zero, simply return 0.
             return 0d;
@@ -870,11 +867,34 @@ public class RangeSeekBar extends ImageView {
     /**
      * Callback listener interface to notify about changed range values.
      */
+    // TODO should we add fromUser
     public interface OnRangeSeekBarChangeListener {
 
-        void onRangeSeekBarValuesChanged(RangeSeekBar bar, int selectedMinValue, int selectedMaxValue);
+        /**
+         * Notification that the progress level has changed. Clients can use the fromUser parameter
+         * to distinguish user-initiated changes from those that occurred programmatically.
+         *
+         * @param rangeSeekBar     The RangeSeekBar whose progress has changed
+         * @param selectedMinValue The current value selected by the left/minimum thumb.
+         * @param selectedMaxValue The current value selected by the right/maximum thumb.
+         */
+        void onRangeSeekBarValuesChanged(RangeSeekBar rangeSeekBar, int selectedMinValue, int selectedMaxValue);
 
-        // TODO add onStartTrackingTouch and onStopTrackingTouch
+        /**
+         * Notification that the user has started a touch gesture. Clients may want to use this
+         * to disable advancing the seekbar.
+         *
+         * @param rangeSeekBar The RangeSeekBar in which the touch gesture began
+         */
+        void onStartTrackingTouch(RangeSeekBar rangeSeekBar);
+
+        /**
+         * Notification that the user has finished a touch gesture. Clients may want to use this
+         * to re-enable advancing the seekbar.
+         *
+         * @param rangeSeekBar The RangeSeekBar in which the touch gesture began
+         */
+        void onStopTrackingTouch(RangeSeekBar rangeSeekBar);
     }
 
 }
