@@ -20,7 +20,6 @@ package org.florescu.android.rangeseekbar.sample;
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
 import org.florescu.android.rangeseekbar.RangeSeekBar;
 
@@ -35,7 +34,7 @@ public class DemoActivity extends Activity {
         setContentView(R.layout.main);
 
         // Setup the new range seek bar
-        RangeSeekBar<Integer> rangeSeekBar = new RangeSeekBar<>(this);
+        RangeSeekBar rangeSeekBar = new RangeSeekBar(this);
         // Set the range
         rangeSeekBar.setRangeValues(15, 90);
         rangeSeekBar.setSelectedMinValue(20);

@@ -17,6 +17,7 @@ limitations under the License.
 
 package org.florescu.android.rangeseekbar;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -30,6 +31,7 @@ import android.graphics.Paint.Style;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.ColorRes;
@@ -43,22 +45,19 @@ import android.widget.ImageView;
 import org.florescu.android.util.BitmapUtil;
 import org.florescu.android.util.PixelUtil;
 
-import java.math.BigDecimal;
-
 /**
  * Widget that lets users select a minimum and maximum value on a given numerical range.
- * The range value types can be one of Long, Double, Integer, Float, Short, Byte or BigDecimal.<br>
+ * The range value types can be any {@link Number}.<br>
  * <br>
  * Improved {@link android.view.MotionEvent} handling for smoother use, anti-aliased painting for improved aesthetics.
  *
- * @param <T> The Number type of the range values. One of Long, Double, Integer, Float, Short, Byte or BigDecimal.
  * @author Stephan Tittel (stephan.tittel@kom.tu-darmstadt.de)
  * @author Peter Sinnott (psinnott@gmail.com)
  * @author Thomas Barrasso (tbarrasso@sevenplusandroid.org)
  * @author Alex Florescu (alex@florescu.org)
  * @author Michael Keppler (bananeweizen@gmx.de)
  */
-public class RangeSeekBar<T extends Number> extends ImageView {
+public class RangeSeekBar extends ImageView {
     /**
      * Default color of a {@link RangeSeekBar}, #FF33B5E5. This is also known as "Ice Cream Sandwich" blue.
      */
@@ -95,15 +94,14 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private float thumbHalfHeight;
 
     private float padding;
-    protected T absoluteMinValue, absoluteMaxValue, absoluteStepValue;
-    protected NumberType numberType;
+    protected int absoluteMinValue, absoluteMaxValue, absoluteStepValue;
     protected double absoluteMinValuePrim, absoluteMaxValuePrim, absoluteStepValuePrim;
     protected double normalizedMinValue = 0d;
     protected double normalizedMaxValue = 1d;
     protected double minDeltaForDefault = 0;
     private Thumb pressedThumb = null;
     private boolean notifyWhileDragging = false;
-    private OnRangeSeekBarChangeListener<T> listener;
+    private OnRangeSeekBarChangeListener listener;
 
     private float downMotionX;
 
@@ -153,19 +151,19 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         init(context, attrs);
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public RangeSeekBar(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+        init(context, attrs);
+    }
+
     @SuppressWarnings("unchecked")
-    private T extractNumericValueFromAttributes(TypedArray a, int attribute, int defaultValue) {
+    private int extractNumericValueFromAttributes(TypedArray a, int attribute, int defaultValue) {
         TypedValue tv = a.peekValue(attribute);
         if (tv == null) {
-            return (T) Integer.valueOf(defaultValue);
+            return defaultValue;
         }
-
-        int type = tv.type;
-        if (type == TypedValue.TYPE_FLOAT) {
-            return (T) Float.valueOf(a.getFloat(attribute, defaultValue));
-        } else {
-            return (T) Integer.valueOf(a.getInteger(attribute, defaultValue));
-        }
+        return a.getInteger(attribute, defaultValue);
     }
 
     private void init(Context context, AttributeSet attrs) {
@@ -278,13 +276,13 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         }
     }
 
-    public void setRangeValues(T minValue, T maxValue) {
+    public void setRangeValues(int minValue, int maxValue) {
         this.absoluteMinValue = minValue;
         this.absoluteMaxValue = maxValue;
         setValuePrimAndNumberType();
     }
 
-    public void setRangeValues(T minValue, T maxValue, T step) {
+    public void setRangeValues(int minValue, int maxValue, int step) {
         this.absoluteStepValue = step;
         setRangeValues(minValue, maxValue);
     }
@@ -295,23 +293,23 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     }
 
     public void setTextAboveThumbsColorResource(@ColorRes int resId) {
-        setTextAboveThumbsColor(getResources().getColor(resId));
+        setTextAboveThumbsColor(// TODO looks like you would need contextcompat here
+                getResources().getColor(resId));
     }
 
     @SuppressWarnings("unchecked")
     // only used to set default values when initialised from XML without any values specified
     private void setRangeToDefaultValues() {
-        this.absoluteMinValue = (T) DEFAULT_MINIMUM;
-        this.absoluteMaxValue = (T) DEFAULT_MAXIMUM;
-        this.absoluteStepValue = (T) DEFAULT_STEP;
+        this.absoluteMinValue = DEFAULT_MINIMUM;
+        this.absoluteMaxValue = DEFAULT_MAXIMUM;
+        this.absoluteStepValue = DEFAULT_STEP;
         setValuePrimAndNumberType();
     }
 
     private void setValuePrimAndNumberType() {
-        absoluteMinValuePrim = absoluteMinValue.doubleValue();
-        absoluteMaxValuePrim = absoluteMaxValue.doubleValue();
-        absoluteStepValuePrim = absoluteStepValue.doubleValue();
-        numberType = NumberType.fromNumber(absoluteMinValue);
+        absoluteMinValuePrim = absoluteMinValue;
+        absoluteMaxValuePrim = absoluteMaxValue;
+        absoluteStepValuePrim = absoluteStepValue;
     }
 
     @SuppressWarnings("unused")
@@ -338,7 +336,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      *
      * @return The absolute minimum value of the range.
      */
-    public T getAbsoluteMinValue() {
+    public int getAbsoluteMinValue() {
         return absoluteMinValue;
     }
 
@@ -347,7 +345,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      *
      * @return The absolute maximum value of the range.
      */
-    public T getAbsoluteMaxValue() {
+    public int getAbsoluteMaxValue() {
         return absoluteMaxValue;
     }
 
@@ -357,9 +355,9 @@ public class RangeSeekBar<T extends Number> extends ImageView {
       * @return rounded off value
       */
     @SuppressWarnings("unchecked")
-    private T roundOffValueToStep(T value) {
-        double d = Math.round(value.doubleValue() / absoluteStepValuePrim) * absoluteStepValuePrim;
-        return (T) numberType.toNumber(Math.max(absoluteMinValuePrim, Math.min(absoluteMaxValuePrim, d)));
+    private int roundOffValueToStep(int value) {
+        double d = Math.round(value / absoluteStepValuePrim) * absoluteStepValuePrim;
+        return (int) Math.max(absoluteMinValuePrim, Math.min(absoluteMaxValuePrim, d));
     }
 
     /**
@@ -367,7 +365,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      *
      * @return The currently selected min value.
      */
-    public T getSelectedMinValue() {
+    public int getSelectedMinValue() {
         return roundOffValueToStep(normalizedToValue(normalizedMinValue));
     }
 
@@ -380,7 +378,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      *
      * @param value The Number value to set the minimum value to. Will be clamped to given absolute minimum/maximum range.
      */
-    public void setSelectedMinValue(T value) {
+    public void setSelectedMinValue(int value) {
         // in case absoluteMinValue == absoluteMaxValue, avoid division by zero when normalizing.
         if (0 == (absoluteMaxValuePrim - absoluteMinValuePrim)) {
             setNormalizedMinValue(0d);
@@ -394,7 +392,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      *
      * @return The currently selected max value.
      */
-    public T getSelectedMaxValue() {
+    public int getSelectedMaxValue() {
         return roundOffValueToStep(normalizedToValue(normalizedMaxValue));
     }
 
@@ -403,7 +401,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      *
      * @param value The Number value to set the maximum value to. Will be clamped to given absolute minimum/maximum range.
      */
-    public void setSelectedMaxValue(T value) {
+    public void setSelectedMaxValue(int value) {
         // in case absoluteMinValue == absoluteMaxValue, avoid division by zero when normalizing.
         if (0 == (absoluteMaxValuePrim - absoluteMinValuePrim)) {
             setNormalizedMaxValue(1d);
@@ -418,7 +416,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      * @param listener The listener to notify about changed selected values.
      */
     @SuppressWarnings("unused")
-    public void setOnRangeSeekBarChangeListener(OnRangeSeekBarChangeListener<T> listener) {
+    public void setOnRangeSeekBarChangeListener(OnRangeSeekBarChangeListener listener) {
         this.listener = listener;
     }
 
@@ -698,7 +696,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
 
     }
 
-    protected String valueToString(T value) {
+    // TODO maaaaybe make this private and add formatter?
+    protected String valueToString(int value) {
         return String.valueOf(value);
     }
 
@@ -814,10 +813,10 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      * Converts a normalized value to a Number object in the value space between absolute minimum and maximum.
      */
     @SuppressWarnings("unchecked")
-    protected T normalizedToValue(double normalized) {
+    protected int normalizedToValue(double normalized) {
         double v = absoluteMinValuePrim + normalized * (absoluteMaxValuePrim - absoluteMinValuePrim);
         // TODO parameterize this rounding to allow variable decimal points
-        return (T) numberType.toNumber(Math.round(v * 100) / 100d);
+        return (int) (Math.round(v * 100) / 100d);
     }
 
     /**
@@ -826,12 +825,12 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      * @param value The Number value to normalize.
      * @return The normalized double.
      */
-    protected double valueToNormalized(T value) {
+    protected double valueToNormalized(int value) {
         if (0 == absoluteMaxValuePrim - absoluteMinValuePrim) {
             // prevent division by zero, simply return 0.
             return 0d;
         }
-        return (value.doubleValue() - absoluteMinValuePrim) / (absoluteMaxValuePrim - absoluteMinValuePrim);
+        return (value - absoluteMinValuePrim) / (absoluteMaxValuePrim - absoluteMinValuePrim);
     }
 
     /**
@@ -869,68 +868,13 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     }
 
     /**
-     * Utility enumeration used to convert between Numbers and doubles.
-     *
-     * @author Stephan Tittel (stephan.tittel@kom.tu-darmstadt.de)
-     */
-    protected enum NumberType {
-        LONG, DOUBLE, INTEGER, FLOAT, SHORT, BYTE, BIG_DECIMAL;
-
-        public static <E extends Number> NumberType fromNumber(E value) throws IllegalArgumentException {
-            if (value instanceof Long) {
-                return LONG;
-            }
-            if (value instanceof Double) {
-                return DOUBLE;
-            }
-            if (value instanceof Integer) {
-                return INTEGER;
-            }
-            if (value instanceof Float) {
-                return FLOAT;
-            }
-            if (value instanceof Short) {
-                return SHORT;
-            }
-            if (value instanceof Byte) {
-                return BYTE;
-            }
-            if (value instanceof BigDecimal) {
-                return BIG_DECIMAL;
-            }
-            throw new IllegalArgumentException("Number class '" + value.getClass().getName() + "' is not supported");
-        }
-
-        public Number toNumber(double value) {
-            switch (this) {
-                case LONG:
-                    return (long) value;
-                case DOUBLE:
-                    return value;
-                case INTEGER:
-                    return (int) value;
-                case FLOAT:
-                    return (float) value;
-                case SHORT:
-                    return (short) value;
-                case BYTE:
-                    return (byte) value;
-                case BIG_DECIMAL:
-                    return BigDecimal.valueOf(value);
-            }
-            throw new InstantiationError("can't convert " + this + " to a Number object");
-        }
-    }
-
-    /**
      * Callback listener interface to notify about changed range values.
-     *
-     * @param <T> The Number type the RangeSeekBar has been declared with.
-     * @author Stephan Tittel (stephan.tittel@kom.tu-darmstadt.de)
      */
-    public interface OnRangeSeekBarChangeListener<T extends Number> {
+    public interface OnRangeSeekBarChangeListener {
 
-        void onRangeSeekBarValuesChanged(RangeSeekBar<T> bar, T minValue, T maxValue);
+        void onRangeSeekBarValuesChanged(RangeSeekBar bar, int selectedMinValue, int selectedMaxValue);
+
+        // TODO add onStartTrackingTouch and onStopTrackingTouch
     }
 
 }

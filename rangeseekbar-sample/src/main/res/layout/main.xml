@@ -8,6 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:background="#263238"
         android:padding="8dp">
 
         <TextView
@@ -55,17 +56,18 @@
             rsb:absoluteMinValue="20"
             rsb:step="10" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Range seek bar from xml with ranges set and double values"/>
+        <!--TODO show an example what this would look like-->
+        <!--<TextView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Range seek bar from xml with ranges set and double values"/>-->
 
 
-        <org.florescu.android.rangeseekbar.RangeSeekBar
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            rsb:absoluteMaxValue="140.54"
-            rsb:absoluteMinValue="15.23"/>
+        <!--<org.florescu.android.rangeseekbar.RangeSeekBar-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--rsb:absoluteMaxValue="140.54"-->
+        <!--rsb:absoluteMinValue="15.23"/>-->
 
         <TextView
             android:layout_width="match_parent"
