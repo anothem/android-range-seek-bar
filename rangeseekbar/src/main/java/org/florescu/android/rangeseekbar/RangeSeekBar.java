@@ -37,6 +37,7 @@ import android.os.Parcelable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -103,7 +104,11 @@ public class RangeSeekBar extends ImageView {
     private double minDeltaForDefault = 0;
     private Thumb pressedThumb = null;
     private boolean notifyWhileDragging = false;
+    @Nullable
     private OnRangeSeekBarChangeListener listener;
+    @Nullable
+    private TextFormatter textFormatter;
+
 
     private float downMotionX;
 
@@ -692,9 +697,17 @@ public class RangeSeekBar extends ImageView {
 
     }
 
-    // TODO maaaaybe make this private and add formatter?
+
+    @SuppressWarnings("unused")
+    public void setTextFormatter(@NonNull TextFormatter textFormatter) {
+        this.textFormatter = textFormatter;
+    }
+
     private String valueToString(int value) {
-        return String.valueOf(value);
+        if (textFormatter == null) {
+            return String.valueOf(value);
+        }
+        return textFormatter.formatValue(value);
     }
 
     /**
@@ -895,6 +908,35 @@ public class RangeSeekBar extends ImageView {
          * @param rangeSeekBar The RangeSeekBar in which the touch gesture began
          */
         void onStopTrackingTouch(RangeSeekBar rangeSeekBar);
+    }
+
+    /**
+     * An utility interface allowing clients to format the text shown by the bar in any way they want.
+     */
+    public interface TextFormatter {
+        String formatValue(int value);
+    }
+
+    /**
+     * A helper abstract class so that clients can implement only the listener methods they care about
+     * from {@link OnRangeSeekBarChangeListener}
+     */
+    public abstract class SimpleRangeSeekBarChangeListener implements OnRangeSeekBarChangeListener {
+
+        @Override
+        public void onRangeSeekBarValuesChanged(RangeSeekBar rangeSeekBar, int selectedMinValue, int selectedMaxValue) {
+
+        }
+
+        @Override
+        public void onStartTrackingTouch(RangeSeekBar rangeSeekBar) {
+
+        }
+
+        @Override
+        public void onStopTrackingTouch(RangeSeekBar rangeSeekBar) {
+
+        }
     }
 
 }

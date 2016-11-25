@@ -39,6 +39,12 @@ public class DemoActivity extends Activity {
         rangeSeekBar.setRangeValues(15, 90);
         rangeSeekBar.setSelectedMinValue(20);
         rangeSeekBar.setSelectedMaxValue(88);
+        rangeSeekBar.setTextFormatter(new RangeSeekBar.TextFormatter() {
+            @Override
+            public String formatValue(int value) {
+                return value + " kittens";
+            }
+        });
 
         // Add to layout
         FrameLayout layout = (FrameLayout) findViewById(R.id.seekbar_placeholder);
