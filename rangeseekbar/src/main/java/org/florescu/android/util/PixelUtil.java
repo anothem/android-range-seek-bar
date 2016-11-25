@@ -23,19 +23,14 @@ import android.util.DisplayMetrics;
 /**
  * Util class for converting between dp, px and other magical pixel units
  */
-public class PixelUtil {
+public final class PixelUtil {
 
     private PixelUtil() {
+        throw new AssertionError("Don't instantiate me");
     }
 
     public static int dpToPx(Context context, int dp) {
-        int px = Math.round(dp * getPixelScaleFactor(context));
-        return px;
-    }
-
-    public static int pxToDp(Context context, int px) {
-        int dp = Math.round(px / getPixelScaleFactor(context));
-        return dp;
+        return Math.round(dp * getPixelScaleFactor(context));
     }
 
     private static float getPixelScaleFactor(Context context) {
