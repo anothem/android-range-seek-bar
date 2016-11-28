@@ -178,6 +178,21 @@
             rsb:thumbShadowYOffset="2dp"
             />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:text="Range seek bar currency format"
+            />
+
+        <org.florescu.android.rangeseekbar.RangeSeekBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            rsb:absoluteMaxValue="150"
+            rsb:absoluteMinValue="20"
+            rsb:numberFormat="currency"
+            />
+
 
     </LinearLayout>
 
