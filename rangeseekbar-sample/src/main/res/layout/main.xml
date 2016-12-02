@@ -8,6 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+
         android:padding="8dp">
 
         <TextView
@@ -27,6 +28,7 @@
             android:text="Range seek bar from xml with default range"/>
 
         <org.florescu.android.rangeseekbar.RangeSeekBar
+            android:id="@+id/rsb_default_range"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
@@ -37,6 +39,7 @@
 
 
         <org.florescu.android.rangeseekbar.RangeSeekBar
+            android:id="@+id/rsb_set_range"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             rsb:absoluteMaxValue="150"
@@ -49,23 +52,24 @@
 
 
         <org.florescu.android.rangeseekbar.RangeSeekBar
+            android:id="@+id/rsb_range_step"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             rsb:absoluteMaxValue="150"
             rsb:absoluteMinValue="20"
             rsb:step="10" />
 
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Range seek bar from xml with ranges set and double values"/>
+            android:text="Range seek bar with double values" />
 
 
         <org.florescu.android.rangeseekbar.RangeSeekBar
+            android:id="@+id/rsb_double_values"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            rsb:absoluteMaxValue="140.54"
-            rsb:absoluteMinValue="15.23"/>
+            android:layout_height="wrap_content" />
 
         <TextView
             android:layout_width="match_parent"
@@ -74,6 +78,7 @@
 
 
         <org.florescu.android.rangeseekbar.RangeSeekBar
+            android:id="@+id/rsb_single_thumb"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             rsb:absoluteMaxValue="150"
@@ -86,6 +91,7 @@
             android:text="Range seek bar from xml with custom color to text above thumbs "/>
 
         <org.florescu.android.rangeseekbar.RangeSeekBar
+            android:id="@+id/rsb_custom_color"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             rsb:absoluteMaxValue="150"
@@ -113,6 +119,7 @@
 
 
         <org.florescu.android.rangeseekbar.RangeSeekBar
+            android:id="@+id/rsb_custom_handle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             rsb:absoluteMaxValue="150"
@@ -130,6 +137,7 @@
 
 
         <org.florescu.android.rangeseekbar.RangeSeekBar
+            android:id="@+id/rsb_no_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             rsb:absoluteMaxValue="150"
@@ -145,6 +153,7 @@
             />
 
         <org.florescu.android.rangeseekbar.RangeSeekBar
+            android:id="@+id/rsb_shadow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             rsb:absoluteMaxValue="150"
@@ -163,6 +172,7 @@
             />
 
         <org.florescu.android.rangeseekbar.RangeSeekBar
+            android:id="@+id/rsb_custom_shadow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             rsb:absoluteMaxValue="150"

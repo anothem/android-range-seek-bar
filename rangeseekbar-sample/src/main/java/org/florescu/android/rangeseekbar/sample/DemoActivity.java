@@ -20,7 +20,6 @@ package org.florescu.android.rangeseekbar.sample;
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
 import org.florescu.android.rangeseekbar.RangeSeekBar;
 
@@ -35,11 +34,17 @@ public class DemoActivity extends Activity {
         setContentView(R.layout.main);
 
         // Setup the new range seek bar
-        RangeSeekBar<Integer> rangeSeekBar = new RangeSeekBar<>(this);
+        RangeSeekBar rangeSeekBar = new RangeSeekBar(this);
         // Set the range
         rangeSeekBar.setRangeValues(15, 90);
         rangeSeekBar.setSelectedMinValue(20);
         rangeSeekBar.setSelectedMaxValue(88);
+        rangeSeekBar.setTextFormatter(new RangeSeekBar.TextFormatter() {
+            @Override
+            public String formatValue(int value) {
+                return value + " kittens";
+            }
+        });
 
         // Add to layout
         FrameLayout layout = (FrameLayout) findViewById(R.id.seekbar_placeholder);
@@ -48,5 +53,15 @@ public class DemoActivity extends Activity {
         // Seek bar for which we will set text color in code
         RangeSeekBar rangeSeekBarTextColorWithCode = (RangeSeekBar) findViewById(R.id.rangeSeekBarTextColorWithCode);
         rangeSeekBarTextColorWithCode.setTextAboveThumbsColorResource(android.R.color.holo_blue_bright);
+
+        // Seekbar with double values
+        RangeSeekBar rsbDoubles = (RangeSeekBar) findViewById(R.id.rsb_double_values);
+        rsbDoubles.setRangeValues(1523, 14835);
+        rsbDoubles.setTextFormatter(new RangeSeekBar.TextFormatter() {
+            @Override
+            public String formatValue(int value) {
+                return "£" + value / 100d;
+            }
+        });
     }
 }

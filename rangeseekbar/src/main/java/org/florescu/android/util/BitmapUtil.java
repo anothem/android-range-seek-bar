@@ -5,7 +5,12 @@ import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
-public class BitmapUtil {
+public final class BitmapUtil {
+
+    private BitmapUtil() {
+        throw new AssertionError("Don't instantiate me");
+    }
+
     public static Bitmap drawableToBitmap(Drawable drawable) {
         if (drawable instanceof BitmapDrawable) {
             return ((BitmapDrawable) drawable).getBitmap();

@@ -17,6 +17,7 @@ limitations under the License.
 
 package org.florescu.android.rangeseekbar;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -30,10 +31,14 @@ import android.graphics.Paint.Style;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.MotionEvent;
@@ -43,40 +48,36 @@ import android.widget.ImageView;
 import org.florescu.android.util.BitmapUtil;
 import org.florescu.android.util.PixelUtil;
 
-import java.math.BigDecimal;
-
 /**
  * Widget that lets users select a minimum and maximum value on a given numerical range.
- * The range value types can be one of Long, Double, Integer, Float, Short, Byte or BigDecimal.<br>
  * <br>
  * Improved {@link android.view.MotionEvent} handling for smoother use, anti-aliased painting for improved aesthetics.
  *
- * @param <T> The Number type of the range values. One of Long, Double, Integer, Float, Short, Byte or BigDecimal.
  * @author Stephan Tittel (stephan.tittel@kom.tu-darmstadt.de)
  * @author Peter Sinnott (psinnott@gmail.com)
  * @author Thomas Barrasso (tbarrasso@sevenplusandroid.org)
  * @author Alex Florescu (alex@florescu.org)
  * @author Michael Keppler (bananeweizen@gmx.de)
  */
-public class RangeSeekBar<T extends Number> extends ImageView {
+public class RangeSeekBar extends ImageView {
     /**
      * Default color of a {@link RangeSeekBar}, #FF33B5E5. This is also known as "Ice Cream Sandwich" blue.
      */
-    public static final int ACTIVE_COLOR = Color.argb(0xFF, 0x33, 0xB5, 0xE5);
+    private static final int ACTIVE_COLOR = Color.argb(0xFF, 0x33, 0xB5, 0xE5);
     /**
      * An invalid pointer id.
      */
-    public static final int INVALID_POINTER_ID = 255;
+    private static final int INVALID_POINTER_ID = 255;
 
     // Localized constants from MotionEvent for compatibility
     // with API < 8 "Froyo".
-    public static final int ACTION_POINTER_INDEX_MASK = 0x0000ff00, ACTION_POINTER_INDEX_SHIFT = 8;
+    private static final int ACTION_POINTER_INDEX_MASK = 0x0000ff00, ACTION_POINTER_INDEX_SHIFT = 8;
 
-    public static final Integer DEFAULT_MINIMUM = 0;
-    public static final Integer DEFAULT_MAXIMUM = 100;
-    public static final Integer DEFAULT_STEP = 1;
-    public static final int HEIGHT_IN_DP = 30;
-    public static final int TEXT_LATERAL_PADDING_IN_DP = 3;
+    private static final Integer DEFAULT_MINIMUM = 0;
+    private static final Integer DEFAULT_MAXIMUM = 100;
+    private static final Integer DEFAULT_STEP = 1;
+    private static final int HEIGHT_IN_DP = 30;
+    private static final int TEXT_LATERAL_PADDING_IN_DP = 3;
 
     private static final int INITIAL_PADDING_IN_DP = 8;
     private static final int DEFAULT_TEXT_SIZE_IN_DP = 14;
@@ -95,15 +96,18 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private float thumbHalfHeight;
 
     private float padding;
-    protected T absoluteMinValue, absoluteMaxValue, absoluteStepValue;
-    protected NumberType numberType;
-    protected double absoluteMinValuePrim, absoluteMaxValuePrim, absoluteStepValuePrim;
-    protected double normalizedMinValue = 0d;
-    protected double normalizedMaxValue = 1d;
-    protected double minDeltaForDefault = 0;
+    private int absoluteMinValue, absoluteMaxValue, absoluteStepValue;
+    private double absoluteMinValuePrim, absoluteMaxValuePrim, absoluteStepValuePrim;
+    private double normalizedMinValue = 0d;
+    private double normalizedMaxValue = 1d;
+    private double minDeltaForDefault = 0;
     private Thumb pressedThumb = null;
     private boolean notifyWhileDragging = false;
-    private OnRangeSeekBarChangeListener<T> listener;
+    @Nullable
+    private OnRangeSeekBarChangeListener listener;
+    @Nullable
+    private TextFormatter textFormatter;
+
 
     private float downMotionX;
 
@@ -125,6 +129,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private float internalPad;
     private int activeColor;
     private int defaultColor;
+    @ColorInt
     private int textAboveThumbsColor;
 
     private boolean thumbShadow;
@@ -153,19 +158,18 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         init(context, attrs);
     }
 
-    @SuppressWarnings("unchecked")
-    private T extractNumericValueFromAttributes(TypedArray a, int attribute, int defaultValue) {
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public RangeSeekBar(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+        init(context, attrs);
+    }
+
+    private int extractNumericValueFromAttributes(TypedArray a, int attribute, int defaultValue) {
         TypedValue tv = a.peekValue(attribute);
         if (tv == null) {
-            return (T) Integer.valueOf(defaultValue);
+            return defaultValue;
         }
-
-        int type = tv.type;
-        if (type == TypedValue.TYPE_FLOAT) {
-            return (T) Float.valueOf(a.getFloat(attribute, defaultValue));
-        } else {
-            return (T) Integer.valueOf(a.getInteger(attribute, defaultValue));
-        }
+        return a.getInteger(attribute, defaultValue);
     }
 
     private void init(Context context, AttributeSet attrs) {
@@ -248,7 +252,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         thumbHalfWidth = 0.5f * thumbImage.getWidth();
         thumbHalfHeight = 0.5f * thumbImage.getHeight();
 
-        setValuePrimAndNumberType();
+        setValuePrim();
 
         textSize = PixelUtil.dpToPx(context, DEFAULT_TEXT_SIZE_IN_DP);
         distanceToTop = PixelUtil.dpToPx(context, DEFAULT_TEXT_DISTANCE_TO_TOP_IN_DP);
@@ -278,43 +282,37 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         }
     }
 
-    public void setRangeValues(T minValue, T maxValue) {
+    public void setRangeValues(int minValue, int maxValue) {
         this.absoluteMinValue = minValue;
         this.absoluteMaxValue = maxValue;
-        setValuePrimAndNumberType();
+        setValuePrim();
     }
 
-    public void setRangeValues(T minValue, T maxValue, T step) {
+    public void setRangeValues(int minValue, int maxValue, int step) {
         this.absoluteStepValue = step;
         setRangeValues(minValue, maxValue);
     }
 
-    public void setTextAboveThumbsColor(int textAboveThumbsColor) {
-        this.textAboveThumbsColor = textAboveThumbsColor;
+    public void setTextAboveThumbsColorResource(@ColorRes int resId) {
+        this.textAboveThumbsColor = ContextCompat.getColor(getContext(), resId);
         invalidate();
     }
 
-    public void setTextAboveThumbsColorResource(@ColorRes int resId) {
-        setTextAboveThumbsColor(getResources().getColor(resId));
-    }
-
-    @SuppressWarnings("unchecked")
     // only used to set default values when initialised from XML without any values specified
     private void setRangeToDefaultValues() {
-        this.absoluteMinValue = (T) DEFAULT_MINIMUM;
-        this.absoluteMaxValue = (T) DEFAULT_MAXIMUM;
-        this.absoluteStepValue = (T) DEFAULT_STEP;
-        setValuePrimAndNumberType();
+        this.absoluteMinValue = DEFAULT_MINIMUM;
+        this.absoluteMaxValue = DEFAULT_MAXIMUM;
+        this.absoluteStepValue = DEFAULT_STEP;
+        setValuePrim();
     }
 
-    private void setValuePrimAndNumberType() {
-        absoluteMinValuePrim = absoluteMinValue.doubleValue();
-        absoluteMaxValuePrim = absoluteMaxValue.doubleValue();
-        absoluteStepValuePrim = absoluteStepValue.doubleValue();
-        numberType = NumberType.fromNumber(absoluteMinValue);
+    private void setValuePrim() {
+        absoluteMinValuePrim = absoluteMinValue;
+        absoluteMaxValuePrim = absoluteMaxValue;
+        absoluteStepValuePrim = absoluteStepValue;
     }
 
-    @SuppressWarnings("unused")
+    @SuppressWarnings("unused") // we're a library
     public void resetSelectedValues() {
         setSelectedMinValue(absoluteMinValue);
         setSelectedMaxValue(absoluteMaxValue);
@@ -338,7 +336,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      *
      * @return The absolute minimum value of the range.
      */
-    public T getAbsoluteMinValue() {
+    public int getAbsoluteMinValue() {
         return absoluteMinValue;
     }
 
@@ -347,7 +345,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      *
      * @return The absolute maximum value of the range.
      */
-    public T getAbsoluteMaxValue() {
+    public int getAbsoluteMaxValue() {
         return absoluteMaxValue;
     }
 
@@ -357,9 +355,9 @@ public class RangeSeekBar<T extends Number> extends ImageView {
       * @return rounded off value
       */
     @SuppressWarnings("unchecked")
-    private T roundOffValueToStep(T value) {
-        double d = Math.round(value.doubleValue() / absoluteStepValuePrim) * absoluteStepValuePrim;
-        return (T) numberType.toNumber(Math.max(absoluteMinValuePrim, Math.min(absoluteMaxValuePrim, d)));
+    private int roundOffValueToStep(int value) {
+        double d = Math.round(value / absoluteStepValuePrim) * absoluteStepValuePrim;
+        return (int) Math.max(absoluteMinValuePrim, Math.min(absoluteMaxValuePrim, d));
     }
 
     /**
@@ -367,7 +365,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      *
      * @return The currently selected min value.
      */
-    public T getSelectedMinValue() {
+    public int getSelectedMinValue() {
         return roundOffValueToStep(normalizedToValue(normalizedMinValue));
     }
 
@@ -378,9 +376,9 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     /**
      * Sets the currently selected minimum value. The widget will be invalidated and redrawn.
      *
-     * @param value The Number value to set the minimum value to. Will be clamped to given absolute minimum/maximum range.
+     * @param value The value to set the minimum value to. Will be clamped to given absolute minimum/maximum range.
      */
-    public void setSelectedMinValue(T value) {
+    public void setSelectedMinValue(int value) {
         // in case absoluteMinValue == absoluteMaxValue, avoid division by zero when normalizing.
         if (0 == (absoluteMaxValuePrim - absoluteMinValuePrim)) {
             setNormalizedMinValue(0d);
@@ -394,16 +392,16 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      *
      * @return The currently selected max value.
      */
-    public T getSelectedMaxValue() {
+    public int getSelectedMaxValue() {
         return roundOffValueToStep(normalizedToValue(normalizedMaxValue));
     }
 
     /**
      * Sets the currently selected maximum value. The widget will be invalidated and redrawn.
      *
-     * @param value The Number value to set the maximum value to. Will be clamped to given absolute minimum/maximum range.
+     * @param value The value to set the maximum value to. Will be clamped to given absolute minimum/maximum range.
      */
-    public void setSelectedMaxValue(T value) {
+    public void setSelectedMaxValue(int value) {
         // in case absoluteMinValue == absoluteMaxValue, avoid division by zero when normalizing.
         if (0 == (absoluteMaxValuePrim - absoluteMinValuePrim)) {
             setNormalizedMaxValue(1d);
@@ -418,20 +416,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      * @param listener The listener to notify about changed selected values.
      */
     @SuppressWarnings("unused")
-    public void setOnRangeSeekBarChangeListener(OnRangeSeekBarChangeListener<T> listener) {
+    public void setOnRangeSeekBarChangeListener(OnRangeSeekBarChangeListener listener) {
         this.listener = listener;
-    }
-
-    /**
-     * Set the path that defines the shadow of the thumb. This path should be defined assuming
-     * that the center of the shadow is at the top left corner (0,0) of the canvas. The
-     * {@link #drawThumbShadow(float, Canvas)} method will place the shadow appropriately.
-     *
-     * @param thumbShadowPath The path defining the thumb shadow
-     */
-    @SuppressWarnings("unused")
-    public void setThumbShadowPath(Path thumbShadowPath) {
-        this.thumbShadowPath = thumbShadowPath;
     }
 
     /**
@@ -439,7 +425,6 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      */
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
-
         if (!isEnabled()) {
             return false;
         }
@@ -542,7 +527,6 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         if (pointerId == activePointerId) {
             // This was our active pointer going up. Choose
             // a new active pointer and adjust accordingly.
-            // TODO: Make this decision more intelligent.
             final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
             downMotionX = ev.getX(newPointerIndex);
             activePointerId = ev.getPointerId(newPointerIndex);
@@ -572,15 +556,21 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     /**
      * This is called when the user has started touching this widget.
      */
-    void onStartTrackingTouch() {
+    private void onStartTrackingTouch() {
         isDragging = true;
+        if (listener != null) {
+            listener.onStartTrackingTouch(this);
+        }
     }
 
     /**
      * This is called when the user either releases his touch or the touch is canceled.
      */
-    void onStopTrackingTouch() {
+    private void onStopTrackingTouch() {
         isDragging = false;
+        if (listener != null) {
+            listener.onStopTrackingTouch(this);
+        }
     }
 
     /**
@@ -698,8 +688,17 @@ public class RangeSeekBar<T extends Number> extends ImageView {
 
     }
 
-    protected String valueToString(T value) {
-        return String.valueOf(value);
+
+    @SuppressWarnings("unused")
+    public void setTextFormatter(@NonNull TextFormatter textFormatter) {
+        this.textFormatter = textFormatter;
+    }
+
+    private String valueToString(int value) {
+        if (textFormatter == null) {
+            return String.valueOf(value);
+        }
+        return textFormatter.formatValue(value);
     }
 
     /**
@@ -811,27 +810,26 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     }
 
     /**
-     * Converts a normalized value to a Number object in the value space between absolute minimum and maximum.
+     * Converts a normalized value to an int in the value space between absolute minimum and maximum.
      */
     @SuppressWarnings("unchecked")
-    protected T normalizedToValue(double normalized) {
+    private int normalizedToValue(double normalized) {
         double v = absoluteMinValuePrim + normalized * (absoluteMaxValuePrim - absoluteMinValuePrim);
-        // TODO parameterize this rounding to allow variable decimal points
-        return (T) numberType.toNumber(Math.round(v * 100) / 100d);
+        return (int) (Math.round(v * 100) / 100d);
     }
 
     /**
-     * Converts the given Number value to a normalized double.
+     * Converts the given value to a normalized double.
      *
-     * @param value The Number value to normalize.
+     * @param value The int value to normalize.
      * @return The normalized double.
      */
-    protected double valueToNormalized(T value) {
+    private double valueToNormalized(int value) {
         if (0 == absoluteMaxValuePrim - absoluteMinValuePrim) {
             // prevent division by zero, simply return 0.
             return 0d;
         }
-        return (value.doubleValue() - absoluteMinValuePrim) / (absoluteMaxValuePrim - absoluteMinValuePrim);
+        return (value - absoluteMinValuePrim) / (absoluteMaxValuePrim - absoluteMinValuePrim);
     }
 
     /**
@@ -869,68 +867,65 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     }
 
     /**
-     * Utility enumeration used to convert between Numbers and doubles.
-     *
-     * @author Stephan Tittel (stephan.tittel@kom.tu-darmstadt.de)
+     * Callback listener interface to notify about changed range values.
      */
-    protected enum NumberType {
-        LONG, DOUBLE, INTEGER, FLOAT, SHORT, BYTE, BIG_DECIMAL;
+    // TODO should we add fromUser
+    public interface OnRangeSeekBarChangeListener {
 
-        public static <E extends Number> NumberType fromNumber(E value) throws IllegalArgumentException {
-            if (value instanceof Long) {
-                return LONG;
-            }
-            if (value instanceof Double) {
-                return DOUBLE;
-            }
-            if (value instanceof Integer) {
-                return INTEGER;
-            }
-            if (value instanceof Float) {
-                return FLOAT;
-            }
-            if (value instanceof Short) {
-                return SHORT;
-            }
-            if (value instanceof Byte) {
-                return BYTE;
-            }
-            if (value instanceof BigDecimal) {
-                return BIG_DECIMAL;
-            }
-            throw new IllegalArgumentException("Number class '" + value.getClass().getName() + "' is not supported");
-        }
+        /**
+         * Notification that the progress level has changed. Clients can use the fromUser parameter
+         * to distinguish user-initiated changes from those that occurred programmatically.
+         *
+         * @param rangeSeekBar     The RangeSeekBar whose progress has changed
+         * @param selectedMinValue The current value selected by the left/minimum thumb.
+         * @param selectedMaxValue The current value selected by the right/maximum thumb.
+         */
+        void onRangeSeekBarValuesChanged(RangeSeekBar rangeSeekBar, int selectedMinValue, int selectedMaxValue);
 
-        public Number toNumber(double value) {
-            switch (this) {
-                case LONG:
-                    return (long) value;
-                case DOUBLE:
-                    return value;
-                case INTEGER:
-                    return (int) value;
-                case FLOAT:
-                    return (float) value;
-                case SHORT:
-                    return (short) value;
-                case BYTE:
-                    return (byte) value;
-                case BIG_DECIMAL:
-                    return BigDecimal.valueOf(value);
-            }
-            throw new InstantiationError("can't convert " + this + " to a Number object");
-        }
+        /**
+         * Notification that the user has started a touch gesture. Clients may want to use this
+         * to disable advancing the seekbar.
+         *
+         * @param rangeSeekBar The RangeSeekBar in which the touch gesture began
+         */
+        void onStartTrackingTouch(RangeSeekBar rangeSeekBar);
+
+        /**
+         * Notification that the user has finished a touch gesture. Clients may want to use this
+         * to re-enable advancing the seekbar.
+         *
+         * @param rangeSeekBar The RangeSeekBar in which the touch gesture began
+         */
+        void onStopTrackingTouch(RangeSeekBar rangeSeekBar);
     }
 
     /**
-     * Callback listener interface to notify about changed range values.
-     *
-     * @param <T> The Number type the RangeSeekBar has been declared with.
-     * @author Stephan Tittel (stephan.tittel@kom.tu-darmstadt.de)
+     * An utility interface allowing clients to format the text shown by the bar in any way they want.
      */
-    public interface OnRangeSeekBarChangeListener<T extends Number> {
+    public interface TextFormatter {
+        String formatValue(int value);
+    }
 
-        void onRangeSeekBarValuesChanged(RangeSeekBar<T> bar, T minValue, T maxValue);
+    /**
+     * A helper abstract class so that clients can implement only the listener methods they care about
+     * from {@link OnRangeSeekBarChangeListener}
+     */
+    public abstract class SimpleRangeSeekBarChangeListener implements OnRangeSeekBarChangeListener {
+
+        @Override
+        public void onRangeSeekBarValuesChanged(RangeSeekBar rangeSeekBar, int selectedMinValue, int selectedMaxValue) {
+
+        }
+
+        @Override
+        public void onStartTrackingTouch(RangeSeekBar rangeSeekBar) {
+
+        }
+
+        @Override
+        public void onStopTrackingTouch(RangeSeekBar rangeSeekBar) {
+
+        }
     }
 
 }
