@@ -53,5 +53,15 @@ public class DemoActivity extends Activity {
         // Seek bar for which we will set text color in code
         RangeSeekBar rangeSeekBarTextColorWithCode = (RangeSeekBar) findViewById(R.id.rangeSeekBarTextColorWithCode);
         rangeSeekBarTextColorWithCode.setTextAboveThumbsColorResource(android.R.color.holo_blue_bright);
+
+        // Seekbar with double values
+        RangeSeekBar rsbDoubles = (RangeSeekBar) findViewById(R.id.rsb_double_values);
+        rsbDoubles.setRangeValues(1523, 14835);
+        rsbDoubles.setTextFormatter(new RangeSeekBar.TextFormatter() {
+            @Override
+            public String formatValue(int value) {
+                return "£" + value / 100d;
+            }
+        });
     }
 }

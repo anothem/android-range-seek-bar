@@ -59,18 +59,17 @@
             rsb:absoluteMinValue="20"
             rsb:step="10" />
 
-        <!--TODO show an example what this would look like-->
-        <!--<TextView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="Range seek bar from xml with ranges set and double values"/>-->
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Range seek bar with double values" />
 
 
-        <!--<org.florescu.android.rangeseekbar.RangeSeekBar-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--rsb:absoluteMaxValue="140.54"-->
-        <!--rsb:absoluteMinValue="15.23"/>-->
+        <org.florescu.android.rangeseekbar.RangeSeekBar
+            android:id="@+id/rsb_double_values"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
         <TextView
             android:layout_width="match_parent"
