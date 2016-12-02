@@ -50,7 +50,6 @@ import org.florescu.android.util.PixelUtil;
 
 /**
  * Widget that lets users select a minimum and maximum value on a given numerical range.
- * The range value types can be any {@link Number}.<br> // TODO get rid of all number references
  * <br>
  * Improved {@link android.view.MotionEvent} handling for smoother use, anti-aliased painting for improved aesthetics.
  *
@@ -165,7 +164,6 @@ public class RangeSeekBar extends ImageView {
         init(context, attrs);
     }
 
-    @SuppressWarnings("unchecked")
     private int extractNumericValueFromAttributes(TypedArray a, int attribute, int defaultValue) {
         TypedValue tv = a.peekValue(attribute);
         if (tv == null) {
@@ -254,7 +252,7 @@ public class RangeSeekBar extends ImageView {
         thumbHalfWidth = 0.5f * thumbImage.getWidth();
         thumbHalfHeight = 0.5f * thumbImage.getHeight();
 
-        setValuePrimAndNumberType();
+        setValuePrim();
 
         textSize = PixelUtil.dpToPx(context, DEFAULT_TEXT_SIZE_IN_DP);
         distanceToTop = PixelUtil.dpToPx(context, DEFAULT_TEXT_DISTANCE_TO_TOP_IN_DP);
@@ -287,7 +285,7 @@ public class RangeSeekBar extends ImageView {
     public void setRangeValues(int minValue, int maxValue) {
         this.absoluteMinValue = minValue;
         this.absoluteMaxValue = maxValue;
-        setValuePrimAndNumberType();
+        setValuePrim();
     }
 
     public void setRangeValues(int minValue, int maxValue, int step) {
@@ -295,26 +293,20 @@ public class RangeSeekBar extends ImageView {
         setRangeValues(minValue, maxValue);
     }
 
-    // TODO should this be just @ColorRes
-    public void setTextAboveThumbsColor(@ColorInt int textAboveThumbsColor) {
-        this.textAboveThumbsColor = textAboveThumbsColor;
+    public void setTextAboveThumbsColorResource(@ColorRes int resId) {
+        this.textAboveThumbsColor = ContextCompat.getColor(getContext(), resId);
         invalidate();
     }
 
-    public void setTextAboveThumbsColorResource(@ColorRes int resId) {
-        setTextAboveThumbsColor(ContextCompat.getColor(getContext(), resId));
-    }
-
-    @SuppressWarnings("unchecked")
     // only used to set default values when initialised from XML without any values specified
     private void setRangeToDefaultValues() {
         this.absoluteMinValue = DEFAULT_MINIMUM;
         this.absoluteMaxValue = DEFAULT_MAXIMUM;
         this.absoluteStepValue = DEFAULT_STEP;
-        setValuePrimAndNumberType();
+        setValuePrim();
     }
 
-    private void setValuePrimAndNumberType() {
+    private void setValuePrim() {
         absoluteMinValuePrim = absoluteMinValue;
         absoluteMaxValuePrim = absoluteMaxValue;
         absoluteStepValuePrim = absoluteStepValue;
@@ -384,7 +376,7 @@ public class RangeSeekBar extends ImageView {
     /**
      * Sets the currently selected minimum value. The widget will be invalidated and redrawn.
      *
-     * @param value The Number value to set the minimum value to. Will be clamped to given absolute minimum/maximum range.
+     * @param value The value to set the minimum value to. Will be clamped to given absolute minimum/maximum range.
      */
     public void setSelectedMinValue(int value) {
         // in case absoluteMinValue == absoluteMaxValue, avoid division by zero when normalizing.
@@ -407,7 +399,7 @@ public class RangeSeekBar extends ImageView {
     /**
      * Sets the currently selected maximum value. The widget will be invalidated and redrawn.
      *
-     * @param value The Number value to set the maximum value to. Will be clamped to given absolute minimum/maximum range.
+     * @param value The value to set the maximum value to. Will be clamped to given absolute minimum/maximum range.
      */
     public void setSelectedMaxValue(int value) {
         // in case absoluteMinValue == absoluteMaxValue, avoid division by zero when normalizing.
@@ -535,7 +527,6 @@ public class RangeSeekBar extends ImageView {
         if (pointerId == activePointerId) {
             // This was our active pointer going up. Choose
             // a new active pointer and adjust accordingly.
-            // TODO: Make this decision more intelligent.
             final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
             downMotionX = ev.getX(newPointerIndex);
             activePointerId = ev.getPointerId(newPointerIndex);
@@ -714,7 +705,6 @@ public class RangeSeekBar extends ImageView {
      * Overridden to save instance state when device orientation changes. This method is called automatically if you assign an id to the RangeSeekBar widget using the {@link #setId(int)} method. Other members of this class than the normalized min and max values don't need to be saved.
      */
     @Override
-    // TODO test these
     protected Parcelable onSaveInstanceState() {
         final Bundle bundle = new Bundle();
         bundle.putParcelable("SUPER", super.onSaveInstanceState());
@@ -820,19 +810,18 @@ public class RangeSeekBar extends ImageView {
     }
 
     /**
-     * Converts a normalized value to a Number object in the value space between absolute minimum and maximum.
+     * Converts a normalized value to an int in the value space between absolute minimum and maximum.
      */
     @SuppressWarnings("unchecked")
     private int normalizedToValue(double normalized) {
         double v = absoluteMinValuePrim + normalized * (absoluteMaxValuePrim - absoluteMinValuePrim);
-        // TODO parameterize this rounding to allow variable decimal points
         return (int) (Math.round(v * 100) / 100d);
     }
 
     /**
-     * Converts the given Number value to a normalized double.
+     * Converts the given value to a normalized double.
      *
-     * @param value The Number value to normalize.
+     * @param value The int value to normalize.
      * @return The normalized double.
      */
     private double valueToNormalized(int value) {
