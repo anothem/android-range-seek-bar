@@ -271,7 +271,9 @@ public class RangeSeekBar extends ImageView {
 
         if (thumbShadow) {
             // We need to remove hardware acceleration in order to blur the shadow
-            setLayerType(LAYER_TYPE_SOFTWARE, null);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+                setLayerType(LAYER_TYPE_SOFTWARE, null);
+            }
             shadowPaint.setColor(thumbShadowColor);
             shadowPaint.setMaskFilter(new BlurMaskFilter(thumbShadowBlur, BlurMaskFilter.Blur.NORMAL));
             thumbShadowPath = new Path();
