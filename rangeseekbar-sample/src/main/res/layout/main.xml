@@ -97,7 +97,7 @@
             rsb:absoluteMaxValue="150"
             rsb:absoluteMinValue="20"
             rsb:singleThumb="true"
-            rsb:textAboveThumbsColor="@android:color/holo_green_light"/>
+            rsb:textAboveThumbsColor="@color/holo_green_light"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -158,7 +158,7 @@
             android:layout_height="wrap_content"
             rsb:absoluteMaxValue="150"
             rsb:absoluteMinValue="20"
-            rsb:textAboveThumbsColor="@android:color/holo_purple"
+            rsb:textAboveThumbsColor="@color/holo_purple"
             rsb:thumbDisabled="@drawable/custom_slider_thumb"
             rsb:thumbNormal="@drawable/custom_slider_thumb"
             rsb:thumbPressed="@drawable/custom_slider_thumb"
@@ -177,7 +177,7 @@
             android:layout_height="wrap_content"
             rsb:absoluteMaxValue="150"
             rsb:absoluteMinValue="20"
-            rsb:textAboveThumbsColor="@android:color/holo_purple"
+            rsb:textAboveThumbsColor="@color/holo_purple"
             rsb:thumbDisabled="@drawable/custom_slider_thumb"
             rsb:thumbNormal="@drawable/custom_slider_thumb"
             rsb:thumbPressed="@drawable/custom_slider_thumb"

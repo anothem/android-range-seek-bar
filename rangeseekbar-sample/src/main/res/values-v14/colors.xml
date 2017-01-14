@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="holo_blue_light" type="color">@android:color/holo_blue_light</item>
+    <item name="holo_green_light" type="color">@android:color/holo_green_light</item>
+    <item name="holo_red_light" type="color">@android:color/holo_red_light</item>
+    <item name="holo_blue_dark" type="color">@android:color/holo_blue_dark</item>
+    <item name="holo_green_dark" type="color">@android:color/holo_green_dark</item>
+    <item name="holo_red_dark" type="color">@android:color/holo_red_dark</item>
+    <item name="holo_purple" type="color">@android:color/holo_purple</item>
+    <item name="holo_orange_light" type="color">@android:color/holo_orange_light</item>
+    <item name="holo_orange_dark" type="color">@android:color/holo_orange_dark</item>
+    <item name="holo_blue_bright" type="color">@android:color/holo_blue_bright</item>
+</resources>
