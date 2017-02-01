@@ -40,6 +40,8 @@ public class DemoActivity extends Activity {
         rangeSeekBar.setSelectedMinValue(20);
         rangeSeekBar.setSelectedMaxValue(88);
 
+        rangeSeekBar.setActiveBarHeight(5);
+
         // Add to layout
         LinearLayout layout = (LinearLayout) findViewById(R.id.seekbar_placeholder);
         layout.addView(rangeSeekBar);

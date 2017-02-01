@@ -117,7 +117,6 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private int textSize;
     private int distanceToTop;
     private RectF rect;
-    private RectF rectActive;
 
     private boolean singleThumb;
     private boolean alwaysActive;
@@ -137,7 +136,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private Matrix thumbShadowMatrix = new Matrix();
 
     private boolean activateOnDefaultValues;
-
+    private float activeBarHeight;
+    private float barHeight;
 
     public RangeSeekBar(Context context) {
         super(context);
@@ -170,8 +170,6 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     }
 
     private void init(Context context, AttributeSet attrs) {
-        float barHeight;
-        float activeBarHeight;
         int thumbNormal = R.drawable.seek_thumb_normal;
         int thumbPressed = R.drawable.seek_thumb_pressed;
         int thumbDisabled = R.drawable.seek_thumb_disabled;
@@ -263,11 +261,6 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 getWidth() - padding,
                 textOffset + thumbHalfHeight + barHeight / 2);
 
-        rectActive = new RectF(padding,
-                textOffset + thumbHalfHeight - activeBarHeight / 2,
-                getWidth() - padding,
-                textOffset + thumbHalfHeight + activeBarHeight / 2);
-
         // make RangeSeekBar focusable. This solves focus handling issues in case EditText widgets are being used along with the RangeSeekBar within ScrollViews.
         setFocusable(true);
         setFocusableInTouchMode(true);
@@ -299,6 +292,26 @@ public class RangeSeekBar<T extends Number> extends ImageView {
 
     public void setTextAboveThumbsColorResource(@ColorRes int resId) {
         setTextAboveThumbsColor(getResources().getColor(resId));
+    }
+
+	/**
+     * Sets the height of the active bar
+     *
+     * @param activeBarHeight the height in DP uints
+     */
+
+    public void setActiveBarHeight(int activeBarHeight) {
+        this.activeBarHeight = PixelUtil.dpToPx(getContext(), activeBarHeight);
+    }
+
+    /**
+     * Sets the height of the bar
+     *
+     * @param barHeight the height in DP uints
+     */
+
+    public void setBarHeight(int barHeight) {
+        this.barHeight = PixelUtil.dpToPx(getContext(), barHeight);
     }
 
     @SuppressWarnings("unchecked")
@@ -619,6 +632,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         // draw seek bar background line
         rect.left = padding;
         rect.right = getWidth() - padding;
+        rect.top = textOffset + thumbHalfHeight - barHeight / 2;
+        rect.bottom = textOffset + thumbHalfHeight + barHeight / 2;
         canvas.drawRect(rect, paint);
 
         boolean selectedValuesAreDefault = (normalizedMinValue <= minDeltaForDefault && normalizedMaxValue >= 1 - minDeltaForDefault);
@@ -628,11 +643,15 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 activeColor;   // non default, filter is active
 
         // draw seek bar active range line
-        rect.left = normalizedToScreen(normalizedMinValue);
-        rect.right = normalizedToScreen(normalizedMaxValue);
+        if (activateOnDefaultValues || !selectedValuesAreDefault) {
+            rect.left = normalizedToScreen(normalizedMinValue);
+            rect.right = normalizedToScreen(normalizedMaxValue);
+            rect.top = textOffset + thumbHalfHeight - activeBarHeight / 2;
+            rect.bottom = textOffset + thumbHalfHeight + activeBarHeight / 2;
 
-        paint.setColor(colorToUseForButtonsAndHighlightedLine);
-        canvas.drawRect(rect, paint);
+            paint.setColor(colorToUseForButtonsAndHighlightedLine);
+            canvas.drawRect(rect, paint);
+        }
 
         // draw minimum thumb (& shadow if requested) if not a single thumb control
         if (!singleThumb) {
@@ -649,13 +668,6 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         }
         drawThumb(normalizedToScreen(normalizedMaxValue), Thumb.MAX.equals(pressedThumb), canvas,
                 selectedValuesAreDefault);
-
-        // draw activeBar if sliders have moved from default edges or is always active
-        if (alwaysActive || (activateOnDefaultValues || !selectedValuesAreDefault)) {
-            rectActive.left = normalizedToScreen(normalizedMinValue);
-            rectActive.right = normalizedToScreen(normalizedMaxValue);
-            canvas.drawRect(rectActive, paint);
-        }
 
         // draw the text if sliders have moved from default edges
         if (showTextAboveThumbs && (activateOnDefaultValues || !selectedValuesAreDefault)) {
@@ -724,7 +736,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
 
     /**
      * Draws the "normal" resp. "pressed" thumb image on specified x-coordinate.
-     * alwaysActive variable overwrites activateOnDefaultValues
+     *
      *
      * @param screenCoord               The x-coordinate in screen space where to draw the image.
      * @param pressed                   Is the thumb currently in "pressed" state?
@@ -733,9 +745,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      */
     private void drawThumb(float screenCoord, boolean pressed, Canvas canvas, boolean areSelectedValuesDefault) {
         Bitmap buttonToDraw;
-        if (alwaysActive) {
-            buttonToDraw = pressed ? thumbPressedImage : thumbImage;
-        } else if (!activateOnDefaultValues && areSelectedValuesDefault){
+        if (!activateOnDefaultValues && areSelectedValuesDefault) {
             buttonToDraw = thumbDisabledImage;
         } else {
             buttonToDraw = pressed ? thumbPressedImage : thumbImage;
