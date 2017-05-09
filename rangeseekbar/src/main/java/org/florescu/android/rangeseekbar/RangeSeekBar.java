@@ -91,6 +91,10 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private Bitmap thumbPressedImage;
     private Bitmap thumbDisabledImage;
 
+    private Bitmap thumbImageLeft, thumbImageRight;
+    private Bitmap thumbPressedImageLeft, thumbPressedImageRight;
+    private Bitmap thumbDisabledImageLeft, thumbDisabledImageRight;
+
     private float thumbHalfWidth;
     private float thumbHalfHeight;
 
@@ -212,17 +216,62 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 alwaysActive = a.getBoolean(R.styleable.RangeSeekBar_alwaysActive, false);
 
                 Drawable normalDrawable = a.getDrawable(R.styleable.RangeSeekBar_thumbNormal);
-                if (normalDrawable != null) {
+
+                if (normalDrawable == null) {
+
+                    Drawable normalDrawableLeft = a.getDrawable(R.styleable.RangeSeekBar_thumbNormalLeft);
+                    Drawable normalDrawableRight = a.getDrawable(R.styleable.RangeSeekBar_thumbNormalRight);
+
+                    if (normalDrawableLeft != null && normalDrawableRight != null) {
+                        thumbImageLeft = BitmapUtil.drawableToBitmap(normalDrawableLeft);
+                        thumbImageRight = BitmapUtil.drawableToBitmap(normalDrawableRight);
+                        if (!BitmapUtil.haveSameSize(thumbImageLeft, thumbImageRight))
+                            thumbImageLeft = thumbImageRight = null;
+                    } else {
+                        thumbImageLeft = thumbImageRight = null;
+                    }
+                } else {
                     thumbImage = BitmapUtil.drawableToBitmap(normalDrawable);
                 }
+
                 Drawable disabledDrawable = a.getDrawable(R.styleable.RangeSeekBar_thumbDisabled);
-                if (disabledDrawable != null) {
+
+                if (disabledDrawable == null) {
+
+                    Drawable disabledDrawableLeft = a.getDrawable(R.styleable.RangeSeekBar_thumbDisabledLeft);
+                    Drawable disabledDrawableRight = a.getDrawable(R.styleable.RangeSeekBar_thumbDisabledRight);
+
+                    if (disabledDrawableLeft != null && disabledDrawableRight != null) {
+                        thumbDisabledImageLeft = BitmapUtil.drawableToBitmap(disabledDrawableLeft);
+                        thumbDisabledImageRight = BitmapUtil.drawableToBitmap(disabledDrawableRight);
+                        if (!BitmapUtil.haveSameSize(thumbDisabledImageLeft, thumbDisabledImageRight))
+                            thumbDisabledImageRight = thumbDisabledImageLeft = null;
+                    } else {
+                        thumbDisabledImageLeft = thumbPressedImageRight = null;
+                    }
+                } else {
                     thumbDisabledImage = BitmapUtil.drawableToBitmap(disabledDrawable);
                 }
+
                 Drawable pressedDrawable = a.getDrawable(R.styleable.RangeSeekBar_thumbPressed);
-                if (pressedDrawable != null) {
+
+                if (pressedDrawable == null) {
+
+                    Drawable pressedDrawableLeft = a.getDrawable(R.styleable.RangeSeekBar_thumbPressedLeft);
+                    Drawable pressedDrawableRight = a.getDrawable(R.styleable.RangeSeekBar_thumbPressedRight);
+
+                    if (pressedDrawableLeft != null && pressedDrawableRight != null) {
+                        thumbPressedImageLeft = BitmapUtil.drawableToBitmap(pressedDrawableLeft);
+                        thumbPressedImageRight = BitmapUtil.drawableToBitmap(pressedDrawableRight);
+                        if (!BitmapUtil.haveSameSize(thumbPressedImageLeft, thumbPressedImageRight))
+                            thumbPressedImageRight = thumbPressedImageLeft = null;
+                    } else {
+                        thumbPressedImageLeft = thumbPressedImageRight = null;
+                    }
+                } else {
                     thumbPressedImage = BitmapUtil.drawableToBitmap(pressedDrawable);
                 }
+
                 thumbShadow = a.getBoolean(R.styleable.RangeSeekBar_thumbShadow, false);
                 thumbShadowColor = a.getColor(R.styleable.RangeSeekBar_thumbShadowColor, defaultShadowColor);
                 thumbShadowXOffset = a.getDimensionPixelSize(R.styleable.RangeSeekBar_thumbShadowXOffset, defaultShadowXOffset);
@@ -235,18 +284,28 @@ public class RangeSeekBar<T extends Number> extends ImageView {
             }
         }
 
-        if (thumbImage == null) {
-            thumbImage = BitmapFactory.decodeResource(getResources(), thumbNormal);
-        }
-        if (thumbPressedImage == null) {
-            thumbPressedImage = BitmapFactory.decodeResource(getResources(), thumbPressed);
-        }
-        if (thumbDisabledImage == null) {
-            thumbDisabledImage = BitmapFactory.decodeResource(getResources(), thumbDisabled);
+        if (thumbImage != null) {
+            thumbImageLeft = thumbImageRight = thumbImage;
+        } else if (thumbImageLeft == null || thumbImageRight == null) {
+            thumbImageLeft = thumbImageRight = BitmapFactory.decodeResource(getResources(), thumbNormal);
         }
 
-        thumbHalfWidth = 0.5f * thumbImage.getWidth();
-        thumbHalfHeight = 0.5f * thumbImage.getHeight();
+        if (thumbPressedImage != null) {
+            thumbPressedImageLeft = thumbPressedImageRight = thumbPressedImage;
+        } else if (thumbPressedImageLeft == null || thumbPressedImageRight == null) {
+            thumbPressedImageLeft = thumbPressedImageRight = BitmapFactory.decodeResource(getResources(), thumbPressed);
+        }
+
+        if (thumbDisabledImage != null) {
+            thumbDisabledImageLeft = thumbDisabledImageRight = thumbDisabledImage;
+        } else if (thumbDisabledImageLeft == null || thumbDisabledImageRight == null) {
+            thumbDisabledImageLeft = thumbDisabledImageRight = BitmapFactory.decodeResource(getResources(), thumbDisabled);
+        }
+
+        // At this point, thumbImageLeft and thumbImageRight should be have same dimensions, use
+        // thumbImageLeft as reference
+        thumbHalfWidth = 0.5f * thumbImageLeft.getWidth();
+        thumbHalfHeight = 0.5f * thumbImageLeft.getHeight();
 
         setValuePrimAndNumberType();
 
@@ -593,7 +652,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
             width = MeasureSpec.getSize(widthMeasureSpec);
         }
 
-        int height = thumbImage.getHeight()
+        int height = thumbImageLeft.getHeight()
                 + (!showTextAboveThumbs ? 0 : PixelUtil.dpToPx(getContext(), HEIGHT_IN_DP))
                 + (thumbShadow ? thumbShadowYOffset + thumbShadowBlur : 0);
         if (MeasureSpec.UNSPECIFIED != MeasureSpec.getMode(heightMeasureSpec)) {
@@ -650,7 +709,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 drawThumbShadow(normalizedToScreen(normalizedMinValue), canvas);
             }
             drawThumb(normalizedToScreen(normalizedMinValue), Thumb.MIN.equals(pressedThumb), canvas,
-                    selectedValuesAreDefault);
+                    selectedValuesAreDefault, true);
         }
 
         // draw maximum thumb & shadow (if necessary)
@@ -658,7 +717,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
             drawThumbShadow(normalizedToScreen(normalizedMaxValue), canvas);
         }
         drawThumb(normalizedToScreen(normalizedMaxValue), Thumb.MAX.equals(pressedThumb), canvas,
-                selectedValuesAreDefault);
+                selectedValuesAreDefault, false);
 
         // draw the text if sliders have moved from default edges
         if (showTextAboveThumbs && (activateOnDefaultValues || !selectedValuesAreDefault)) {
@@ -731,13 +790,17 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      * @param screenCoord The x-coordinate in screen space where to draw the image.
      * @param pressed     Is the thumb currently in "pressed" state?
      * @param canvas      The canvas to draw upon.
+     * @param isLeft      Are drawing left thumb?
      */
-    private void drawThumb(float screenCoord, boolean pressed, Canvas canvas, boolean areSelectedValuesDefault) {
+    private void drawThumb(float screenCoord, boolean pressed, Canvas canvas, boolean areSelectedValuesDefault, boolean isLeft) {
         Bitmap buttonToDraw;
         if (!activateOnDefaultValues && areSelectedValuesDefault) {
-            buttonToDraw = thumbDisabledImage;
+            buttonToDraw = isLeft ? thumbDisabledImageLeft : thumbDisabledImageRight ;
         } else {
-            buttonToDraw = pressed ? thumbPressedImage : thumbImage;
+            if (isLeft)
+                buttonToDraw = pressed ? thumbPressedImageLeft : thumbImageLeft;
+            else
+                buttonToDraw = pressed ? thumbPressedImageRight : thumbImageRight;
         }
 
         canvas.drawBitmap(buttonToDraw, screenCoord - thumbHalfWidth,

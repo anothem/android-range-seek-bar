@@ -43,6 +43,13 @@
         <attr name="thumbPressed" format="reference"/>
         <attr name="thumbDisabled" format="reference"/>
 
+        <attr name="thumbNormalLeft" format="reference"/>
+        <attr name="thumbPressedLeft" format="reference"/>
+        <attr name="thumbDisabledLeft" format="reference"/>
+        <attr name="thumbNormalRight" format="reference"/>
+        <attr name="thumbPressedRight" format="reference"/>
+        <attr name="thumbDisabledRight" format="reference"/>
+
         <!-- thumb shadow specifications -->
         <attr name="thumbShadow" format="boolean"/>
         <attr name="thumbShadowColor" format="color"/>

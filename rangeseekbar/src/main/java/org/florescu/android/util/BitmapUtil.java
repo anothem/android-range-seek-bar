@@ -28,4 +28,8 @@ public class BitmapUtil {
 
         return bitmap;
     }
+
+    public static boolean haveSameSize(Bitmap b1, Bitmap b2){
+        return b1.getWidth() == b2.getWidth() && b1.getHeight() == b2.getHeight();
+    }
 }
