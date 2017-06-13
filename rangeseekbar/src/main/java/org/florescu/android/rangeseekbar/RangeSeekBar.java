@@ -969,7 +969,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
       return 0d;
     }
     if (rangeType == RangeType.PREDEFINED) {
-      return predefinedRangeValues.indexOf(value) / (predefinedRangeValues.size() - 1.0);
+      return predefinedRangeValues.indexOf(value) / (predefinedRangeValues != null ? (predefinedRangeValues.size() - 1.0) : 1.0);
     }
     return (value.doubleValue() - absoluteMinValuePrim) / (absoluteMaxValuePrim - absoluteMinValuePrim);
   }
