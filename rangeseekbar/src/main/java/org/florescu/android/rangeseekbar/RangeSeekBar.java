@@ -968,6 +968,9 @@ public class RangeSeekBar<T extends Number> extends ImageView {
       // prevent division by zero, simply return 0.
       return 0d;
     }
+    if (rangeType == RangeType.PREDEFINED) {
+      return predefinedRangeValues.indexOf(value) / (predefinedRangeValues.size() - 1.0);
+    }
     return (value.doubleValue() - absoluteMinValuePrim) / (absoluteMaxValuePrim - absoluteMinValuePrim);
   }
 
