@@ -7,14 +7,14 @@ repositories {
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    buildToolsVersion '25.0.0'
 
     defaultConfig {
         applicationId "org.florescu.android.rangeseekbar.sample"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
+        versionCode 4
+        versionName "0.4.0"
     }
     buildTypes {
         release {

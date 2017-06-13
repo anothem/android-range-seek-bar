@@ -24,6 +24,8 @@ import android.widget.LinearLayout;
 import org.florescu.android.rangeseekbar.RangeSeekBar;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class DemoActivity extends Activity {
 
@@ -38,17 +40,27 @@ public class DemoActivity extends Activity {
         // Setup the new range seek bar
         RangeSeekBar<Integer> rangeSeekBar = new RangeSeekBar<Integer>(this);
         // Set the range
-        rangeSeekBar.setRangeType(RangeSeekBar.RangeType.CUBIC);
+        rangeSeekBar.setRangeType(RangeSeekBar.RangeType.GENERATED);
         rangeSeekBar.setTextFormatter(new DecimalFormat("\u00A4###,###,###"));
-        rangeSeekBar.setRangeValues(1000, 1000000);
-        rangeSeekBar.setSelectedMaxValue(80000);
+        rangeSeekBar.setIncrements(Arrays.asList(1000, 5000, 25000), Arrays.asList(50000, 200000));
+        rangeSeekBar.setRangeValues(0, 1000000);
 
         // Add to layout
         LinearLayout layout = (LinearLayout) findViewById(R.id.seekbar_placeholder);
         layout.addView(rangeSeekBar);
 
         RangeSeekBar<Integer> predefined = (RangeSeekBar<Integer>) findViewById(R.id.predefined);
-        predefined.setPredefinedRangeValues(new Integer[]{10, 25, 50, 75, 100, 200, 300, 500, 1000000});
+        predefined.setPredefinedRangeValues(new ArrayList<Integer>(){{
+            add(10);
+            add(25);
+            add(50);
+            add(75);
+            add(100);
+            add(200);
+            add(300);
+            add(500);
+            add(1000000);
+        }});
 
         // Seek bar for which we will set text color in code
         RangeSeekBar rangeSeekBarTextColorWithCode = (RangeSeekBar) findViewById(R.id.rangeSeekBarTextColorWithCode);
