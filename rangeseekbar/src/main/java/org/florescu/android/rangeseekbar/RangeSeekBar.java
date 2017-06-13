@@ -938,6 +938,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         return (T) numberType.toNumber(Math.round(v / step) * step);
       case GENERATED:
       case PREDEFINED:
+        if (predefinedRangeValues == null) return (T) numberType.toNumber(0);
         int index = (int)(normalized * (predefinedRangeValues.size() - 1));
         if (index >= predefinedRangeValues.size()) index = predefinedRangeValues.size() - 1;
         return predefinedRangeValues.get(index);
@@ -969,7 +970,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
       return 0d;
     }
     if (rangeType == RangeType.PREDEFINED) {
-      return predefinedRangeValues.indexOf(value) / (predefinedRangeValues != null ? (predefinedRangeValues.size() - 1.0) : 1.0);
+      if (predefinedRangeValues == null) return 1.0;
+      return predefinedRangeValues.indexOf(value) / (predefinedRangeValues.size() - 1.0);
     }
     return (value.doubleValue() - absoluteMinValuePrim) / (absoluteMaxValuePrim - absoluteMinValuePrim);
   }
