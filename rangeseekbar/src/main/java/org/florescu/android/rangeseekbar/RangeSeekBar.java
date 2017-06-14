@@ -39,7 +39,6 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
-import android.widget.ImageView;
 
 import org.florescu.android.util.BitmapUtil;
 import org.florescu.android.util.PixelUtil;
@@ -63,7 +62,7 @@ import java.util.List;
  * @author Alex Florescu (alex@florescu.org)
  * @author Michael Keppler (bananeweizen@gmx.de)
  */
-public class RangeSeekBar<T extends Number> extends ImageView {
+public class RangeSeekBar<T extends Number> extends android.support.v7.widget.AppCompatImageView {
   /**
    * Default color of a {@link RangeSeekBar}, #FF33B5E5. This is also known as "Ice Cream Sandwich" blue.
    */
@@ -779,9 +778,9 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     boolean selectedValuesAreDefault = (getSelectedMinValue().equals(getAbsoluteMinValue()) &&
         getSelectedMaxValue().equals(getAbsoluteMaxValue()));
 
-    int colorToUseForButtonsAndHighlightedLine = !mAlwaysActive && !mActivateOnDefaultValues && selectedValuesAreDefault ?
+    int colorToUseForButtonsAndHighlightedLine = !isEnabled() ? mDefaultColor : (!mAlwaysActive && !mActivateOnDefaultValues && selectedValuesAreDefault ?
         mDefaultColor : // default values
-        mActiveColor;   // non default, filter is active
+        mActiveColor);   // non default, filter is active
 
 
     padding = mInternalPad + minMaxLabelSize + (mThumbHalfWidth * 2);
@@ -851,7 +850,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
    */
   private void drawThumb(float screenCoord, boolean pressed, Canvas canvas, boolean areSelectedValuesDefault, boolean isMax) {
     Bitmap buttonToDraw;
-    if (!mActivateOnDefaultValues && areSelectedValuesDefault) {
+    if (!isEnabled() || (!mActivateOnDefaultValues && areSelectedValuesDefault)) {
       buttonToDraw = thumbDisabledImage;
     } else {
       buttonToDraw = pressed ? thumbPressedImage : thumbImage;
