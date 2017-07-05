@@ -968,7 +968,7 @@ public class RangeSeekBar<T extends Number> extends android.support.v7.widget.Ap
       // prevent division by zero, simply return 0.
       return 0d;
     }
-    if (rangeType == RangeType.PREDEFINED) {
+    if (rangeType == RangeType.PREDEFINED || rangeType == RangeType.GENERATED) {
       if (predefinedRangeValues == null) return 1.0;
       return predefinedRangeValues.indexOf(value) / (predefinedRangeValues.size() - 1.0);
     }
