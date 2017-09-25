@@ -1,3 +1,4 @@
+apply from: rootProject.file('depconfig.gradle')
 buildscript {
     repositories {
         mavenCentral()
@@ -11,12 +12,12 @@ buildscript {
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    compileSdkVersion compile_sdk_version
+    buildToolsVersion build_tools_version
 
     defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 23
+        minSdkVersion min_sdk_version
+        targetSdkVersion target_sdk_version
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -36,8 +37,8 @@ dependencies {
     }
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:23.4.0'
-    compile 'com.android.support:support-annotations:23.4.0'
+    compile "com.android.support:appcompat-v7:$app_compat_version"
+    compile "com.android.support:support-annotations:$app_compat_version"
 
     // Robolectric
     testCompile 'org.robolectric:robolectric:3.1-rc1'
