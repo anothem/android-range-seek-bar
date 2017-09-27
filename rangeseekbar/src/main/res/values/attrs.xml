@@ -52,6 +52,18 @@
 
         <!-- to activate the thumbs and texts when the min and max values are the default ones (defaults to false) -->
         <attr name="activateOnDefaultValues" format="boolean"/>
+
+        <attr name="drawIconAboveThumb" format="boolean"/>
+        <attr name="iconAboveThumbWidth" format="dimension"/>
+        <attr name="iconAboveThumbHeight" format="dimension"/>
+        <attr name="iconAboveThumb" format="reference"/>
+
+        <!-- This allows to add a string next to a value (for example "5 miles" where 5 is the value, and miles is the label) -->
+        <attr name="valueSuffixWord" format="string"/>
+
+        <!-- Size to use to draw a text on labels -->
+        <attr name="labelTextSize" format="dimension"/>
+
     </declare-styleable>
 
 </resources>

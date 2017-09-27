@@ -5,4 +5,8 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <style name="AppTheme.RangeSeekBar.Default" parent="AppTheme">
+        <item name="textAboveThumbsColor">?android:textColorPrimary</item>
+    </style>
+
 </resources>

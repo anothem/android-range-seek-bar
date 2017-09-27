@@ -1,0 +1,9 @@
+ext {
+    compile_sdk_version = 26
+    build_tools_version = '26.0.1'
+    min_sdk_version = 19
+    target_sdk_version = 26
+    app_compat_version = '26.0.2'
+    // If you like you can also put all of your dependencies here like that
+    // firebase_crash  : "com.google.firebase:firebase-crash:$firebaseVersion",
+}
