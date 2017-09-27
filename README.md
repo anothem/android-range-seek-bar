@@ -7,7 +7,7 @@ If you are coming from [the original repo](https://github.com/yahoo/android-rang
 
 This library provides a SeekBar similar to the default Android one, but with two thumb controls allowing a range to be selected.
 
-![](demo_screenshot.png)
+![Demo gif](https://github.com/mykolaj/android-range-seek-bar/blob/develop/Assets/main_screen_animated.gif)
 
 # Features and customizations
 
