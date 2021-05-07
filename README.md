@@ -3,6 +3,8 @@ range-seek-bar
 
 # Introduction
 
+Refactored to support AndroidX.
+
 If you are coming from [the original repo](https://github.com/yahoo/android-range-seek-bar), it has a [new home](https://github.com/anothem/android-range-seek-bar) so if you're seeing this, you're probably in the right place.
 
 This library provides a SeekBar similar to the default Android one, but with two thumb controls allowing a range to be selected.
